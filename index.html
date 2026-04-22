@@ -452,7 +452,7 @@
 <!-- ─── NAVIGATION ─── -->
 <nav class="nav">
   <a class="nav-brand" href="#">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
+    <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-label="Pieces of Perception logo"><rect x="1" y="1" width="12.5" height="12.5" rx="2.5" fill="#6C63FF"/><rect x="16.5" y="1" width="12.5" height="12.5" rx="2.5" fill="#9B94FF"/><rect x="1" y="16.5" width="12.5" height="12.5" rx="2.5" fill="#16162A"/><rect x="16.5" y="16.5" width="12.5" height="12.5" rx="2.5" fill="#E8845A"/></svg>
     <span class="brand-name">Pieces of Perception</span>
   </a>
   <ul class="nav-links">
@@ -847,7 +847,7 @@
 <!-- ─── FOOTER ─── -->
 <footer>
   <div class="footer-brand">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
+    <svg width="22" height="22" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-label="Pieces of Perception logo"><rect x="1" y="1" width="12.5" height="12.5" rx="2.5" fill="#6C63FF"/><rect x="16.5" y="1" width="12.5" height="12.5" rx="2.5" fill="#9B94FF"/><rect x="1" y="16.5" width="12.5" height="12.5" rx="2.5" fill="#4A4580"/><rect x="16.5" y="16.5" width="12.5" height="12.5" rx="2.5" fill="#E8845A"/></svg>
     <span>piecesofperception.com</span>
   </div>
   <p class="footer-tagline">Built with love by a family who gets it.</p>
@@ -861,9 +861,16 @@
   <p class="footer-legal">&copy; 2026 Pieces of Perception LLC. All rights reserved. This platform is an informational resource and does not provide medical advice, diagnosis, or treatment. Always consult qualified professionals for your child's care.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-  function joinWaitlist() {
+  const _sb = supabase.createClient(
+    'https://ezberjgmwdahiljzproz.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6YmVyamdtd2RhaGlsanpwcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjAwMDQsImV4cCI6MjA5MjM5NjAwNH0.S-dDookJKoiBDq4BxMVH21_FOSaHXgt9qDrQ6u8bOJI'
+  );
+
+  async function joinWaitlist() {
     const input = document.getElementById('waitlist-email');
+    const btn = document.getElementById('waitlist-btn');
     const email = input.value.trim();
     if (!email || !email.includes('@') || !email.includes('.')) {
       input.style.outline = '2px solid #E8645A';
@@ -871,11 +878,20 @@
       return;
     }
     input.style.outline = '';
-    // In production: sends to Supabase
     input.disabled = true;
+    if (btn) btn.disabled = true;
+
+    const { error } = await _sb.from('waitlist').insert([{ email }]);
+
+    // code 23505 = duplicate email (already signed up) — treat as success
+    if (error && error.code !== '23505') {
+      console.error('Waitlist error:', error.message);
+    }
+
     input.value = '';
     document.getElementById('waitlist-success').style.display = 'block';
   }
+
   document.getElementById('waitlist-email').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') joinWaitlist();
   });
