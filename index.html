@@ -861,13 +861,9 @@
   <p class="footer-legal">&copy; 2026 Pieces of Perception LLC. All rights reserved. This platform is an informational resource and does not provide medical advice, diagnosis, or treatment. Always consult qualified professionals for your child's care.</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-  const _sb = supabase.createClient(
-    'https://ezberjgmwdahiljzproz.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6YmVyamdtd2RhaGlsanpwcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjAwMDQsImV4cCI6MjA5MjM5NjAwNH0.S-dDookJKoiBDq4BxMVH21_FOSaHXgt9qDrQ6u8bOJI',
-    { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
-  );
+  const _SB_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
+  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6YmVyamdtd2RhaGlsanpwcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjAwMDQsImV4cCI6MjA5MjM5NjAwNH0.S-dDookJKoiBDq4BxMVH21_FOSaHXgt9qDrQ6u8bOJI';
 
   async function joinWaitlist() {
     const input = document.getElementById('waitlist-email');
@@ -882,11 +878,23 @@
     input.disabled = true;
     if (btn) btn.disabled = true;
 
-    const { error } = await _sb.from('waitlist').insert([{ email }]);
-
-    // code 23505 = duplicate email (already signed up) — treat as success
-    if (error && error.code !== '23505') {
-      console.error('Waitlist error:', error.message);
+    try {
+      const res = await fetch(`${_SB_URL}/rest/v1/waitlist`, {
+        method: 'POST',
+        headers: {
+          'apikey': _SB_KEY,
+          'Authorization': `Bearer ${_SB_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ email })
+      });
+      if (!res.ok && res.status !== 409) {
+        const txt = await res.text();
+        console.error('Waitlist error:', res.status, txt);
+      }
+    } catch(e) {
+      console.error('Waitlist fetch error:', e);
     }
 
     input.value = '';
