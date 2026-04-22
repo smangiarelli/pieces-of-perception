@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pieces of Perception helps families of neurodiverse children build personalized action reports — a clear, shareable guide to their child's strengths, sensory needs, communication style, and regulation strategies.">
+  <title>Pieces of Perception | Personalized Guides for Neurodiverse Families</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #6C63FF;
+      --accent-dark:  #5349e0;
+      --accent-mid:   #8B84FF;
+      --accent-bg:    rgba(108,99,255,0.07);
+      --warm:         #E8845A;
+      --warm-light:   rgba(232,132,90,0.10);
+      --sage:         #2BA87E;
+      --sage-light:   rgba(43,168,126,0.10);
+      --sky:          #3FA8CC;
+      --sky-light:    rgba(63,168,204,0.10);
+      --lavender:     #8E7FC4;
+      --lavender-light: rgba(142,127,196,0.12);
+      --rose:         #D95B72;
+      --rose-light:   rgba(217,91,114,0.10);
+      --deep:         #16162A;
+      --text:         #2C2C3E;
+      --text-light:   #6B6B80;
+      --border:       #E6E8F0;
+      --border-soft:  rgba(108,99,255,0.12);
+      --bg:           #F7F8FC;
+      --white:        #ffffff;
+      --card-shadow:  0 2px 8px rgba(22,22,42,0.06), 0 8px 32px rgba(22,22,42,0.08);
+      --card-shadow-hover: 0 4px 16px rgba(22,22,42,0.10), 0 16px 48px rgba(22,22,42,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TYPOGRAPHY ── */
+    .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand .brand-name { font-size: 17px; font-weight: 700; color: var(--deep); letter-spacing: -0.3px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-size: 14px; color: var(--text-light); text-decoration: none; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 11px 24px; border-radius: 12px; font-size: 14px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all .22s; border: none;
+      font-family: 'DM Sans', sans-serif; letter-spacing: -0.1px;
+    }
+    .btn-primary {
+      background: var(--accent); color: white;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.25);
+    }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108,99,255,0.35); }
+    .btn-outline { background: white; color: var(--accent); border: 1.5px solid rgba(108,99,255,0.3); }
+    .btn-outline:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .btn-warm { background: var(--warm); color: white; box-shadow: 0 2px 8px rgba(232,132,90,0.25); }
+    .btn-warm:hover { background: #d4744a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,132,90,0.35); }
+    .btn-large { padding: 15px 36px; font-size: 16px; border-radius: 14px; }
+
+    /* ── SECTIONS ── */
+    section { padding: 88px 48px; }
+    .section-inner { max-width: 1000px; margin: 0 auto; }
+    .section-label {
+      display: inline-block; padding: 5px 14px;
+      background: var(--accent-bg); color: var(--accent);
+      border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.4px;
+      margin-bottom: 16px; border: 1px solid var(--border-soft);
+    }
+    h2.section-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 40px); font-weight: 800;
+      color: var(--deep); line-height: 1.2; margin-bottom: 14px;
+      text-align: center;
+    }
+    .section-sub {
+      font-size: 17px; color: var(--text-light);
+      max-width: 580px; margin: 0 auto 52px;
+      line-height: 1.75; text-align: center; font-weight: 400;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 92vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 100px 48px 80px;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108,99,255,0.14) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(232,132,90,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(43,168,126,0.08) 0%, transparent 60%),
+        var(--white);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(108,99,255,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 18px;
+      background: white; border: 1px solid var(--border);
+      border-radius: 30px; font-size: 13px; font-weight: 500; color: var(--text-light);
+      margin-bottom: 28px;
+      box-shadow: 0 2px 12px rgba(22,22,42,0.06);
+    }
+    .hero-badge .dot { width: 7px; height: 7px; background: var(--sage); border-radius: 50%; }
+    .hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(38px, 6vw, 68px); font-weight: 900;
+      color: var(--deep); line-height: 1.1; margin-bottom: 24px;
+      letter-spacing: -1px; max-width: 820px;
+    }
+    .hero h1 .gradient {
+      background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 50%, var(--warm) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-desc {
+      font-size: 18px; color: var(--text-light); max-width: 540px;
+      margin: 0 auto 36px; line-height: 1.75; font-weight: 400;
+    }
+    .hero-cta { display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+    .hero-note { font-size: 13px; color: var(--text-light); }
+    .hero-note strong { color: var(--sage); font-weight: 600; }
+
+    /* Trust badges */
+    .trust-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 36px; max-width: 700px; }
+    .trust-chip {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; background: white; border-radius: 30px;
+      border: 1px solid var(--border); font-size: 12px; font-weight: 500; color: var(--text-light);
+      box-shadow: 0 1px 4px rgba(22,22,42,0.06);
+    }
+
+    /* Disclaimer */
+    .hero-disclaimer {
+      max-width: 600px; margin: 24px auto 0;
+      padding: 14px 20px; background: rgba(108,99,255,0.04);
+      border-radius: 14px; border: 1px solid var(--border-soft);
+      font-size: 12.5px; color: var(--text-light); line-height: 1.65;
+    }
+
+    /* ── TWO PATHS ── */
+    .paths-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 780px; margin: 0 auto; }
+    .path-card {
+      background: white; border-radius: 22px;
+      border: 1.5px solid var(--border);
+      padding: 32px 28px;
+      box-shadow: var(--card-shadow);
+      transition: all .25s;
+    }
+    .path-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-3px); }
+    .path-card.featured { border-color: var(--accent); background: linear-gradient(145deg,rgba(108,99,255,0.03),white); }
+    .path-icon { font-size: 36px; margin-bottom: 14px; }
+    .path-card h3 { font-size: 18px; font-weight: 700; color: var(--deep); margin-bottom: 10px; letter-spacing: -0.2px; }
+    .path-card p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+    .path-meta { margin-top: 14px; font-size: 12px; color: var(--text-light); font-weight: 500; }
+
+    /* ── HOW IT WORKS ── */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    .step-card {
+      background: white; border-radius: 20px; border: 1px solid var(--border);
+      padding: 32px 28px; text-align: center;
+      box-shadow: var(--card-shadow); transition: all .25s;
+    }
+    .step-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-3px); }
+    .step-num {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 800; margin: 0 auto 20px;
+    }
+    .step-card h3 { font-size: 17px; font-weight: 700; color: var(--deep); margin-bottom: 10px; }
+    .step-card p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+
+    /* ── FEATURES ── */
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .feature {
+      background: white; border-radius: 18px; border: 1px solid var(--border);
+      padding: 26px; display: flex; gap: 16px; align-items: flex-start;
+      box-shadow: var(--card-shadow); transition: all .25s;
+    }
+    .feature:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .feature h4 { font-size: 15px; font-weight: 700; color: var(--deep); margin-bottom: 7px; letter-spacing: -0.1px; }
+    .feature p { font-size: 13px; color: var(--text-light); line-height: 1.65; }
+
+    /* ── PRICING ── */
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; max-width: 820px; margin: 0 auto; }
+    .price-card {
+      background: white; border-radius: 24px;
+      border: 1.5px solid var(--border); padding: 36px 32px;
+      box-shadow: var(--card-shadow); position: relative;
+      transition: all .25s;
+    }
+    .price-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-3px); }
+    .price-card.premium {
+      background: linear-gradient(150deg, #1E1B3A 0%, #2A274D 100%);
+      border-color: transparent; color: white;
+    }
+    .popular-badge {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--warm), #f0a46a);
+      color: white; padding: 5px 18px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap;
+    }
+    .price-tier { font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; color: var(--accent); }
+    .price-card.premium .price-tier { color: #a78bfa; }
+    .price-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px; font-weight: 900; color: var(--deep); line-height: 1;
+    }
+    .price-card.premium .price-amount { color: white; }
+    .price-period { font-size: 13px; color: var(--text-light); margin-bottom: 16px; }
+    .price-card.premium .price-period { color: rgba(255,255,255,0.5); }
+    .price-desc { font-size: 14px; color: var(--text-light); line-height: 1.65; margin-bottom: 22px; }
+    .price-card.premium .price-desc { color: rgba(255,255,255,0.7); }
+    .price-divider { height: 1px; background: var(--border); margin: 0 0 20px; }
+    .price-card.premium .price-divider { background: rgba(255,255,255,0.1); }
+    .price-features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 10px; }
+    .price-features li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--text); line-height: 1.4; }
+    .price-card.premium .price-features li { color: rgba(255,255,255,0.9); }
+    .pf-check { flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; margin-top: 1px; }
+
+    /* ── CARE GUIDES ── */
+    .care-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 820px; margin: 0 auto 28px; }
+    .care-card {
+      background: white; border-radius: 18px; border: 1px solid var(--border);
+      padding: 22px 22px 22px 26px; position: relative;
+      box-shadow: var(--card-shadow); transition: all .25s;
+    }
+    .care-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
+    .care-price-tag {
+      position: absolute; top: 16px; right: 16px;
+      padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700;
+    }
+    .care-card h3 { font-size: 15px; font-weight: 700; color: var(--deep); margin-bottom: 8px; padding-right: 56px; }
+    .care-card p { font-size: 13px; color: var(--text-light); line-height: 1.65; }
+    .bundle-row {
+      max-width: 820px; margin: 0 auto;
+      background: white; border-radius: 18px; border: 1px solid var(--border);
+      padding: 18px 28px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: var(--card-shadow);
+    }
+    .bundle-row .bundle-label { font-size: 15px; font-weight: 700; color: var(--deep); }
+    .bundle-row .bundle-price { font-size: 22px; font-weight: 800; color: var(--sage); margin-left: 12px; }
+    .bundle-row .bundle-save { font-size: 13px; color: var(--text-light); margin-left: 6px; }
+
+    /* ── IEP ADDON ── */
+    .iep-card {
+      max-width: 820px; margin: 0 auto;
+      background: white; border-radius: 24px; border: 2px solid var(--lavender);
+      overflow: hidden; box-shadow: var(--card-shadow);
+    }
+    .iep-header {
+      background: linear-gradient(135deg, var(--lavender), #7c6fb5);
+      padding: 22px 36px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .iep-body { padding: 32px 36px; }
+    .iep-feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0; }
+    .iep-feat { background: var(--lavender-light); border-radius: 14px; padding: 18px; text-align: center; }
+    .iep-feat .fi { font-size: 24px; margin-bottom: 8px; }
+    .iep-feat strong { font-size: 12px; font-weight: 700; color: var(--lavender); display: block; margin-bottom: 5px; }
+    .iep-feat p { font-size: 12px; color: var(--text-light); margin: 0; line-height: 1.5; }
+
+    /* ── COMMITMENT ── */
+    .commit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 760px; margin: 0 auto 32px; }
+    .commit-box {
+      border-radius: 18px; padding: 26px 28px;
+      box-shadow: var(--card-shadow);
+    }
+    .commit-box.is { background: linear-gradient(135deg, rgba(43,168,126,0.07), white); border: 1.5px solid rgba(43,168,126,0.2); }
+    .commit-box.isnt { background: linear-gradient(135deg, rgba(217,91,114,0.07), white); border: 1.5px solid rgba(217,91,114,0.2); }
+    .commit-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+    .commit-box.is .commit-title { color: var(--sage); }
+    .commit-box.isnt .commit-title { color: var(--rose); }
+    .commit-box li { list-style: none; font-size: 14px; color: var(--text); padding: 5px 0; line-height: 1.5; }
+    .three-commitments { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; max-width: 700px; margin: 0 auto; }
+    .commitment-pill {
+      display: flex; align-items: center; gap: 12px;
+      background: white; border: 1px solid var(--border);
+      border-radius: 50px; padding: 12px 20px 12px 12px;
+      box-shadow: var(--card-shadow);
+    }
+    .c-num {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 13px; flex-shrink: 0;
+    }
+    .commitment-pill span { font-size: 14px; color: var(--text); }
+
+    /* ── NEUROTRANSLATE ── */
+    .eco-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: center; max-width: 680px; margin: 36px auto 0; }
+    .eco-card {
+      background: white; border-radius: 20px; padding: 28px;
+      border: 1px solid var(--border); text-align: center; box-shadow: var(--card-shadow);
+    }
+    .eco-icon { font-size: 32px; margin-bottom: 10px; }
+    .eco-card h4 { font-size: 16px; font-weight: 700; color: var(--deep); margin-bottom: 6px; }
+    .eco-card p { font-size: 13px; color: var(--text-light); line-height: 1.6; margin: 0; }
+    .eco-connector { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .eco-connector .arrow { font-size: 28px; color: var(--warm); }
+    .eco-connector .label { font-size: 10px; color: var(--text-light); font-weight: 700; letter-spacing: .8px; }
+
+    /* ── TESTIMONIAL ── */
+    .testimonial-wrap {
+      max-width: 720px; margin: 0 auto;
+      background: white; border-radius: 24px; padding: 48px;
+      border: 1px solid var(--border); text-align: center;
+      box-shadow: var(--card-shadow);
+      position: relative;
+    }
+    .testimonial-wrap::before {
+      content: '\201C';
+      position: absolute; top: 20px; left: 36px;
+      font-family: 'Playfair Display', serif;
+      font-size: 72px; color: var(--accent-bg); line-height: 1;
+    }
+    .testimonial-wrap blockquote {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; color: var(--deep); line-height: 1.7;
+      font-style: italic; margin-bottom: 18px;
+    }
+    .testimonial-author { font-size: 14px; color: var(--text-light); font-weight: 500; }
+
+    /* ── WAITLIST ── */
+    .waitlist-section {
+      background: linear-gradient(150deg, #1E1B3A 0%, #2A1F4A 50%, #1a2a3a 100%);
+      color: white; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .waitlist-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108,99,255,0.25), transparent 70%);
+      pointer-events: none;
+    }
+    .waitlist-section h2.section-title { color: white; }
+    .waitlist-section .section-sub { color: rgba(255,255,255,0.65); }
+    .waitlist-count {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 18px; background: rgba(255,255,255,0.1);
+      border-radius: 30px; font-size: 13px; color: rgba(255,255,255,0.8);
+      margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.15);
+    }
+    .waitlist-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
+    .waitlist-form input {
+      flex: 1; padding: 15px 20px; border-radius: 14px; border: none;
+      font-size: 15px; font-family: 'DM Sans', sans-serif;
+      outline: 2px solid transparent; transition: outline .2s;
+      background: rgba(255,255,255,0.95);
+    }
+    .waitlist-form input:focus { outline-color: var(--accent-mid); }
+    .waitlist-form button {
+      padding: 15px 28px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--warm), #f0a46a);
+      color: white; border: none; font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      white-space: nowrap; transition: all .22s;
+      box-shadow: 0 4px 16px rgba(232,132,90,0.3);
+    }
+    .waitlist-form button:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,132,90,0.4); }
+    .waitlist-note { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 14px; }
+    #waitlist-success {
+      display: none; margin-top: 18px;
+      padding: 14px 28px; background: rgba(43,168,126,0.2);
+      border-radius: 14px; color: rgba(255,255,255,0.9); font-size: 14px;
+      border: 1px solid rgba(43,168,126,0.3);
+    }
+
+    /* ── DISCLOSURES ── */
+    .disclosure-grid { display: grid; gap: 14px; max-width: 880px; margin: 0 auto; }
+    .disclosure-item {
+      background: white; border-radius: 16px; border: 1px solid var(--border);
+      padding: 20px 24px; box-shadow: var(--card-shadow);
+    }
+    .disclosure-item h4 { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 7px; }
+    .disclosure-item p { font-size: 13px; color: var(--text-light); line-height: 1.7; margin: 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0F0F1E; color: rgba(255,255,255,0.5);
+      padding: 52px 48px 36px; text-align: center;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 8px; }
+    .footer-brand span { font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.9); }
+    .footer-tagline { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
+    .footer-links { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 28px; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.8); }
+    .footer-legal { font-size: 11px; color: rgba(255,255,255,0.25); line-height: 1.7; max-width: 600px; margin: 0 auto; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 840px) {
+      section { padding: 64px 24px; }
+      .nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .steps, .features { grid-template-columns: 1fr; }
+      .paths-grid, .pricing-grid, .care-grid, .commit-grid { grid-template-columns: 1fr; }
+      .iep-feats { grid-template-columns: 1fr; }
+      .eco-row { grid-template-columns: 1fr; }
+      .eco-connector .arrow { transform: rotate(90deg); }
+      .waitlist-form { flex-direction: column; }
+      .hero { min-height: auto; padding: 80px 24px 64px; }
+      h2.section-title { font-size: 28px; }
+      .bundle-row { flex-direction: column; gap: 6px; text-align: center; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .hero > * { animation: fadeUp .7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .hero > *:nth-child(1) { animation-delay: .05s; }
+    .hero > *:nth-child(2) { animation-delay: .15s; }
+    .hero > *:nth-child(3) { animation-delay: .25s; }
+    .hero > *:nth-child(4) { animation-delay: .32s; }
+    .hero > *:nth-child(5) { animation-delay: .38s; }
+    .hero > *:nth-child(6) { animation-delay: .44s; }
+    .hero > *:nth-child(7) { animation-delay: .50s; }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAVIGATION ─── -->
+<nav class="nav">
+  <a class="nav-brand" href="#">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
+    <span class="brand-name">Pieces of Perception</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#iep">IEP Support</a></li>
+    <li><a href="#neurotranslate">NeuroTranslate</a></li>
+  </ul>
+  <a href="#waitlist" class="btn btn-primary">Join the Waitlist</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-badge"><div class="dot"></div> For families raising neurodiverse children</div>
+  <h1>Every brain tells its story<br>in <span class="gradient">pieces</span>.<br>We help you see the whole picture.</h1>
+  <p class="hero-desc">A personalized guide built around your child — their strengths, sensory needs, communication style, and what every person in their life needs to know to truly support them.</p>
+  <div class="hero-cta">
+    <a href="#waitlist" class="btn btn-primary btn-large">Reserve Your Spot &rarr;</a>
+    <a href="#how-it-works" class="btn btn-outline btn-large">See How It Works</a>
+  </div>
+  <p class="hero-note"><strong>Launching soon.</strong> &nbsp;Join the waitlist for founding-member access and pricing.</p>
+  <div class="trust-row">
+    <div class="trust-chip">🔒 End-to-End Encrypted</div>
+    <div class="trust-chip">👤 COPPA Compliant</div>
+    <div class="trust-chip">🛡 Secure by Design</div>
+    <div class="trust-chip">❌ We Never Sell Your Data</div>
+    <div class="trust-chip">♻ Delete Your Data Anytime</div>
+  </div>
+  <div class="hero-disclaimer">
+    <strong style="color:var(--accent)">Please note:</strong> Pieces of Perception is an informational resource — not a diagnostic instrument, medical device, or substitute for professional clinical evaluation. Reports are designed to be used <strong>alongside</strong> your child's doctors, therapists, school teams, and other qualified professionals.
+  </div>
+</section>
+
+<!-- ─── TWO PATHS ─── -->
+<section style="background:var(--bg)">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">Two Ways to Get Support</div>
+    <h2 class="section-title">Start where you are</h2>
+    <p class="section-sub">Every family is different. Choose the path that fits where you are right now — you can always explore both.</p>
+    <div class="paths-grid">
+      <div class="path-card">
+        <div class="path-icon">🧭</div>
+        <h3>Comprehensive Profile</h3>
+        <p>Build a complete picture of your child — their strengths, sensory profile, communication style, emotional patterns, and a full personalized action plan. Ideal for families ready to create a whole-child strategy.</p>
+        <p class="path-meta">⏱ About 20–30 minutes &nbsp;·&nbsp; 12 sections</p>
+      </div>
+      <div class="path-card featured">
+        <div class="path-icon">🏳️</div>
+        <h3>Focused Issue Support</h3>
+        <p>There's something specific happening right now — a trigger, a trauma response, a school crisis — and you need targeted strategies. This path digs deep into the specific challenge and delivers focused, actionable guidance.</p>
+        <p class="path-meta">⏱ About 25–35 minutes &nbsp;·&nbsp; 13 sections</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ─── -->
+<section id="how-it-works" style="background:white">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">The Process</div>
+    <h2 class="section-title">Three steps to a plan built<br>for your child</h2>
+    <p class="section-sub">Not a generic checklist. A report built entirely from what you share.</p>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num" style="background:var(--accent-bg);color:var(--accent)">1</div>
+        <h3>Complete the Profile</h3>
+        <p>A thoughtful, interview-style questionnaire covering your child's sensory needs, communication style, emotional patterns, strengths, triggers, and goals. Designed to capture what no checkbox ever could.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:var(--warm-light);color:var(--warm)">2</div>
+        <h3>AI Builds the Report</h3>
+        <p>Our AI analyzes every answer and creates a personalized, visually clear report with specific strategies and action steps. Not a template — built entirely around your child's unique profile.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:var(--sage-light);color:var(--sage)">3</div>
+        <h3>Share &amp; Implement</h3>
+        <p>Download your report, one-page Quick Reference Card, and personalized Care Guides. Share with teachers, therapists, grandparents — so everyone in your child's life speaks the same language.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHAT'S INCLUDED ─── -->
+<section style="background:var(--bg)">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">What You Receive</div>
+    <h2 class="section-title">Inside your report</h2>
+    <p class="section-sub">Every section is built from your answers — never generic, always specific to your child.</p>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon" style="background:var(--accent-bg)">🧠</div>
+        <div>
+          <h4>Sensory Profile Map</h4>
+          <p>Visual breakdown across all 7 sensory systems — what overwhelms, what regulates, and what your child's environment needs to feel safe.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon" style="background:var(--warm-light)">⭐</div>
+        <div>
+          <h4>Strengths Spotlight</h4>
+          <p>A detailed celebration of your child's gifts and natural abilities. Understanding strengths is more important than cataloguing challenges.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon" style="background:var(--sage-light)">💬</div>
+        <div>
+          <h4>Communication Quick Guide</h4>
+          <p>Specific language and approaches that work for your child — and what to avoid. Tailored to how they actually communicate.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon" style="background:var(--sky-light)">🛠️</div>
+        <div>
+          <h4>Regulation Toolkit</h4>
+          <p>Personalized calming strategies and de-escalation steps based on your child's specific sensory profile and patterns.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon" style="background:var(--lavender-light)">📋</div>
+        <div>
+          <h4>Quick Reference Cheat Sheet</h4>
+          <p>A one-page printable card covering personality, triggers, likes, dislikes, and goals — hand it to anyone who works with your child.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon" style="background:var(--rose-light)">✅</div>
+        <div>
+          <h4>Week-One Action Checklist</h4>
+          <p>Concrete, prioritized steps for this week — because you need a starting point, not a 12-week plan when you're in the thick of it right now.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ─── -->
+<section id="pricing" style="background:white">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, transparent pricing</h2>
+    <p class="section-sub">No subscriptions. No surprise fees. Pay once and keep your report forever.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tier">ACTION REPORT</div>
+        <div class="price-amount">$14.99</div>
+        <div class="price-period">one-time purchase</div>
+        <p class="price-desc">A clear, visual action report with your child's complete profile, regulation tools, and a week-one checklist. Perfect to bring to your next school meeting or doctor's appointment.</p>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li><div class="pf-check" style="background:var(--sage-light);color:var(--sage)">✓</div> Sensory Profile Map</li>
+          <li><div class="pf-check" style="background:var(--sage-light);color:var(--sage)">✓</div> Strengths Spotlight</li>
+          <li><div class="pf-check" style="background:var(--sage-light);color:var(--sage)">✓</div> Communication Quick Guide</li>
+          <li><div class="pf-check" style="background:var(--sage-light);color:var(--sage)">✓</div> Regulation Toolkit</li>
+          <li><div class="pf-check" style="background:var(--sage-light);color:var(--sage)">✓</div> Quick Reference Cheat Sheet</li>
+          <li><div class="pf-check" style="background:var(--sage-light);color:var(--sage)">✓</div> Week-One Action Checklist</li>
+          <li><div class="pf-check" style="background:var(--sage-light);color:var(--sage)">✓</div> Shareable PDF Export</li>
+        </ul>
+        <a href="#waitlist" class="btn btn-outline" style="width:100%;padding:14px">Join Waitlist</a>
+      </div>
+      <div class="price-card premium">
+        <div class="popular-badge">MOST POPULAR</div>
+        <div class="price-tier">COMPREHENSIVE PLAN</div>
+        <div class="price-amount">$29.99</div>
+        <div class="price-period">one-time purchase</div>
+        <p class="price-desc">Everything in the Action Report, plus a complete 12-week action framework with scripts, step-by-step timelines, and deep-dive tools for every person in your child's life.</p>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Everything in Action Report</li>
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Full Communication Scripts (5 audiences)</li>
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> 12-Week Implementation Framework</li>
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Crisis De-escalation Playbook</li>
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Trigger Word Replacement Guide</li>
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Morning Launch Protocol</li>
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Visual Scale Templates (printable)</li>
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Unlimited updates for 1 year</li>
+        </ul>
+        <a href="#waitlist" class="btn btn-warm" style="width:100%;padding:14px">Join Waitlist</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CARE GUIDES ─── -->
+<section style="background:var(--bg)">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">Add-Ons</div>
+    <h2 class="section-title">Care Guides for everyone<br>in your child's life</h2>
+    <p class="section-sub">Consistency matters. Personalized quick-reference guides so every caregiver follows the same approach — no matter their background.</p>
+    <div class="care-grid">
+      <div class="care-card" style="border-left:3px solid var(--warm)">
+        <div class="care-price-tag" style="background:var(--warm-light);color:var(--warm)">+$4.99</div>
+        <h3>Babysitter / Respite Care Guide</h3>
+        <p>Essential need-to-knows: triggers to avoid, what to do in a crisis, regulation tools that work, and clear dos and don'ts. Designed to hand to anyone watching your child — no background required.</p>
+      </div>
+      <div class="care-card" style="border-left:3px solid var(--lavender)">
+        <div class="care-price-tag" style="background:var(--lavender-light);color:var(--lavender)">+$4.99</div>
+        <h3>Grandparent / Extended Family Guide</h3>
+        <p>A warm, plain-language guide that explains your child's experience — what helps vs. what makes it worse — and how to be a truly supportive part of the team without the clinical jargon.</p>
+      </div>
+      <div class="care-card" style="border-left:3px solid var(--sky)">
+        <div class="care-price-tag" style="background:var(--sky-light);color:var(--sky)">+$4.99</div>
+        <h3>Sibling Guide</h3>
+        <p>An age-appropriate guide that validates siblings' experiences, explains why their brother or sister acts the way they do, and helps them feel like an important — not forgotten — part of the team.</p>
+      </div>
+      <div class="care-card" style="border-left:3px solid var(--accent)">
+        <div class="care-price-tag" style="background:var(--accent-bg);color:var(--accent)">+$4.99</div>
+        <h3>Teacher / School Staff Guide</h3>
+        <p>A concise professional guide with classroom supports, communication approaches, de-escalation steps, and trigger avoidance. Perfect to attach to an IEP or share at the start of a new school year.</p>
+      </div>
+    </div>
+    <div class="bundle-row">
+      <div><span class="bundle-label">Bundle all 4 Care Guides</span><span class="bundle-price">$14.99</span><span class="bundle-save">— save $5</span></div>
+      <a href="#waitlist" class="btn btn-primary">Join Waitlist for Early Access</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── IEP ADD-ON ─── -->
+<section id="iep" style="background:white">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">Optional Add-On</div>
+    <h2 class="section-title">IEP Goal Recommendations</h2>
+    <p class="section-sub">Walk into your next IEP meeting prepared — with specific, professionally-worded goal language tailored to your child.</p>
+    <div class="iep-card">
+      <div class="iep-header">
+        <div>
+          <div style="color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;letter-spacing:.5px;margin-bottom:4px">ADD-ON REPORT</div>
+          <div style="color:white;font-size:22px;font-weight:800">IEP Goal Recommendations</div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:white;font-size:32px;font-weight:800;font-family:'Playfair Display',serif">$9.99</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:13px">add to any purchase</div>
+        </div>
+      </div>
+      <div class="iep-body">
+        <p style="font-size:15px;color:var(--text);line-height:1.75;margin-bottom:4px">IEP meetings can feel overwhelming — especially when you don't know what to ask for. This add-on generates a ready-to-share document with specific, measurable goal language based on your child's unique profile, covering every area of need identified in the questionnaire.</p>
+        <div class="iep-feats">
+          <div class="iep-feat">
+            <div class="fi">🎯</div>
+            <strong>Measurable Goal Language</strong>
+            <p>IDEA-aligned goal statements with built-in measurement criteria, baselines, and benchmarks ready to present to the team.</p>
+          </div>
+          <div class="iep-feat">
+            <div class="fi">📋</div>
+            <strong>Recommended Supports</strong>
+            <p>A prioritized list of classroom accommodations tied directly to your child's sensory and regulation profile.</p>
+          </div>
+          <div class="iep-feat">
+            <div class="fi">💬</div>
+            <strong>Conversation Starters</strong>
+            <p>Questions to ask the IEP team, red flags to watch for, and language that helps you advocate effectively and confidently.</p>
+          </div>
+        </div>
+        <div style="background:var(--accent-bg);border-radius:14px;padding:14px 20px;margin-bottom:22px">
+          <p style="font-size:13px;color:var(--accent);margin:0;line-height:1.65"><strong>Important:</strong> This report provides suggested goal language as an informational starting point for family advocacy. It is not legal advice and does not constitute an official IEP document. Always review recommendations with your child's school team and, if needed, a qualified special education advocate.</p>
+        </div>
+        <div style="text-align:center">
+          <a href="#waitlist" class="btn" style="background:var(--lavender);color:white;padding:14px 32px;font-size:15px;box-shadow:0 4px 16px rgba(142,127,196,0.3)">Join Waitlist for Early Access</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COMMITMENT ─── -->
+<section style="background:var(--bg)">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">Our Promise to You</div>
+    <h2 class="section-title">A map, not a magic fix</h2>
+    <p class="section-sub">We believe in being honest with the families we serve. Here's what this platform is — and what it isn't.</p>
+    <div class="commit-grid">
+      <div class="commit-box is">
+        <div class="commit-title">✓ &nbsp;What this IS</div>
+        <ul>
+          <li>✓ &nbsp;A personalized guide built from <em>your</em> child's profile</li>
+          <li>✓ &nbsp;A starting point — something real to build from</li>
+          <li>✓ &nbsp;A communication tool for schools, therapists, and family</li>
+          <li>✓ &nbsp;A framework to try, adapt, and grow with over time</li>
+          <li>✓ &nbsp;An act of advocacy for your child</li>
+        </ul>
+      </div>
+      <div class="commit-box isnt">
+        <div class="commit-title">✗ &nbsp;What this ISN'T</div>
+        <ul>
+          <li>✗ &nbsp;A diagnosis or clinical evaluation</li>
+          <li>✗ &nbsp;A guaranteed solution or cure</li>
+          <li>✗ &nbsp;A substitute for professional care</li>
+          <li>✗ &nbsp;Something that works overnight</li>
+          <li>✗ &nbsp;One-size-fits-all advice</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:15px;font-weight:600;color:var(--deep);margin-bottom:20px">The families who get the most from this bring three things:</p>
+    <div class="three-commitments">
+      <div class="commitment-pill">
+        <div class="c-num" style="background:var(--accent)">1</div>
+        <span><strong>Patience</strong> — with the process and with your child</span>
+      </div>
+      <div class="commitment-pill">
+        <div class="c-num" style="background:var(--warm)">2</div>
+        <span><strong>Communication</strong> — with everyone in your child's life</span>
+      </div>
+      <div class="commitment-pill">
+        <div class="c-num" style="background:var(--sage)">3</div>
+        <span><strong>Commitment</strong> — to trying, noticing, and adjusting</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── NEUROTRANSLATE ─── -->
+<section id="neurotranslate" style="background:white">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">From the Same Team</div>
+    <h2 class="section-title">Meet NeuroTranslate</h2>
+    <p class="section-sub">The companion app that puts your child's profile to work — in real time, every day. Coming soon for iOS and Android.</p>
+    <div class="eco-row">
+      <div class="eco-card">
+        <div class="eco-icon">🌐</div>
+        <h4>Pieces of Perception</h4>
+        <p>Organizes your knowledge.<br>Creates the profile.<br>Generates the plan.</p>
+      </div>
+      <div class="eco-connector">
+        <div class="arrow">⇄</div>
+        <div class="label">FEEDS INTO</div>
+      </div>
+      <div class="eco-card">
+        <div class="eco-icon">📱</div>
+        <h4>NeuroTranslate App</h4>
+        <p>Uses the profile daily.<br>Translates in real time.<br>Tracks progress over time.</p>
+      </div>
+    </div>
+    <p style="font-size:14px;color:var(--text-light);margin-top:20px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7">Families who complete a Pieces of Perception report can import their child's profile directly into NeuroTranslate — so the app already knows their child from day one.</p>
+    <div style="margin-top:24px"><a href="#waitlist" class="btn btn-outline">Get NeuroTranslate Updates</a></div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIAL ─── -->
+<section style="background:var(--bg)">
+  <div class="testimonial-wrap">
+    <blockquote>"For the first time, I felt like someone actually understood what our family goes through every day. The report gave my son's teacher more insight in ten pages than three years of IEP meetings ever did."</blockquote>
+    <div class="testimonial-author">— Sarah M., mother of a 12-year-old with ASD &amp; PTSD</div>
+  </div>
+</section>
+
+<!-- ─── WAITLIST ─── -->
+<section id="waitlist" class="waitlist-section">
+  <div class="section-inner">
+    <div class="waitlist-count">🚀 &nbsp;Launching soon — spots are limited</div>
+    <h2 class="section-title">Be part of building something that matters.</h2>
+    <p class="section-sub">Join the waitlist for early access, founding-member pricing, and a direct voice in shaping what we build for families like yours.</p>
+    <div class="waitlist-form">
+      <input type="email" id="waitlist-email" placeholder="your@email.com" autocomplete="email">
+      <button onclick="joinWaitlist()">Save My Spot</button>
+    </div>
+    <p class="waitlist-note">No spam. Unsubscribe anytime. Launch updates only.</p>
+    <div id="waitlist-success">✓ &nbsp;You're on the list — we'll be in touch before we launch.</div>
+  </div>
+</section>
+
+<!-- ─── DISCLOSURES ─── -->
+<section id="disclosures" style="background:var(--bg)">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">Transparency</div>
+    <h2 class="section-title">Important disclosures</h2>
+    <p class="section-sub" style="margin-bottom:36px">We're committed to being clear about what this platform is and how it works.</p>
+    <div class="disclosure-grid">
+      <div class="disclosure-item">
+        <h4>Not a Diagnostic Tool</h4>
+        <p>Pieces of Perception does not diagnose, treat, cure, or prevent any medical or psychological condition. Reports are informational resources generated from family-provided data. They are not a substitute for professional clinical evaluation by physicians, psychologists, occupational therapists, speech-language pathologists, or other licensed providers.</p>
+      </div>
+      <div class="disclosure-item">
+        <h4>Intended Use — Supplementary Resource Only</h4>
+        <p>Reports are designed to be used <strong>alongside — never in place of</strong> — professional care. We encourage families to share their reports with their child's doctors, therapists, school psychologists, IEP teams, and qualified professionals as a communication and advocacy tool.</p>
+      </div>
+      <div class="disclosure-item">
+        <h4>AI-Generated Content Disclosure</h4>
+        <p>Reports are generated using artificial intelligence based on your questionnaire responses. While designed to produce informed, evidence-based suggestions, AI-generated content may contain errors or omissions. All suggestions should be reviewed with your child's care team before implementation. Pieces of Perception assumes no liability for outcomes resulting from application of report content.</p>
+      </div>
+      <div class="disclosure-item">
+        <h4>🛡 Secure by Design &amp; Data Privacy</h4>
+        <p>All data is encrypted in transit and at rest. We do not sell, share, or broker your data. You may request permanent deletion of all your data at any time. Our platform is built with COPPA compliance and privacy standards designed to protect children's sensitive information. AI subprocessors are governed by data processing agreements that prohibit use of your data for model training.</p>
+      </div>
+      <div class="disclosure-item">
+        <h4>Emergency Resources</h4>
+        <p>If your child is in immediate danger or experiencing a medical or psychiatric emergency, call <strong>911</strong> or go to your nearest emergency room. For mental health crisis support, contact the <strong>988 Suicide &amp; Crisis Lifeline</strong> (call or text 988) or the <strong>Crisis Text Line</strong> (text HOME to 741741). Pieces of Perception is not a crisis or emergency service.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-brand">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
+    <span>piecesofperception.com</span>
+  </div>
+  <p class="footer-tagline">Built with love by a family who gets it.</p>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Refund Policy</a>
+    <a href="#">Disclaimer</a>
+    <a href="#">Contact Us</a>
+  </div>
+  <p class="footer-legal">&copy; 2026 Pieces of Perception LLC. All rights reserved. This platform is an informational resource and does not provide medical advice, diagnosis, or treatment. Always consult qualified professionals for your child's care.</p>
+</footer>
+
+<script>
+  function joinWaitlist() {
+    const input = document.getElementById('waitlist-email');
+    const email = input.value.trim();
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      input.style.outline = '2px solid #E8645A';
+      input.focus();
+      return;
+    }
+    input.style.outline = '';
+    // In production: sends to Supabase
+    input.disabled = true;
+    input.value = '';
+    document.getElementById('waitlist-success').style.display = 'block';
+  }
+  document.getElementById('waitlist-email').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') joinWaitlist();
+  });
+</script>
+
+</body>
+</html>
