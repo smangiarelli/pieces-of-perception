@@ -865,7 +865,8 @@
 <script>
   const _sb = supabase.createClient(
     'https://ezberjgmwdahiljzproz.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6YmVyamdtd2RhaGlsanpwcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjAwMDQsImV4cCI6MjA5MjM5NjAwNH0.S-dDookJKoiBDq4BxMVH21_FOSaHXgt9qDrQ6u8bOJI'
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6YmVyamdtd2RhaGlsanpwcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjAwMDQsImV4cCI6MjA5MjM5NjAwNH0.S-dDookJKoiBDq4BxMVH21_FOSaHXgt9qDrQ6u8bOJI',
+    { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
   );
 
   async function joinWaitlist() {
