@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Privacy Policy for Pieces of Perception — how we collect, use, and protect your information.">
+  <title>Privacy Policy | Pieces of Perception</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #6C63FF;
+      --accent-dark:  #5349e0;
+      --accent-mid:   #8B84FF;
+      --accent-bg:    rgba(108,99,255,0.07);
+      --warm:         #E8845A;
+      --deep:         #16162A;
+      --text:         #2C2C3E;
+      --text-light:   #6B6B80;
+      --border:       #E6E8F0;
+      --bg:           #F7F8FC;
+      --white:        #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand .brand-name { font-size: 17px; font-weight: 700; color: var(--deep); letter-spacing: -0.3px; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-size: 14px; color: var(--text-light); text-decoration: none; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--accent); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 11px 24px; border-radius: 12px; font-size: 14px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all .22s; border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-primary { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(108,99,255,0.25); }
+    .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); }
+
+    /* ── PAGE CONTENT ── */
+    .page-header {
+      background: var(--deep);
+      padding: 72px 48px 56px;
+      text-align: center;
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 42px; font-weight: 700;
+      color: white; margin-bottom: 12px;
+    }
+    .page-header p {
+      font-size: 15px; color: rgba(255,255,255,0.5);
+    }
+
+    .content-wrap {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 64px 48px 80px;
+    }
+
+    .content-wrap h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--deep);
+      margin: 40px 0 12px;
+    }
+    .content-wrap h2:first-child { margin-top: 0; }
+
+    .content-wrap p {
+      font-size: 15px; color: var(--text); line-height: 1.8;
+      margin-bottom: 14px;
+    }
+
+    .content-wrap ul {
+      margin: 8px 0 14px 20px;
+    }
+    .content-wrap ul li {
+      font-size: 15px; color: var(--text); line-height: 1.8;
+      margin-bottom: 6px;
+    }
+
+    .content-wrap a { color: var(--accent); text-decoration: none; }
+    .content-wrap a:hover { text-decoration: underline; }
+
+    .effective-date {
+      display: inline-block;
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-size: 13px; font-weight: 600;
+      padding: 6px 14px; border-radius: 20px;
+      margin-bottom: 36px;
+    }
+
+    .highlight-box {
+      background: var(--accent-bg);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    .highlight-box p { margin-bottom: 0; color: var(--deep); font-weight: 500; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #0F0F1E; color: rgba(255,255,255,0.5);
+      padding: 52px 48px 36px; text-align: center;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 8px; }
+    .footer-brand span { font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.9); }
+    .footer-tagline { font-size: 14px; color: rgba(255,255,255,0.35); margin-bottom: 24px; }
+    .footer-links { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; margin-bottom: 28px; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.8); }
+    .footer-legal { font-size: 11px; color: rgba(255,255,255,0.25); line-height: 1.7; max-width: 600px; margin: 0 auto; }
+
+    @media (max-width: 840px) {
+      .nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .page-header { padding: 56px 24px 40px; }
+      .page-header h1 { font-size: 30px; }
+      .content-wrap { padding: 48px 24px 64px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAVIGATION ─── -->
+<nav class="nav">
+  <a class="nav-brand" href="/">
+    <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-label="Pieces of Perception logo"><rect x="1" y="1" width="12.5" height="12.5" rx="2.5" fill="#6C63FF"/><rect x="16.5" y="1" width="12.5" height="12.5" rx="2.5" fill="#9B94FF"/><rect x="1" y="16.5" width="12.5" height="12.5" rx="2.5" fill="#16162A"/><rect x="16.5" y="16.5" width="12.5" height="12.5" rx="2.5" fill="#E8845A"/></svg>
+    <span class="brand-name">Pieces of Perception</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/#how-it-works">How It Works</a></li>
+    <li><a href="/#pricing">Pricing</a></li>
+    <li><a href="/#iep">IEP Support</a></li>
+    <li><a href="/#neurotranslate">NeuroTranslate</a></li>
+  </ul>
+  <a href="/#waitlist" class="btn btn-primary">Join the Waitlist</a>
+</nav>
+
+<!-- ─── PAGE HEADER ─── -->
+<div class="page-header">
+  <h1 class="serif">Privacy Policy</h1>
+  <p>How we collect, use, and protect your information</p>
+</div>
+
+<!-- ─── CONTENT ─── -->
+<div class="content-wrap">
+
+  <span class="effective-date">Effective Date: April 23, 2026</span>
+
+  <div class="highlight-box">
+    <p>Your family's information is sacred to us. We collect only what we need, we never sell your data, and we treat your child's information with the same care we would want for our own.</p>
+  </div>
+
+  <h2>1. Who We Are</h2>
+  <p>Pieces of Perception ("we," "our," or "us") is operated by Pieces of Perception LLC, a company dedicated to helping families of neurodiverse children create personalized action reports and care guides. Our website is located at <a href="https://piecesofperception.com">piecesofperception.com</a>.</p>
+  <p>If you have questions about this Privacy Policy, you can reach us at: <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a></p>
+
+  <h2>2. Information We Collect</h2>
+  <p>We collect information in two ways: information you provide directly, and information collected automatically when you use our site.</p>
+  <p><strong>Information you provide:</strong></p>
+  <ul>
+    <li><strong>Waitlist email address</strong> — If you join our waitlist, we collect your email address so we can notify you when we launch.</li>
+    <li><strong>Questionnaire responses</strong> — When you use our platform to create a report, you will provide information about your child's needs, strengths, sensory profile, and communication style. This information is used solely to generate your personalized report.</li>
+    <li><strong>Account information</strong> — When you create an account, we collect your name and email address.</li>
+    <li><strong>Payment information</strong> — When you make a purchase, payment is processed securely by Stripe. We do not store your credit card number.</li>
+  </ul>
+  <p><strong>Information collected automatically:</strong></p>
+  <ul>
+    <li>Basic usage data such as pages visited and time spent on the site (via standard web analytics)</li>
+    <li>Your browser type and device type</li>
+    <li>IP address (used for security and fraud prevention only)</li>
+  </ul>
+
+  <h2>3. How We Use Your Information</h2>
+  <p>We use the information we collect to:</p>
+  <ul>
+    <li>Send you launch updates and product announcements if you joined our waitlist (you can unsubscribe at any time)</li>
+    <li>Generate your personalized action reports and care guides</li>
+    <li>Operate, maintain, and improve our platform</li>
+    <li>Process payments and send receipts</li>
+    <li>Respond to your questions and provide customer support</li>
+    <li>Comply with legal obligations</li>
+  </ul>
+
+  <h2>4. How We Share Your Information</h2>
+  <p>We do not sell, rent, or share your personal information with third parties for their marketing purposes — ever.</p>
+  <p>We work with a small number of trusted service providers who help us operate the platform:</p>
+  <ul>
+    <li><strong>Supabase</strong> — secure database and authentication infrastructure</li>
+    <li><strong>Stripe</strong> — payment processing</li>
+    <li><strong>Anthropic</strong> — AI report generation (your questionnaire responses are sent to generate your report and are not used to train AI models)</li>
+    <li><strong>Vercel</strong> — website hosting</li>
+  </ul>
+  <p>Each of these providers is bound by their own privacy and security policies. We may also share information when required by law or to protect the safety of our users.</p>
+
+  <h2>5. Children's Privacy</h2>
+  <p>Our platform is designed to be used by parents and caregivers — not directly by children. We do not knowingly collect personal information directly from children under the age of 13. The information you provide about your child is used only to generate their personalized report for your use as their caregiver.</p>
+  <p>If you believe we have inadvertently collected information from a child under 13, please contact us immediately at <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a>.</p>
+
+  <h2>6. Data Storage and Security</h2>
+  <p>Your data is stored on Supabase's secure infrastructure, which uses industry-standard encryption in transit (TLS) and at rest. We use Row Level Security (RLS) policies to ensure that users can only access their own data.</p>
+  <p>While we take reasonable steps to protect your information, no method of transmission over the internet is 100% secure. We encourage you to use a strong, unique password for your account.</p>
+
+  <h2>7. Your Rights and Choices</h2>
+  <p>You have the right to:</p>
+  <ul>
+    <li><strong>Unsubscribe</strong> from waitlist or marketing emails at any time using the link in any email we send</li>
+    <li><strong>Access</strong> the personal information we hold about you</li>
+    <li><strong>Correct</strong> inaccurate information in your account</li>
+    <li><strong>Delete</strong> your account and associated data by contacting us at <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a></li>
+    <li><strong>Opt out</strong> of analytics tracking using your browser's privacy settings or a browser extension</li>
+  </ul>
+  <p>If you are located in California, the European Union, or another jurisdiction with specific privacy rights, additional rights may apply. Please contact us to learn more.</p>
+
+  <h2>8. Cookies</h2>
+  <p>We use minimal, essential cookies to keep you logged in and to make our platform function properly. We do not use cookies for advertising or cross-site tracking. You can disable cookies in your browser settings, though this may affect some features of the platform.</p>
+
+  <h2>9. Retention</h2>
+  <p>We retain your personal information for as long as your account is active or as needed to provide our services. If you request deletion of your account, we will delete or anonymize your data within 30 days, except where retention is required by law.</p>
+
+  <h2>10. Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time. If we make material changes, we will notify waitlist members by email and post a notice on our website. The effective date at the top of this page will always reflect the most recent version.</p>
+
+  <h2>11. Contact Us</h2>
+  <p>If you have any questions, concerns, or requests regarding this Privacy Policy, please reach out:</p>
+  <ul>
+    <li>Email: <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a></li>
+    <li>Website: <a href="https://piecesofperception.com">piecesofperception.com</a></li>
+  </ul>
+
+  <hr>
+
+  <p style="font-size: 13px; color: var(--text-light);">This policy was last reviewed on April 23, 2026. This document is intended as a good-faith disclosure of our data practices and will be reviewed by legal counsel prior to full platform launch.</p>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-brand">
+    <svg width="22" height="22" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" aria-label="Pieces of Perception logo"><rect x="1" y="1" width="12.5" height="12.5" rx="2.5" fill="#6C63FF"/><rect x="16.5" y="1" width="12.5" height="12.5" rx="2.5" fill="#9B94FF"/><rect x="1" y="16.5" width="12.5" height="12.5" rx="2.5" fill="#4A4580"/><rect x="16.5" y="16.5" width="12.5" height="12.5" rx="2.5" fill="#E8845A"/></svg>
+    <span>piecesofperception.com</span>
+  </div>
+  <p class="footer-tagline">Built with love by a family who gets it.</p>
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms of Service</a>
+    <a href="#">Refund Policy</a>
+    <a href="#">Disclaimer</a>
+    <a href="mailto:hello@piecesofperception.com">Contact Us</a>
+  </div>
+  <p class="footer-legal">&copy; 2026 Pieces of Perception LLC. All rights reserved. This platform is an informational resource and does not provide medical advice, diagnosis, or treatment. Always consult qualified professionals for your child's care.</p>
+</footer>
+
+</body>
+</html>
