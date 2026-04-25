@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pieces of Perception | Personalized Neurodevelopmental Action Reports</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --deep: #1a1a2e;
+    --navy: #16213e;
+    --accent: #6c63ff;
+    --accent-light: #8b83ff;
+    --accent-bg: rgba(108,99,255,0.08);
+    --warm: #e8a87c;
+    --warm-light: #fceade;
+    --sage: #7ec8a0;
+    --sage-light: #d4f0e0;
+    --rose: #d4a5a5;
+    --rose-light: #f5e0e0;
+    --sky: #87ceeb;
+    --sky-light: #d6effa;
+    --lavender: #b8a9c9;
+    --lavender-light: #e8e0f0;
+    --text: #2d3436;
+    --text-light: #636e72;
+    --bg: #fafbfe;
+    --white: #ffffff;
+    --border: #e8ecf1;
+    --shadow: 0 4px 24px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, system-ui, sans-serif; color: var(--text); background: var(--bg); line-height: 1.6; }
+
+  .hidden { display: none !important; }
+
+  /* ── Navigation ── */
+  .nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 40px; background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-brand svg { width: 28px; height: 28px; }
+  .nav-brand span { font-size: 18px; font-weight: 700; color: var(--deep); }
+  .nav-actions { display: flex; gap: 8px; align-items: center; }
+  .nav-info { font-size: 13px; color: var(--text-light); }
+
+  /* ── Buttons ── */
+  .btn {
+    padding: 10px 24px; border-radius: 10px; font-size: 14px;
+    font-weight: 600; cursor: pointer; transition: all 0.2s;
+    border: none; font-family: inherit;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    color: white; box-shadow: 0 2px 12px rgba(108,99,255,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(108,99,255,0.35); }
+  .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-large { padding: 16px 40px; font-size: 17px; border-radius: 12px; }
+  .btn-warm { background: linear-gradient(135deg, var(--warm), var(--accent)); color: white; }
+
+  /* ── Landing Page ── */
+  .hero {
+    padding: 100px 40px 80px; text-align: center;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--lavender-light) 50%, var(--bg) 100%);
+  }
+  .hero-badge {
+    display: inline-block; padding: 6px 18px; background: var(--accent-bg);
+    border-radius: 20px; font-size: 13px; color: var(--accent);
+    font-weight: 600; margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 50px; font-weight: 800; line-height: 1.15;
+    color: var(--deep); max-width: 720px; margin: 0 auto 20px;
+  }
+  .hero h1 .gradient {
+    background: linear-gradient(135deg, var(--accent), var(--warm));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p { font-size: 18px; color: var(--text-light); max-width: 560px; margin: 0 auto 36px; line-height: 1.7; }
+  .hero .subtext { font-size: 13px; color: var(--text-light); margin-top: 12px; }
+
+  /* ── Sections ── */
+  .section { padding: 80px 40px; }
+  .section-center { max-width: 1000px; margin: 0 auto; }
+  .section h2 { text-align: center; font-size: 32px; font-weight: 700; color: var(--deep); margin-bottom: 12px; }
+  .section .subtitle { text-align: center; color: var(--text-light); margin-bottom: 48px; font-size: 16px; }
+  .section-warm { background: linear-gradient(180deg, var(--bg), var(--warm-light), var(--bg)); }
+
+  /* ── Cards ── */
+  .card-grid { display: grid; gap: 24px; }
+  .card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .card {
+    background: white; border-radius: 16px; padding: 28px;
+    border: 1px solid var(--border); transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+  }
+  .card-step { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+  .card p { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+
+  .feature-card {
+    display: flex; gap: 16px; background: white; border-radius: 14px;
+    padding: 22px; border: 1px solid var(--border);
+  }
+  .feature-card .card-icon { margin-bottom: 0; flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px; }
+  .feature-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .feature-card p { font-size: 13px; color: var(--text-light); line-height: 1.5; }
+
+  /* ── Pricing ── */
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 800px; margin: 0 auto; }
+  .price-card { border-radius: 20px; padding: 32px; text-align: left; position: relative; }
+  .price-card.standard { background: white; border: 1px solid var(--border); }
+  .price-card.premium { background: linear-gradient(135deg, var(--deep), var(--navy)); color: white; }
+  .price-tier { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .price-amount { font-size: 40px; font-weight: 800; margin-bottom: 4px; }
+  .price-period { font-size: 14px; opacity: 0.6; }
+  .price-desc { font-size: 14px; margin: 16px 0 20px; line-height: 1.5; opacity: 0.8; }
+  .price-features { list-style: none; margin-bottom: 24px; }
+  .price-features li {
+    display: flex; gap: 8px; align-items: center;
+    font-size: 14px; margin-bottom: 10px;
+  }
+  .price-features li svg { flex-shrink: 0; }
+  .popular-badge {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--warm); color: white;
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* ── Testimonial ── */
+  .testimonial {
+    max-width: 600px; margin: 0 auto; background: var(--accent-bg);
+    border-radius: 20px; padding: 40px; border: 1px solid rgba(108,99,255,0.15);
+    text-align: center;
+  }
+  .testimonial p { font-size: 18px; line-height: 1.7; font-style: italic; margin-bottom: 16px; }
+  .testimonial .author { font-size: 14px; color: var(--text-light); }
+
+  /* ── Footer ── */
+  .footer {
+    padding: 40px; border-top: 1px solid var(--border); text-align: center;
+  }
+  .footer-brand { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
+  .footer p { font-size: 13px; color: var(--text-light); }
+
+  /* ── Auth ── */
+  .auth-page {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--bg), var(--lavender-light));
+  }
+  .auth-card {
+    width: 420px; background: white; border-radius: 20px;
+    padding: 40px; box-shadow: var(--shadow-lg);
+  }
+  .auth-card h2 { text-align: center; margin-bottom: 4px; font-size: 24px; }
+  .auth-card .subtitle { text-align: center; color: var(--text-light); font-size: 14px; margin-bottom: 28px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--border); font-size: 14px;
+    font-family: inherit; outline: none; transition: border 0.2s;
+    background: white;
+  }
+  .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+  .switch-link { text-align: center; margin-top: 16px; }
+  .switch-link button { background: none; border: none; color: var(--accent); font-size: 14px; cursor: pointer; font-family: inherit; }
+
+  /* ── Questionnaire ── */
+  .q-page { min-height: 100vh; background: var(--bg); }
+  .q-progress-bar {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 32px; max-width: 720px; margin-left: auto; margin-right: auto;
+    padding: 0 20px;
+  }
+  .q-progress-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .q-progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .q-progress-text { font-size: 13px; color: var(--text-light); min-width: 45px; text-align: right; }
+
+  .q-container { max-width: 720px; margin: 0 auto; padding: 40px 20px; }
+  .q-header { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+  .q-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .q-title { font-size: 24px; font-weight: 700; }
+  .q-discipline { font-size: 12px; color: var(--text-light); font-style: italic; margin-bottom: 4px; margin-left: 58px; }
+  .q-subtitle { color: var(--text-light); margin-bottom: 32px; font-size: 15px; margin-left: 58px; }
+
+  .question-block { margin-bottom: 28px; }
+  .question-label { font-size: 15px; font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+  .question-rationale {
+    font-size: 12px; color: var(--text-light); font-style: italic;
+    margin-bottom: 10px; padding-left: 12px; border-left: 2px solid var(--border);
+  }
+  .question-sub { font-size: 13px; color: #555; margin-bottom: 4px; padding-left: 8px; }
+
+  /* Multi-select pills */
+  .pill-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    padding: 8px 16px; border-radius: 20px; font-size: 13px;
+    border: 1.5px solid var(--border); background: white;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
+    color: var(--text); user-select: none;
+  }
+  .pill.selected {
+    border-color: var(--accent); background: rgba(108,99,255,0.1);
+    color: var(--accent); font-weight: 600;
+  }
+  .pill:hover { border-color: var(--accent-light); }
+
+  /* Select cards */
+  .select-grid { display: grid; gap: 8px; }
+  .select-card {
+    padding: 12px 16px; border-radius: 10px; border: 1.5px solid var(--border);
+    background: white; cursor: pointer; transition: all 0.2s;
+    font-size: 14px; text-align: left; font-family: inherit; color: var(--text);
+  }
+  .select-card.selected { border-color: var(--accent); background: rgba(108,99,255,0.06); }
+  .select-card:hover { border-color: var(--accent-light); }
+
+  /* Slider */
+  .slider-container { margin-top: 8px; }
+  .slider-container input[type=range] { width: 100%; accent-color: var(--accent); }
+  .slider-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); margin-top: 4px; }
+
+  .q-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .q-nav .btn { min-width: 130px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+  /* Section sub-header inside questionnaire */
+  .q-section-sub {
+    font-size: 14px; font-weight: 700; margin: 24px 0 12px;
+    padding: 8px 14px; border-radius: 8px; display: inline-block;
+  }
+
+  /* ── Loading ── */
+  .loading-page {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, var(--bg), var(--lavender-light));
+  }
+  .loading-container { max-width: 480px; text-align: center; padding: 0 20px; }
+  .loading-icon {
+    width: 80px; height: 80px; margin: 0 auto 24px; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(108,99,255,0.2), var(--lavender-light));
+    display: flex; align-items: center; justify-content: center;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  .loading-container h2 { font-size: 22px; margin-bottom: 28px; }
+  .loading-steps { text-align: left; }
+  .loading-step {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px; transition: opacity 0.5s;
+  }
+  .loading-step.inactive { opacity: 0.25; }
+  .loading-step.active { opacity: 1; }
+  .loading-step.done { opacity: 1; }
+  .step-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 12px; transition: background 0.5s;
+  }
+  .step-dot.pending { background: var(--border); }
+  .step-dot.active { background: var(--accent); }
+  .step-dot.done { background: var(--sage); }
+
+  /* ── Report ── */
+  .report-page { background: var(--bg); min-height: 100vh; }
+  .report-container { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+  .report-header { text-align: center; margin-bottom: 40px; }
+  .report-header h1 { font-size: 30px; font-weight: 800; color: var(--deep); margin-bottom: 6px; }
+  .report-header .meta { color: var(--text-light); font-size: 14px; }
+
+  .report-section {
+    background: white; border-radius: 16px; padding: 28px;
+    border: 1px solid var(--border); margin-bottom: 20px;
+  }
+  .report-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+  .report-gradient {
+    border-radius: 16px; padding: 28px; margin-bottom: 20px;
+  }
+
+  /* Sensory bars */
+  .sensory-bar { margin-bottom: 14px; }
+  .sensory-bar-header { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-light); margin-bottom: 4px; }
+  .sensory-bar-track { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+  .sensory-bar-fill { height: 100%; border-radius: 5px; transition: width 1.5s ease; }
+  .sensory-bar-note { font-size: 11px; color: var(--text-light); margin-top: 12px; }
+
+  /* Strength badges */
+  .strength-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+  .strength-badge {
+    padding: 8px 16px; border-radius: 20px; font-size: 13px;
+    font-weight: 600; border: 1px solid;
+  }
+
+  /* Regulation toolkit cards */
+  .reg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+  .reg-card {
+    background: white; border-radius: 12px; padding: 14px;
+    font-size: 13px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .reg-num {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 13px; font-weight: 700;
+  }
+
+  /* Communication grid */
+  .comm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .comm-grid h5 { margin-bottom: 8px; font-size: 14px; }
+  .comm-grid ul { padding-left: 20px; font-size: 14px; line-height: 1.8; }
+  .trigger-box {
+    margin-top: 16px; padding: 16px; border-radius: 12px;
+    border: 1px solid rgba(212,165,165,0.3); background: rgba(212,165,165,0.06);
+  }
+  .trigger-box h5 { color: var(--rose); margin-bottom: 6px; font-size: 14px; }
+
+  /* Goals */
+  .goal-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px; border-radius: 12px; margin-bottom: 8px;
+  }
+  .goal-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; flex-shrink: 0;
+  }
+
+  /* Action items */
+  .action-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: white; border-radius: 10px; padding: 12px;
+    margin-bottom: 8px;
+  }
+  .action-checkbox {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 2px solid var(--sage); flex-shrink: 0; margin-top: 2px;
+  }
+  .action-item span { font-size: 14px; line-height: 1.5; }
+
+  /* Upgrade CTA */
+  .upgrade-cta {
+    background: linear-gradient(135deg, var(--deep), var(--navy));
+    border-radius: 20px; padding: 36px; text-align: center;
+    margin-top: 20px;
+  }
+  .upgrade-cta h3 { color: white; font-size: 20px; margin: 12px 0 8px; }
+  .upgrade-cta p { color: rgba(255,255,255,0.7); font-size: 14px; max-width: 500px; margin: 0 auto 24px; }
+
+  /* ── Payment ── */
+  .payment-page {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--bg), var(--warm-light));
+  }
+  .payment-card {
+    max-width: 480px; background: white; border-radius: 20px;
+    padding: 40px; box-shadow: var(--shadow-lg); text-align: center;
+  }
+  .payment-card h2 { font-size: 24px; margin: 16px 0 8px; }
+  .payment-card .price-note { color: var(--text-light); font-size: 14px; margin-bottom: 24px; }
+  .payment-card .form-group { text-align: left; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .payment-secure { font-size: 11px; color: var(--text-light); margin-top: 16px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 32px; }
+    .hero { padding: 60px 20px 50px; }
+    .section { padding: 50px 20px; }
+    .card-grid-3 { grid-template-columns: 1fr; }
+    .card-grid-2 { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .comm-grid { grid-template-columns: 1fr; }
+    .nav { padding: 12px 16px; }
+    .q-container { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ SVG ICONS ═══════════════ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="icon-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2a4 4 0 0 1 4 4 4 4 0 0 1-1.5 3.1A3.5 3.5 0 0 1 16 13a3.5 3.5 0 0 1-2.4 3.3A4 4 0 0 1 12 22a4 4 0 0 1-1.6-5.7A3.5 3.5 0 0 1 8 13a3.5 3.5 0 0 1 1.5-3.9A4 4 0 0 1 8 6a4 4 0 0 1 4-4z"/>
+    <path d="M12 2v20"/>
+  </symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </symbol>
+  <symbol id="icon-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+  </symbol>
+  <symbol id="icon-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="15 18 9 12 15 6"/>
+  </symbol>
+  <symbol id="icon-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="9 18 15 12 9 6"/>
+  </symbol>
+  <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+  </symbol>
+</svg>
+
+<!-- ═══════════════ LANDING PAGE ═══════════════ -->
+<div id="page-landing">
+  <nav class="nav">
+    <div class="nav-brand">
+      <svg style="color:var(--accent)"><use href="#icon-brain"/></svg>
+      <span>Pieces of Perception</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn" style="background:none;border:none;color:var(--text);font-size:14px;cursor:pointer;padding:8px 12px" onclick="document.getElementById('neurotranslate-section').scrollIntoView({behavior:'smooth'})">NeuroTranslate App</button>
+      <button class="btn btn-outline" onclick="showPage('auth','login')">Log In</button>
+      <button class="btn btn-primary" onclick="showPage('auth','signup')">Get Started</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">For families raising neurodiverse children</div>
+    <h1>Every brain tells its story in <span class="gradient">pieces</span>.<br>We help you see the whole picture.</h1>
+    <p>A personalized action report that organizes your family's knowledge &mdash; your child's strengths, sensory needs, communication style, and regulation strategies &mdash; so every person in their life knows how to help them thrive.</p>
+    <button class="btn btn-primary btn-large" onclick="showPage('auth','signup')">
+      Start Your Child's Profile <svg style="width:18px;height:18px;vertical-align:-3px;margin-left:4px"><use href="#icon-arrow-right"/></svg>
+    </button>
+    <p class="subtext">Takes about 20&ndash;30 minutes. Your answers are private and encrypted.</p>
+
+    <!-- Secure by Design trust badges -->
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:20px auto;max-width:680px">
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:white;border-radius:30px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.05)">
+        <span style="font-size:15px">&#128274;</span><span style="font-size:12px;font-weight:600;color:var(--deep)">End-to-End Encrypted</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:white;border-radius:30px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.05)">
+        <span style="font-size:15px">&#128100;</span><span style="font-size:12px;font-weight:600;color:var(--deep)">COPPA Compliant</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:white;border-radius:30px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.05)">
+        <span style="font-size:15px">&#128737;</span><span style="font-size:12px;font-weight:600;color:var(--deep)">Secure by Design</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:white;border-radius:30px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.05)">
+        <span style="font-size:15px">&#10060;</span><span style="font-size:12px;font-weight:600;color:var(--deep)">We Never Sell Your Data</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:white;border-radius:30px;border:1px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,0.05)">
+        <span style="font-size:15px">&#9851;</span><span style="font-size:12px;font-weight:600;color:var(--deep)">Delete Your Data Anytime</span>
+      </div>
+    </div>
+
+    <div style="max-width:640px;margin:0 auto;padding:16px 20px;background:rgba(108,99,255,0.05);border-radius:12px;border:1px solid rgba(108,99,255,0.12)">
+      <p style="font-size:12px;color:var(--text-light);line-height:1.6;margin:0">
+        <strong style="color:var(--accent)">Important:</strong> Pieces of Perception is an informational resource tool &mdash; not a diagnostic instrument, medical device, or substitute for professional clinical evaluation. Reports are generated from family-reported information and are designed to be used <strong>in conjunction with</strong> your child&rsquo;s doctors, psychologists, therapists, school teams, and other professionals. Always consult qualified healthcare providers for diagnosis, treatment, and clinical guidance.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-center">
+      <h2>How It Works</h2>
+      <p class="subtitle">Three steps to a plan built for YOUR child &mdash; not a generic checklist.</p>
+      <div class="card-grid card-grid-3">
+        <div class="card" style="text-align:center">
+          <div class="card-icon" style="background:rgba(108,99,255,0.1);margin:0 auto 16px">
+            <svg style="width:24px;height:24px;color:var(--accent)"><use href="#icon-brain"/></svg>
+          </div>
+          <div class="card-step" style="color:var(--accent)">Step 1</div>
+          <h3>Share Your Story</h3>
+          <p>Complete a guided interview about your child &mdash; their strengths, challenges, sensory needs, triggers, and what makes them extraordinary. No clinical jargon required.</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="card-icon" style="background:var(--warm-light);margin:0 auto 16px">
+            <svg style="width:24px;height:24px;color:var(--warm)"><use href="#icon-brain"/></svg>
+          </div>
+          <div class="card-step" style="color:var(--warm)">Step 2</div>
+          <h3>AI Builds the Profile</h3>
+          <p>Our AI analyzes your responses and builds a comprehensive profile map &mdash; sensory charts, communication guides, regulation toolkits, and personalized strategies.</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="card-icon" style="background:var(--sage-light);margin:0 auto 16px">
+            <svg style="width:24px;height:24px;color:var(--sage)"><use href="#icon-brain"/></svg>
+          </div>
+          <div class="card-step" style="color:var(--sage)">Step 3</div>
+          <h3>Get Your Action Report</h3>
+          <p>Receive a beautiful, shareable action report with visual aids you can hand to teachers, therapists, and family members &mdash; so everyone speaks the same language.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-warm">
+    <div class="section-center">
+      <h2>What's Inside Your Report</h2>
+      <div class="card-grid card-grid-2" style="margin-top:32px">
+        <div class="feature-card"><div class="card-icon" style="background:var(--sage-light)"><svg style="width:20px;height:20px;color:var(--sage)"><use href="#icon-brain"/></svg></div><div><h4>Sensory Profile Map</h4><p>Visual charts showing sensitivity levels across all senses &mdash; so environments can be adjusted before crisis hits.</p></div></div>
+        <div class="feature-card"><div class="card-icon" style="background:var(--warm-light)"><svg style="width:20px;height:20px;color:var(--warm)"><use href="#icon-brain"/></svg></div><div><h4>Strengths Spotlight</h4><p>A reframing of your child's traits as superpowers &mdash; because the world needs to see what they CAN do.</p></div></div>
+        <div class="feature-card"><div class="card-icon" style="background:var(--rose-light)"><svg style="width:20px;height:20px;color:var(--rose)"><use href="#icon-brain"/></svg></div><div><h4>Trigger & Safety Guide</h4><p>Identified trigger words, crisis patterns, and a de-escalation protocol tailored to YOUR child's specific needs.</p></div></div>
+        <div class="feature-card"><div class="card-icon" style="background:var(--accent-bg)"><svg style="width:20px;height:20px;color:var(--accent)"><use href="#icon-brain"/></svg></div><div><h4>Communication Translations</h4><p>Scripts for teachers, family, peers, and therapists &mdash; so everyone knows how to connect with your child.</p></div></div>
+        <div class="feature-card"><div class="card-icon" style="background:var(--sky-light)"><svg style="width:20px;height:20px;color:var(--sky)"><use href="#icon-brain"/></svg></div><div><h4>Regulation Toolkit</h4><p>Prioritized calming strategies organized by environment and escalation level.</p></div></div>
+        <div class="feature-card"><div class="card-icon" style="background:var(--lavender-light)"><svg style="width:20px;height:20px;color:var(--lavender)"><use href="#icon-brain"/></svg></div><div><h4>Action Checklist</h4><p>Concrete steps to implement THIS WEEK &mdash; because you need a plan, not more advice.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-center">
+      <h2>Simple, Transparent Pricing</h2>
+      <p class="subtitle">Choose the level of support your family needs.</p>
+      <div class="pricing-grid">
+        <div class="price-card standard">
+          <div class="price-tier" style="color:var(--accent)">ACTION REPORT</div>
+          <div class="price-amount" style="color:var(--deep)">$149</div>
+          <div class="price-period" style="color:var(--text-light)">per report</div>
+          <p class="price-desc" style="color:var(--text-light)">A clear, visual action report with your child's sensory profile, strengths, regulation tools, and a week-one checklist. Perfect to bring to your next IEP meeting, therapy session, or doctor's appointment.</p>
+          <ul class="price-features">
+            <li><svg style="width:16px;height:16px;color:var(--sage)"><use href="#icon-check"/></svg> Sensory Profile Map</li>
+            <li><svg style="width:16px;height:16px;color:var(--sage)"><use href="#icon-check"/></svg> Strengths Spotlight</li>
+            <li><svg style="width:16px;height:16px;color:var(--sage)"><use href="#icon-check"/></svg> Communication Quick Guide</li>
+            <li><svg style="width:16px;height:16px;color:var(--sage)"><use href="#icon-check"/></svg> Regulation Toolkit</li>
+            <li><svg style="width:16px;height:16px;color:var(--sage)"><use href="#icon-check"/></svg> Weekly Action Checklist</li>
+            <li><svg style="width:16px;height:16px;color:var(--sage)"><use href="#icon-check"/></svg> Shareable PDF Export</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> <strong>Quick Reference Cheat Sheet</strong></li>
+          </ul>
+          <button class="btn btn-outline" style="width:100%;padding:14px" onclick="showPage('auth','signup')">Get Action Report</button>
+        </div>
+        <div class="price-card premium">
+          <div class="popular-badge">MOST POPULAR</div>
+          <div class="price-tier" style="color:var(--warm)">COMPREHENSIVE PLAN</div>
+          <div class="price-amount">$299</div>
+          <div class="price-period">per plan</div>
+          <p class="price-desc">Everything in the Action Report plus a full therapeutic protocol with scripts, timelines, and deep-dive tools.</p>
+          <ul class="price-features" style="color:rgba(255,255,255,0.9)">
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> Everything in Action Report</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> Quick Reference Cheat Sheet</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> Full Communication Scripts (5 audiences)</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> 12-Week Implementation Timeline</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> Crisis De-escalation Playbook</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> Trigger Word Replacement Guide</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> Morning Launch Protocol</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> Visual Scale Templates (printable)</li>
+            <li><svg style="width:16px;height:16px;color:var(--warm)"><use href="#icon-check"/></svg> Unlimited updates for 1 year</li>
+          </ul>
+          <button class="btn btn-warm" style="width:100%;padding:14px" onclick="showPage('auth','signup')">Get Comprehensive Plan</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CARE GUIDES ADD-ON ═══ -->
+  <section class="section" style="background:linear-gradient(180deg,var(--bg),var(--sage-light),var(--bg))">
+    <div class="section-center">
+      <h2>Care Guides for Everyone in Your Child's Life</h2>
+      <p class="subtitle">Consistency is everything. Make sure every caregiver is on the same page with personalized, abridged quick-reference guides.</p>
+      <div class="card-grid card-grid-2" style="max-width:800px;margin:0 auto">
+        <div class="card" style="border-left:3px solid var(--warm);position:relative">
+          <div style="position:absolute;top:12px;right:12px;background:var(--warm-light);color:var(--warm);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">+$4.99 each</div>
+          <h3 style="font-size:16px;margin-bottom:4px">Babysitter / Respite Care Guide</h3>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6">A 2-3 page quick-reference card with essential need-to-knows: trigger words to avoid, what to do if they melt down, regulation tools that work, emergency contacts, and do&rsquo;s and don&rsquo;ts. Designed to hand to anyone watching your child &mdash; no clinical background needed.</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--lavender);position:relative">
+          <div style="position:absolute;top:12px;right:12px;background:var(--lavender-light);color:var(--lavender);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">+$4.99 each</div>
+          <h3 style="font-size:16px;margin-bottom:4px">Grandparent / Extended Family Guide</h3>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6">A warm, educational guide that explains your child&rsquo;s brain in plain language. Covers what neurodivergence actually means, why certain behaviors happen, what helps vs. what makes it worse, and how to be a supportive part of the team &mdash; without the clinical jargon.</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--sky);position:relative">
+          <div style="position:absolute;top:12px;right:12px;background:var(--sky-light);color:var(--sky);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">+$4.99 each</div>
+          <h3 style="font-size:16px;margin-bottom:4px">Sibling Guide</h3>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6">An age-appropriate guide for brothers and sisters that validates their experience, explains why their sibling acts the way they do, gives them language for their own feelings, and helps them feel like an important part of the team &mdash; not forgotten in the chaos.</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--accent);position:relative">
+          <div style="position:absolute;top:12px;right:12px;background:var(--accent-bg);color:var(--accent);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">+$4.99 each</div>
+          <h3 style="font-size:16px;margin-bottom:4px">Teacher / School Staff Guide</h3>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6">A professional, concise guide designed for educators: classroom accommodations that work, communication approaches, de-escalation steps, trigger avoidance, and how to support without singling out. Perfect to attach to an IEP or share at the start of a new school year.</p>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:24px">
+        <div style="display:inline-block;padding:14px 28px;background:white;border-radius:14px;border:1px solid var(--border)">
+          <span style="font-size:15px;font-weight:700;color:var(--deep)">Bundle all 4 Care Guides:</span>
+          <span style="font-size:15px;font-weight:800;color:var(--sage);margin-left:8px">$14.99</span>
+          <span style="font-size:13px;color:var(--text-light);margin-left:4px">(save $5)</span>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:12px">Each care guide is auto-generated from your child&rsquo;s full report &mdash; personalized, consistent, and ready to share.</p>
+    </div>
+  </section>
+
+  <!-- ═══ IEP ADD-ON ═══ -->
+  <section class="section" style="background:linear-gradient(180deg,var(--bg),var(--lavender-light),var(--bg))">
+    <div class="section-center">
+      <div style="text-align:center;margin-bottom:12px">
+        <div style="display:inline-block;padding:5px 14px;background:var(--lavender-light);border-radius:20px;font-size:12px;color:var(--lavender);font-weight:700;letter-spacing:.5px">OPTIONAL ADD-ON</div>
+      </div>
+      <h2 style="text-align:center">IEP Goal Recommendations Report</h2>
+      <p class="subtitle">Walk into your next IEP meeting prepared &mdash; with specific, professionally-worded goal language tailored to your child.</p>
+      <div style="max-width:800px;margin:0 auto;background:white;border-radius:20px;border:2px solid var(--lavender);overflow:hidden;box-shadow:0 8px 32px rgba(108,99,255,0.10)">
+        <div style="background:var(--lavender);padding:20px 32px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="color:rgba(255,255,255,0.85);font-size:13px;font-weight:600;letter-spacing:.5px">ADD-ON REPORT</div>
+            <div style="color:white;font-size:22px;font-weight:800;margin-top:2px">IEP Goal Recommendations</div>
+          </div>
+          <div style="text-align:right">
+            <div style="color:white;font-size:30px;font-weight:800">$9.99</div>
+            <div style="color:rgba(255,255,255,0.75);font-size:12px">add to any purchase</div>
+          </div>
+        </div>
+        <div style="padding:28px 32px">
+          <p style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px">IEP meetings can feel overwhelming. This add-on generates a ready-to-share document with specific, measurable goal language based on your child&rsquo;s unique profile &mdash; covering every area of need identified in the questionnaire. Bring it to your next meeting and advocate with confidence.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+            <div style="padding:16px;background:var(--lavender-light);border-radius:12px">
+              <div style="font-size:13px;font-weight:700;color:var(--lavender);margin-bottom:6px">&#127919; Measurable Goal Language</div>
+              <p style="font-size:13px;color:var(--text-light);margin:0;line-height:1.5">Ready-to-use goal statements with built-in measurement criteria, baselines, and benchmarks that meet IDEA standards.</p>
+            </div>
+            <div style="padding:16px;background:var(--lavender-light);border-radius:12px">
+              <div style="font-size:13px;font-weight:700;color:var(--lavender);margin-bottom:6px">&#128218; Area-by-Area Coverage</div>
+              <p style="font-size:13px;color:var(--text-light);margin:0;line-height:1.5">Covers communication, social skills, emotional regulation, executive function, sensory, and academic access &mdash; whichever areas your child needs.</p>
+            </div>
+            <div style="padding:16px;background:var(--lavender-light);border-radius:12px">
+              <div style="font-size:13px;font-weight:700;color:var(--lavender);margin-bottom:6px">&#128172; Parent Conversation Starters</div>
+              <p style="font-size:13px;color:var(--text-light);margin:0;line-height:1.5">Suggested talking points and questions to ask the IEP team, plus red flags to watch for and accommodations to request.</p>
+            </div>
+            <div style="padding:16px;background:var(--lavender-light);border-radius:12px">
+              <div style="font-size:13px;font-weight:700;color:var(--lavender);margin-bottom:6px">&#128203; Recommended Accommodations</div>
+              <p style="font-size:13px;color:var(--text-light);margin:0;line-height:1.5">A prioritized list of classroom accommodations and supports tied directly to your child&rsquo;s sensory, communication, and regulation profile.</p>
+            </div>
+          </div>
+          <div style="background:var(--accent-bg);border-radius:12px;padding:14px 18px;margin-bottom:20px">
+            <p style="font-size:13px;color:var(--accent);margin:0;line-height:1.6"><strong>Important:</strong> This report provides suggested goal language as an informational starting point for family advocacy. It is not legal advice, does not constitute an official IEP document, and does not create any rights or obligations under IDEA (Individuals with Disabilities Education Act). Always review recommendations with your child&rsquo;s school team. For legal disputes, eligibility disagreements, or due process matters, consult a qualified special education advocate or special education attorney.</p>
+          </div>
+          <div style="text-align:center">
+            <button class="btn btn-primary" onclick="alert('In production: adds IEP Goal Recommendations Report to cart for $9.99')">Add IEP Report &mdash; $9.99</button>
+            <p style="font-size:12px;color:var(--text-light);margin-top:8px">Available as an add-on at checkout with any Action Report or Comprehensive Plan purchase.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="testimonial">
+      <p>"For the first time, I felt like someone actually understood what our family goes through every day. The report gave my son's teacher more insight in 10 pages than three years of IEP meetings ever did."</p>
+      <div class="author">&mdash; Sarah M., mother of a 12-year-old with ASD &amp; PTSD</div>
+    </div>
+  </section>
+
+  <!-- ═══ NEUROTRANSLATE APP SECTION ═══ -->
+  <section id="neurotranslate-section" class="section" style="background:linear-gradient(180deg,var(--bg),#f0ecff,var(--bg));padding:80px 40px">
+    <div style="max-width:960px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:48px">
+        <div style="display:inline-block;padding:6px 16px;background:var(--accent-bg);border-radius:20px;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:16px">From the same team</div>
+        <h2 style="font-size:36px;font-weight:800;color:var(--deep);margin-bottom:12px">Meet NeuroTranslate</h2>
+        <p style="font-size:18px;color:var(--text-light);max-width:600px;margin:0 auto;line-height:1.7">
+          The companion app that puts your child&rsquo;s profile to work &mdash; in real time, in real life.
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+        <!-- Left: description -->
+        <div>
+          <p style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px">
+            <strong>Pieces of Perception</strong> organizes your family&rsquo;s knowledge. <strong>NeuroTranslate</strong> puts that knowledge to work every single day.
+          </p>
+          <p style="font-size:15px;color:var(--text);line-height:1.7;margin-bottom:24px">
+            NeuroTranslate is a mobile app that serves as a real-time communication translator between neurodiverse individuals and the neurotypical world. Just as Google Translate bridges two languages, NeuroTranslate bridges two fundamentally different ways of experiencing and expressing the world &mdash; <em>without asking the neurodiverse person to mask or suppress who they are.</em>
+          </p>
+
+          <div style="display:grid;gap:12px;margin-bottom:28px">
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg style="width:18px;height:18px;color:var(--accent)"><use href="#icon-brain"/></svg>
+              </div>
+              <div>
+                <strong style="font-size:14px;color:var(--text)">Real-Time Translation</strong>
+                <p style="font-size:13px;color:var(--text-light);margin:2px 0 0;line-height:1.5">Your child selects how they feel and the situation &mdash; the app generates a clear message they can show to teachers, parents, peers, or anyone who needs to understand.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--warm-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg style="width:18px;height:18px;color:var(--warm)"><use href="#icon-brain"/></svg>
+              </div>
+              <div>
+                <strong style="font-size:14px;color:var(--text)">Visual Scales &amp; Regulation Tools</strong>
+                <p style="font-size:13px;color:var(--text-light);margin:2px 0 0;line-height:1.5">1-10 visual scales, one-tap regulation strategies, and a lock-screen widget &mdash; because crises don&rsquo;t wait for you to open an app.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg style="width:18px;height:18px;color:var(--sage)"><use href="#icon-brain"/></svg>
+              </div>
+              <div>
+                <strong style="font-size:14px;color:var(--text)">Pattern Museum &amp; Progress Tracking</strong>
+                <p style="font-size:13px;color:var(--text-light);margin:2px 0 0;line-height:1.5">Help your child externalize worry patterns, track emotional trends over time, and see visual proof of their growth.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div style="width:36px;height:36px;border-radius:10px;background:var(--rose-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg style="width:18px;height:18px;color:var(--rose)"><use href="#icon-brain"/></svg>
+              </div>
+              <div>
+                <strong style="font-size:14px;color:var(--text)">My Circle &mdash; Trusted People Network</strong>
+                <p style="font-size:13px;color:var(--text-light);margin:2px 0 0;line-height:1.5">Share a customized &ldquo;guide to me&rdquo; with parents, teachers, therapists, and friends. Each person sees what they need to know.</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="alert('In production, this links to the NeuroTranslate app page or app store listing.')">
+              Learn More About NeuroTranslate <svg style="width:14px;height:14px;vertical-align:-2px;margin-left:4px"><use href="#icon-arrow-right"/></svg>
+            </button>
+            <button class="btn btn-outline" onclick="alert('In production, this links to the App Store / Google Play pre-registration page.')">
+              Join the Waitlist
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: visual card -->
+        <div style="background:linear-gradient(135deg,var(--deep),var(--navy));border-radius:24px;padding:36px;color:white;position:relative;overflow:hidden">
+          <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(108,99,255,0.15)"></div>
+          <div style="position:absolute;bottom:-30px;left:-30px;width:150px;height:150px;border-radius:50%;background:rgba(232,168,124,0.1)"></div>
+          <div style="position:relative;z-index:1">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
+              <svg style="width:28px;height:28px;color:var(--accent)"><use href="#icon-brain"/></svg>
+              <span style="font-size:20px;font-weight:700">NeuroTranslate</span>
+            </div>
+            <p style="font-size:13px;opacity:0.7;margin-bottom:20px;font-style:italic">&ldquo;My brain isn&rsquo;t broken. It just speaks a different language.&rdquo;</p>
+
+            <div style="background:rgba(255,255,255,0.08);border-radius:14px;padding:20px;margin-bottom:16px">
+              <p style="font-size:12px;opacity:0.6;margin-bottom:8px">THE APP TRANSLATES:</p>
+              <div style="background:rgba(108,99,255,0.2);border-radius:10px;padding:14px;margin-bottom:10px">
+                <p style="font-size:13px;margin:0;line-height:1.5;opacity:0.9">
+                  &ldquo;I&rsquo;m feeling overwhelmed right now. The noise level is making it hard for me to process what&rsquo;s happening. I&rsquo;m not upset with you &mdash; my brain just needs a quieter environment. Can we step outside for a few minutes?&rdquo;
+                </p>
+              </div>
+              <p style="font-size:11px;opacity:0.5;margin:0">Adapted for: Teacher &bull; Parent &bull; Peer &bull; Employer &bull; Stranger</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px;text-align:center">
+                <div style="font-size:22px;font-weight:800;color:var(--warm)">13</div>
+                <div style="font-size:11px;opacity:0.6">Feature Modules</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.06);border-radius:10px;padding:12px;text-align:center">
+                <div style="font-size:22px;font-weight:800;color:var(--sage)">iOS &amp; Android</div>
+                <div style="font-size:11px;opacity:0.6">Cross-Platform</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How they work together -->
+      <div style="margin-top:48px;text-align:center">
+        <h3 style="font-size:20px;font-weight:700;color:var(--deep);margin-bottom:24px">Better Together: The Complete Ecosystem</h3>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;max-width:700px;margin:0 auto">
+          <div style="background:white;border-radius:16px;padding:24px;border:1px solid var(--border);text-align:center">
+            <svg style="width:28px;height:28px;color:var(--accent);margin-bottom:8px"><use href="#icon-brain"/></svg>
+            <h4 style="font-size:15px;margin-bottom:4px;color:var(--deep)">Pieces of Perception</h4>
+            <p style="font-size:12px;color:var(--text-light);margin:0;line-height:1.5">Organizes your knowledge.<br>Creates the profile.<br>Generates the plan.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <svg style="width:24px;height:24px;color:var(--warm);transform:rotate(0deg)"><use href="#icon-arrow-right"/></svg>
+            <span style="font-size:11px;color:var(--text-light);font-weight:600">FEEDS INTO</span>
+            <svg style="width:24px;height:24px;color:var(--warm);transform:rotate(180deg)"><use href="#icon-arrow-right"/></svg>
+          </div>
+          <div style="background:white;border-radius:16px;padding:24px;border:1px solid var(--border);text-align:center">
+            <svg style="width:28px;height:28px;color:var(--warm);margin-bottom:8px"><use href="#icon-brain"/></svg>
+            <h4 style="font-size:15px;margin-bottom:4px;color:var(--deep)">NeuroTranslate App</h4>
+            <p style="font-size:12px;color:var(--text-light);margin:0;line-height:1.5">Uses the profile daily.<br>Translates in real time.<br>Tracks progress over time.</p>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--text-light);margin-top:20px;max-width:500px;margin-left:auto;margin-right:auto">
+          Families who complete a Pieces of Perception report can import their child&rsquo;s profile directly into NeuroTranslate &mdash; so the app already knows their child from day one.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ LEGAL / DISCLAIMER SECTION ═══ -->
+  <section style="padding:40px;background:var(--bg)">
+    <div style="max-width:800px;margin:0 auto">
+      <h3 style="text-align:center;font-size:18px;font-weight:700;color:var(--deep);margin-bottom:20px">Important Disclosures</h3>
+      <div style="display:grid;gap:16px">
+        <div style="padding:20px;background:white;border-radius:12px;border:1px solid var(--border)">
+          <h4 style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px">Not a Diagnostic Tool</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6;margin:0">Pieces of Perception does not diagnose, treat, cure, or prevent any medical or psychological condition. Our reports are informational resources generated from family-provided data and are NOT a substitute for professional clinical evaluation, diagnosis, or treatment by qualified healthcare providers including but not limited to physicians, psychologists, psychiatrists, occupational therapists, speech-language pathologists, or licensed counselors.</p>
+        </div>
+        <div style="padding:20px;background:white;border-radius:12px;border:1px solid var(--border)">
+          <h4 style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px">Intended Use as a Supplementary Resource</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6;margin:0">Reports generated by Pieces of Perception are designed to be used <strong>in supplement to &mdash; never in place of</strong> &mdash; professional care. We encourage families to share their reports with their child&rsquo;s doctors, therapists, school psychologists, IEP teams, and other qualified professionals as a communication and advocacy tool. Decisions about your child&rsquo;s care should always be made in consultation with licensed professionals who know your child.</p>
+        </div>
+        <div style="padding:20px;background:white;border-radius:12px;border:1px solid var(--border)">
+          <h4 style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px">Data Privacy &amp; Security</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6;margin:0">We take your family&rsquo;s privacy seriously. All personal and assessment data is encrypted in transit and at rest. We do not sell, share, or distribute your data to third parties. Data is used solely for the purpose of generating your personalized reports. You may request deletion of your data at any time. Pieces of Perception is not a HIPAA-covered entity, as we are a consumer informational tool rather than a healthcare provider. However, we follow privacy practices that align with HIPAA principles: minimal data collection, encrypted storage and transmission, user-controlled access, and no sale or sharing of your data. We take the privacy of your child&rsquo;s information seriously and apply COPPA-aware practices for all data involving minors.</p>
+        </div>
+        <div style="padding:20px;background:white;border-radius:12px;border:1px solid var(--border)">
+          <h4 style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px">&#128737; Secure by Design</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6;margin:0">Security is built into every layer of this platform &mdash; not added as an afterthought. Our commitments: <strong>Minimal data collection</strong> (we only ask for what we need to generate your report). <strong>Row-level security</strong> (your data is cryptographically isolated from other users &mdash; even our own team cannot access your records without authorization). <strong>No third-party data brokers</strong> (data shared with AI processing is subject to data processing agreements that prohibit use for AI training). <strong>Right to erasure</strong> (you can permanently delete your account and all associated data at any time, no questions asked). <strong>Vulnerability disclosure</strong> (we operate a responsible disclosure policy for security researchers).</p>
+        </div>
+        <div style="padding:20px;background:white;border-radius:12px;border:1px solid var(--border)">
+          <h4 style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px">AI-Generated Content Disclosure</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6;margin:0">Reports are generated using artificial intelligence based on your questionnaire responses. While our AI is designed to produce clinically-informed, evidence-based recommendations, AI-generated content may contain errors or omissions. All strategies and suggestions should be reviewed with your child&rsquo;s care team before implementation. Pieces of Perception assumes no liability for outcomes resulting from the application of report recommendations.</p>
+        </div>
+        <div style="padding:20px;background:white;border-radius:12px;border:1px solid var(--border)">
+          <h4 style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:6px">Emergency Disclaimer</h4>
+          <p style="font-size:13px;color:var(--text-light);line-height:1.6;margin:0">If your child is in immediate danger or experiencing a medical or psychiatric emergency, please call 911 or go to your nearest emergency room. For mental health crisis support, contact the 988 Suicide &amp; Crisis Lifeline (call or text 988) or the Crisis Text Line (text HOME to 741741). Pieces of Perception is not an emergency service.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer" style="padding:40px 40px 24px">
+    <div class="footer-brand">
+      <svg style="width:20px;height:20px;color:var(--accent)"><use href="#icon-brain"/></svg>
+      <span style="font-weight:700;color:var(--deep)">piecesofperception.com</span>
+    </div>
+    <p>Built with love by a family who gets it. Your data is encrypted and never shared.</p>
+    <div style="margin-top:16px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap">
+      <a href="#" style="font-size:12px;color:var(--text-light);text-decoration:none" onclick="event.preventDefault();alert('Privacy Policy page &mdash; will be a full legal page in production')">Privacy Policy</a>
+      <a href="#" style="font-size:12px;color:var(--text-light);text-decoration:none" onclick="event.preventDefault();alert('Terms of Service page &mdash; will be a full legal page in production')">Terms of Service</a>
+      <a href="#" style="font-size:12px;color:var(--text-light);text-decoration:none" onclick="event.preventDefault();alert('Disclaimer page &mdash; will be a full legal page in production')">Disclaimer</a>
+      <a href="#" style="font-size:12px;color:var(--text-light);text-decoration:none" onclick="event.preventDefault();alert('Refund Policy page &mdash; will be a full legal page in production')">Refund Policy</a>
+      <a href="#" style="font-size:12px;color:var(--text-light);text-decoration:none" onclick="event.preventDefault();alert('Contact Us page &mdash; will be a full contact form in production')">Contact Us</a>
+    </div>
+    <p style="font-size:11px;color:var(--text-light);margin-top:16px;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.5">&copy; 2026 Pieces of Perception. All rights reserved. This platform is an informational resource and does not provide medical advice, diagnosis, or treatment. Always consult qualified professionals for your child&rsquo;s care.</p>
+  </footer>
+</div>
+
+<!-- ═══════════════ AUTH PAGE ═══════════════ -->
+<div id="page-auth" class="hidden">
+  <div class="auth-page">
+    <div style="position:relative;width:100%;max-width:420px">
+      <button class="btn btn-outline" style="position:fixed;top:20px;left:20px;padding:8px 16px;font-size:13px" onclick="showPage('landing')">
+        <svg style="width:14px;height:14px;vertical-align:-2px"><use href="#icon-chevron-left"/></svg> Back
+      </button>
+      <div class="auth-card">
+        <div style="text-align:center;margin-bottom:20px">
+          <svg style="width:36px;height:36px;color:var(--accent)"><use href="#icon-brain"/></svg>
+        </div>
+        <h2 id="auth-title">Create Your Account</h2>
+        <p class="subtitle" id="auth-subtitle">Start building your child's personalized profile.</p>
+
+        <div>
+          <div class="form-group" id="auth-name-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="text" placeholder="you@email.com">
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" placeholder="Create a password">
+          </div>
+          <button class="btn btn-primary" style="width:100%;padding:14px;margin-top:8px" id="auth-submit" onclick="showPage('pathselect')">
+            Create Account & Start
+          </button>
+        </div>
+
+        <div class="switch-link">
+          <button id="auth-switch" onclick="toggleAuth()">Already have an account? Log in</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PATH SELECT PAGE ═══════════════ -->
+<div id="page-pathselect" class="hidden">
+  <div style="min-height:100vh;background:var(--bg);padding:40px 24px 80px">
+    <div style="max-width:760px;margin:0 auto">
+
+      <!-- Back button -->
+      <button class="btn btn-outline" style="padding:8px 16px;font-size:13px;margin-bottom:32px" onclick="showPage('landing')">
+        <svg style="width:14px;height:14px;vertical-align:-2px"><use href="#icon-chevron-left"/></svg> Back
+      </button>
+
+      <!-- Brand -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:36px">
+        <svg style="width:28px;height:28px;color:var(--accent)"><use href="#icon-brain"/></svg>
+        <span style="font-size:17px;font-weight:700;color:var(--deep)">Pieces of Perception</span>
+      </div>
+
+      <!-- Commitment Disclosure -->
+      <div style="background:white;border-radius:20px;border:1px solid var(--border);padding:32px;margin-bottom:36px;box-shadow:0 4px 24px rgba(0,0,0,0.05)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--accent);margin-bottom:10px">BEFORE YOU BEGIN</div>
+        <h2 style="font-size:24px;font-weight:800;color:var(--deep);margin-bottom:16px;line-height:1.3">This is a map &mdash; not a magic fix.</h2>
+        <p style="font-size:15px;color:var(--text);line-height:1.8;margin-bottom:20px">
+          The report you are about to create is a personalized guide built entirely around your child. Think of it as a blueprint &mdash; a carefully drawn picture of how your child experiences the world, what they need, and how the people in their life can support them more effectively.
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+          <div style="padding:18px;background:rgba(39,174,96,0.06);border-radius:14px;border:1px solid rgba(39,174,96,0.15)">
+            <div style="font-size:13px;font-weight:700;color:var(--sage);margin-bottom:10px">&#10003;&nbsp; What this IS</div>
+            <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text);line-height:2">
+              <li>A personalized guide built from <em>your</em> child&rsquo;s profile</li>
+              <li>A starting point &mdash; something to build from</li>
+              <li>A communication tool for schools, therapists, and family</li>
+              <li>A framework to try, adapt, and grow with over time</li>
+              <li>An act of advocacy for your child</li>
+            </ul>
+          </div>
+          <div style="padding:18px;background:rgba(192,57,43,0.05);border-radius:14px;border:1px solid rgba(192,57,43,0.12)">
+            <div style="font-size:13px;font-weight:700;color:var(--rose);margin-bottom:10px">&#10005;&nbsp; What this ISN&rsquo;T</div>
+            <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text);line-height:2">
+              <li>A diagnosis or clinical evaluation</li>
+              <li>A guaranteed solution or cure</li>
+              <li>A substitute for professional care</li>
+              <li>Something that works overnight</li>
+              <li>One-size-fits-all advice</li>
+            </ul>
+          </div>
+        </div>
+        <div style="background:linear-gradient(135deg,var(--accent-bg),var(--warm-light));border-radius:14px;padding:20px 24px;border:1px solid rgba(108,99,255,0.12)">
+          <div style="font-size:13px;font-weight:700;color:var(--deep);margin-bottom:8px">The families who get the most from this report bring three things:</div>
+          <div style="display:flex;gap:24px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text)">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:12px;flex-shrink:0">1</div>
+              <span><strong>Patience</strong> &mdash; with the process and with your child</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text)">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--warm);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:12px;flex-shrink:0">2</div>
+              <span><strong>Communication</strong> &mdash; with everyone in your child&rsquo;s life</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text)">
+              <div style="width:32px;height:32px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:12px;flex-shrink:0">3</div>
+              <span><strong>Commitment</strong> &mdash; to trying, noticing, and adjusting</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Path Selection -->
+      <h3 style="font-size:18px;font-weight:700;color:var(--deep);margin-bottom:6px;text-align:center">What kind of support are you looking for today?</h3>
+      <p style="text-align:center;color:var(--text-light);font-size:14px;margin-bottom:24px">Your answer shapes the questions you&rsquo;ll be asked and the report you receive.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px" id="path-cards">
+
+        <!-- Path 1: General -->
+        <div id="path-card-general" onclick="selectPath('general')" style="background:white;border-radius:18px;border:2px solid var(--border);padding:28px 24px;cursor:pointer;transition:all .2s;position:relative">
+          <div style="font-size:32px;margin-bottom:12px">&#129514;</div>
+          <div style="font-size:15px;font-weight:800;color:var(--deep);margin-bottom:8px">Comprehensive Profile</div>
+          <div style="font-size:13px;color:var(--text-light);line-height:1.6;margin-bottom:16px">I want to build a complete picture of my child &mdash; their strengths, sensory profile, communication style, emotional patterns, and a full personalized action plan.</div>
+          <div style="font-size:12px;color:var(--text-light)">&#128337; About 20&ndash;30 minutes &nbsp;&bull;&nbsp; 12 sections</div>
+          <div id="path-check-general" style="display:none;position:absolute;top:16px;right:16px;width:24px;height:24px;border-radius:50%;background:var(--sage);display:none;align-items:center;justify-content:center">
+            <svg style="width:14px;height:14px;color:white"><use href="#icon-check"/></svg>
+          </div>
+        </div>
+
+        <!-- Path 2: Specific -->
+        <div id="path-card-specific" onclick="selectPath('specific')" style="background:white;border-radius:18px;border:2px solid var(--border);padding:28px 24px;cursor:pointer;transition:all .2s;position:relative">
+          <div style="font-size:32px;margin-bottom:12px">&#127987;&#65039;</div>
+          <div style="font-size:15px;font-weight:800;color:var(--deep);margin-bottom:8px">Focused Issue Support</div>
+          <div style="font-size:13px;color:var(--text-light);line-height:1.6;margin-bottom:16px">There is something specific happening right now that I need help with &mdash; a trigger, a behavior pattern, a trauma response, a school crisis &mdash; and I need targeted strategies.</div>
+          <div style="font-size:12px;color:var(--text-light)">&#128337; About 25&ndash;35 minutes &nbsp;&bull;&nbsp; 13 sections</div>
+          <div id="path-check-specific" style="display:none;position:absolute;top:16px;right:16px;width:24px;height:24px;border-radius:50%;background:var(--accent);align-items:center;justify-content:center">
+            <svg style="width:14px;height:14px;color:white"><use href="#icon-check"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Specific Issue Follow-up (hidden until Path 2 selected) -->
+      <div id="specific-followup" style="display:none;background:white;border-radius:18px;border:2px solid var(--accent);padding:28px;margin-bottom:24px;animation:fadeIn .3s ease">
+        <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px">Tell us a little about the specific challenge &mdash; we&rsquo;ll tailor the questionnaire around it.</div>
+        <div class="form-group" style="margin-bottom:16px">
+          <label style="font-size:13px;font-weight:600;color:var(--deep);display:block;margin-bottom:8px">What category best describes the challenge?</label>
+          <div id="issue-category-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            ${['A specific trigger word, phrase, or situation','Trauma response or PTSD pattern','Extreme meltdowns or crisis behavior','Aggression or self-injurious behavior','School refusal or school-related anxiety','Severe separation anxiety','A sudden behavioral change','Sleep crisis or night terrors','Communication breakdown','Intense sensory crisis','A specific relationship conflict','Something else'].map(cat =>
+              `<button class="select-card" onclick="selectIssueCategory(this,'${cat.replace(/'/g,"\\'")}');" style="text-align:left;font-size:12px;padding:10px 14px">${cat}</button>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label style="font-size:13px;font-weight:600;color:var(--deep);display:block;margin-bottom:8px">Describe it briefly in your own words <span style="font-weight:400;color:var(--text-light)">(we&rsquo;ll ask for full detail inside)</span></label>
+          <textarea id="specific-issue-text" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-family:inherit;min-height:80px;resize:vertical;box-sizing:border-box" placeholder="For example: 'My son has a severe reaction to the word stop — even in completely neutral contexts. It started after a restraint incident at school and has gotten worse over the past year...'" oninput="specificIssueText=this.value"></textarea>
+        </div>
+      </div>
+
+      <!-- Begin Button -->
+      <div style="text-align:center">
+        <button id="begin-btn" class="btn btn-primary btn-large" style="opacity:0.4;pointer-events:none" onclick="beginQuestionnaire()">
+          Begin My Profile &nbsp;<svg style="width:16px;height:16px;vertical-align:-3px"><use href="#icon-arrow-right"/></svg>
+        </button>
+        <p style="font-size:12px;color:var(--text-light);margin-top:10px">You can change your answers at any time and regenerate the report.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ QUESTIONNAIRE PAGE ═══════════════ -->
+<div id="page-questionnaire" class="hidden">
+  <div class="q-page">
+    <nav class="nav">
+      <div class="nav-brand">
+        <svg style="color:var(--accent);width:24px;height:24px"><use href="#icon-brain"/></svg>
+        <span style="font-size:16px">Pieces of Perception</span>
+      </div>
+      <div class="nav-info">Your answers are saved automatically</div>
+    </nav>
+    <div style="padding-top:24px">
+      <div class="q-progress-bar">
+        <button class="btn btn-outline" style="padding:6px 10px;border:none" onclick="prevStep()">
+          <svg style="width:18px;height:18px;color:var(--text-light)"><use href="#icon-chevron-left"/></svg>
+        </button>
+        <div class="q-progress-track">
+          <div class="q-progress-fill" id="q-progress" style="width:8%;background:linear-gradient(90deg,var(--accent),var(--warm))"></div>
+        </div>
+        <span class="q-progress-text" id="q-step-text">1/12</span>
+      </div>
+      <div class="q-container" id="q-content">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LOADING PAGE ═══════════════ -->
+<div id="page-loading" class="hidden">
+  <div class="loading-page">
+    <div class="loading-container">
+      <div class="loading-icon">
+        <svg style="width:36px;height:36px;color:var(--accent)"><use href="#icon-brain"/></svg>
+      </div>
+      <h2>Building <span id="loading-name">Your Child</span>'s Perception Profile</h2>
+      <div class="loading-steps" id="loading-steps">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ REPORT PAGE ═══════════════ -->
+<div id="page-report" class="hidden">
+  <div class="report-page">
+    <nav class="nav">
+      <div class="nav-brand">
+        <svg style="color:var(--accent);width:24px;height:24px"><use href="#icon-brain"/></svg>
+        <span style="font-size:16px">Pieces of Perception</span>
+      </div>
+      <div class="nav-actions">
+        <button class="btn btn-outline" style="font-size:13px;padding:8px 16px">Export PDF</button>
+        <button class="btn btn-outline" style="font-size:13px;padding:8px 16px" onclick="showPage('questionnaire')">Edit Answers</button>
+      </div>
+    </nav>
+    <div class="report-container" id="report-content">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAYMENT PAGE ═══════════════ -->
+<div id="page-payment" class="hidden">
+  <div class="payment-page">
+    <div class="payment-card">
+      <svg style="width:36px;height:36px;color:var(--accent)"><use href="#icon-brain"/></svg>
+      <h2>Upgrade to Comprehensive Plan</h2>
+      <p class="price-note">One-time payment of $299</p>
+      <div>
+        <div class="form-group"><label>Card Number</label><input type="text" placeholder="4242 4242 4242 4242"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Expiry</label><input type="text" placeholder="MM/YY"></div>
+          <div class="form-group"><label>CVC</label><input type="text" placeholder="123"></div>
+        </div>
+        <button class="btn btn-warm" style="width:100%;padding:14px;margin-top:8px" onclick="alert('In production, this connects to Stripe for secure payment processing. Thank you for exploring the demo!'); showPage('report')">Pay $299 &amp; Unlock Full Plan</button>
+      </div>
+      <button class="btn" style="color:var(--text-light);margin-top:12px" onclick="showPage('report')">Go back to Action Report</button>
+      <p class="payment-secure">Secured with Stripe. Your payment info is never stored on our servers.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════ QUESTIONNAIRE DATA ═══════════════
+const phases = [
+  {
+    id: "consent", title: "Welcome & Informed Consent", discipline: "Before we begin",
+    color: "var(--warm)", iconColor: "var(--warm)", bgColor: "var(--warm-light)",
+    subtitle: "Before we begin, let's make sure you understand what this assessment is and isn't.",
+    questions: [
+      { id: "consent", label: "I understand that Pieces of Perception is an informational and organizational tool, not a diagnostic instrument. The report generated is based on family-reported information and is designed to help communicate my child's needs \u2014 it does not replace professional clinical evaluation.", type: "select", options: ["I understand and agree", "I have questions before proceeding"], rationale: "Informed consent is foundational to ethical practice in every clinical discipline." },
+      { id: "respondent", label: "Who is completing this assessment?", type: "select", options: ["Parent / Legal Guardian", "Grandparent or other family caregiver", "Foster parent", "The individual themselves (age 16+)", "Completing together with my child", "Professional with family permission"], rationale: "The respondent\u2019s relationship to the child affects how we interpret and contextualize responses." },
+      { id: "prior_evals", label: "Has your child had any formal evaluations or diagnoses? If so, please describe them with approximate dates.", type: "textarea", rationale: "Existing evaluations provide critical context. We want to build ON existing knowledge, not duplicate it." },
+    ]
+  },
+  {
+    id: "development", title: "Developmental & Medical History", discipline: "Building a picture of your child's journey",
+    color: "var(--sage)", iconColor: "var(--sage)", bgColor: "var(--sage-light)",
+    subtitle: "Understanding your child\u2019s developmental trajectory helps us identify patterns and tailor recommendations.",
+    questions: [
+      { id: "child_name", label: "Child\u2019s first name or preferred name:", type: "text" },
+      { id: "child_age", label: "How old is your child?", type: "select", options: ["3-5 years","6-8 years","9-11 years","12-14 years","15-17 years","18+"] },
+      { id: "diagnosis", label: "What diagnoses or identifications does your child have? (Select all that apply)", type: "multi", options: ["Autism Spectrum (Level 1)","Autism Spectrum (Level 2)","Autism Spectrum (Level 3)","ADHD - Inattentive","ADHD - Combined","Anxiety Disorder","PTSD / Trauma","Sensory Processing Disorder","OCD","Learning Disability","Gifted / Twice Exceptional","Awaiting Diagnosis","Other"] },
+      { id: "milestones", label: "Were any developmental milestones notably delayed or atypical?", type: "multi", options: ["First words (delayed)","First sentences (delayed)","Walking (delayed)","Social engagement (atypical)","Fine motor skills (difficulty)","Toilet training (delayed)","Pretend play (limited)","Language regression (lost and regained)"], rationale: "Milestone patterns help distinguish between different neurodevelopmental profiles." },
+      { id: "medical", label: "Has your child experienced any of the following?", type: "multi", options: ["Seizures/epilepsy","Chronic ear infections","Hearing or vision concerns","GI issues","Sleep disorders","Allergies","Hospitalizations/surgeries","Traumatic brain injury","None of the above"] },
+      { id: "medication", label: "Is your child currently taking any medication? (Select all that apply)", type: "multi", options: ["Stimulant medication (ADHD)","Non-stimulant ADHD medication","SSRI or anti-anxiety medication","Antipsychotic medication","Mood stabilizer","Sleep medication or melatonin","Anti-seizure medication","Other prescription medication","No medication currently","Prefer not to say"], rationale: "Medication status directly affects which strategies are appropriate. For example, certain anxiety strategies differ depending on whether medication is already addressing the baseline." },
+      { id: "medication_notes", label: "Any notes about medication that would help us understand your child\u2019s experience? (Optional \u2014 e.g., what\u2019s worked, what hasn\u2019t, current concerns)", type: "textarea", optional: true },
+    ]
+  },
+  {
+    id: "communication", title: "Communication & Language Profile", discipline: "How your child communicates and connects",
+    color: "var(--accent)", iconColor: "var(--accent)", bgColor: "rgba(108,99,255,0.08)",
+    subtitle: "Communication is more than words. This section explores how your child understands, expresses, and navigates the social rules of language.",
+    questions: [
+      { id: "receptive", label: "How well does your child understand spoken language?", type: "select", options: ["Understands complex instructions with no difficulty","Understands most conversation but misses nuance, sarcasm, or implied meaning","Needs simple, concrete language","Relies primarily on context, tone, and visual cues","Understanding varies with environment and regulation state"], rationale: "Receptive language ability is often overestimated in verbal children." },
+      { id: "receptive_diff", label: "Does your child have difficulty with any of these? (Select all)", type: "multi", options: ["Following multi-step directions","Understanding 'why' and 'how' questions","Understanding idioms or sarcasm","Processing language in noisy environments","Understanding time concepts","Understanding emotions behind words","Processing language when dysregulated","Understanding indirect requests"] },
+      { id: "expressive", label: "How does your child primarily communicate? (Select all)", type: "multi", options: ["Fluent spoken language","Spoken with limited vocabulary","Echolalia (repeating scripts/phrases)","Gestures (pointing, leading, showing)","AAC device or app","Written (types better than speaks)","Drawing or visual expression","Behavioral communication","Selectively mute"] },
+      { id: "pragmatic", label: "Social communication patterns (select all that apply):", type: "multi", options: ["Difficulty initiating conversations","Monologues on preferred topics","Interrupts or misses conversational turns","Volume control issues","Misreads facial expressions or body language","Takes language very literally","Uses scripted phrases from media","Talks to adults more easily than peers","Avoids or gives intense eye contact","Strong skills only on preferred topics"] },
+      { id: "misunderstood", label: "Describe a recent time your child was misunderstood. What happened and how did they react?", type: "textarea", rationale: "Real-world examples directly inform the communication scripts in the report." },
+    ]
+  },
+  {
+    id: "sensory", title: "Sensory Processing Profile", discipline: "Understanding your child's sensory world",
+    color: "var(--sage)", iconColor: "var(--sage)", bgColor: "var(--sage-light)",
+    subtitle: "Every brain processes sensory input differently. Let's map your child's unique sensory landscape across all 7 systems.",
+    questions: [
+      { id: "sensory_sound", label: "Sound sensitivity", type: "slider", min:1, max:10, labels:["Seeks more sound","Neutral","Very sensitive"] },
+      { id: "sensory_light", label: "Light / visual sensitivity", type: "slider", min:1, max:10, labels:["Seeks visual input","Neutral","Very sensitive"] },
+      { id: "sensory_touch", label: "Touch / tactile sensitivity", type: "slider", min:1, max:10, labels:["Seeks touch/pressure","Neutral","Avoids touch"] },
+      { id: "sensory_taste", label: "Taste & smell sensitivity", type: "slider", min:1, max:10, labels:["Seeks strong flavors","Neutral","Very limited/sensitive"] },
+      { id: "sensory_movement", label: "Movement / vestibular needs", type: "slider", min:1, max:10, labels:["Seeks constant movement","Neutral","Avoids movement"] },
+      { id: "sensory_proprioception", label: "Body awareness / pressure needs", type: "slider", min:1, max:10, labels:["Seeks deep pressure","Neutral","Avoids input"] },
+      { id: "sensory_interoception", label: "Internal body signals (hunger, pain, temperature, emotions)", type: "slider", min:1, max:10, labels:["Doesn't notice signals","Typical","Over-aware/distressed"] },
+      { id: "overload_signs", label: "What does sensory overload look like for your child?", type: "multi", options: ["Covers ears or eyes","Hides under furniture/blankets","Goes very quiet and still","Becomes very loud or hyper","Headache or stomach pain","Removes clothing","Bolts / runs away","Meltdown (crying, screaming)","Becomes aggressive","Dissociates / zones out"] },
+    ]
+  },
+  {
+    id: "emotional", title: "Emotional Regulation & Wellbeing", discipline: "Understanding your child's emotional landscape",
+    color: "var(--rose)", iconColor: "var(--rose)", bgColor: "var(--rose-light)",
+    sectionWarning: "This section includes questions about your child\u2019s emotional history, anxiety patterns, and past adverse experiences. Some of these questions may bring up difficult memories. Take your time, skip anything that doesn\u2019t feel right, and know you can step away and return at any time.",
+    subtitle: "This section explores how your child experiences and manages emotions \u2014 the patterns of thinking that drive emotional responses.",
+    questions: [
+      { id: "baseline", label: "How would you describe your child\u2019s overall emotional baseline?", type: "select", options: ["Generally happy and regulated with occasional difficulty","Anxious most of the time \u2014 scanning for threats","Flat or withdrawn \u2014 not much emotion either way","Intense \u2014 emotions run very high (positive and negative)","Rapidly shifting \u2014 calm to crisis in seconds","Depends entirely on environment and predictability"], rationale: "Emotional baseline determines whether the primary challenge is anxiety, intensity, alexithymia, or regulation speed." },
+      { id: "anxiety", label: "Does your child experience any of these anxiety patterns?", type: "multi", options: ["Generalized worry","Social anxiety","Separation anxiety","Performance anxiety","Obsessive/repetitive thoughts","Compulsive rituals","Anticipatory anxiety (dreads events days ahead)","Somatic anxiety (stomach aches, headaches)","Reassurance-seeking loops","Catastrophic thinking","Demand avoidance (PDA \u2014 Pathological Demand Avoidance)","None observed"], rationale: "A child with Demand Avoidance (PDA) needs fundamentally different strategies than a child with social anxiety \u2014 standard reward/consequence systems often worsen PDA profiles significantly. If you selected PDA, the report will flag this and tailor recommendations accordingly." },
+      { id: "reassurance", label: "THE REASSURANCE CYCLE: Does your child repeatedly ask the same question for comfort, even after you\u2019ve answered?", type: "textarea", rationale: "The reassurance cycle can deepen anxiety. Understanding this pattern helps build specific strategies that actually work." },
+      { id: "trauma", label: "Has your child experienced trauma or adverse experiences? (Answer only what you\u2019re comfortable sharing)", type: "multi", options: ["Bullying","Abuse (physical, emotional, or sexual)","Neglect","Witnessing domestic violence","Loss of parent or close family member","Frightening medical procedures","Restraint or seclusion at school","Frequent moves or instability","High-conflict divorce","None that I\u2019m aware of","Prefer not to answer"], rationale: "Important: Pieces of Perception is not a mandated reporter and cannot act on disclosures made here. If a child is currently in danger, please call 911 or contact your local child protective services. Share only what you feel comfortable sharing \u2014 this information is used solely to inform the tone and strategies in your report." },
+      { id: "escalation", label: "When emotionally escalated, describe the trajectory: how fast does it rise, how high does it peak, and how long does recovery take?", type: "textarea", placeholder: "Example: \u2018Ours goes from 0 to full crisis in about 30 seconds \u2014 usually triggered by a transition. It peaks for 15\u201320 minutes with screaming and throwing. Full recovery (back to baseline, able to talk about it) takes about an hour. The window where he can hear us is very small.\u2019 Share whatever level of detail feels useful.", rationale: "Understanding the escalation curve determines when and how to intervene \u2014 and when to stay back." },
+    ]
+  },
+  {
+    id: "triggers", title: "Behavioral Patterns & Triggers", discipline: "Understanding what your child's behavior is telling us",
+    color: "var(--lavender)", iconColor: "var(--lavender)", bgColor: "var(--lavender-light)",
+    subtitle: "All behavior is communication. This section helps us understand what your child's behavior is telling us about their unmet needs.",
+    questions: [
+      { id: "trigger_words", label: "TRIGGER WORDS: Are there specific words or phrases that cause an outsized emotional reaction? List them and describe the reaction.", type: "textarea", rationale: "Trigger words often carry traumatic associations. Identifying them allows for replacement language." },
+      { id: "trigger_situations", label: "Which situations consistently trigger a behavioral response?", type: "multi", options: ["Transitions between activities","Unexpected changes in routine","Being told 'no'","Being corrected or told they're wrong","Losing a game","Homework / academic demands","Being rushed","Waiting (in line, for a turn)","Being touched without warning","Loud/chaotic environments","New situations","Separation from safe person","Perceived injustice","Being watched or put on the spot","End of preferred activity (screen time, play)"] },
+      { id: "crisis_desc", label: "When your child is in full crisis, describe exactly what it looks like:", type: "textarea", rationale: "This specificity is essential for building a de-escalation protocol that teachers and other caregivers can follow." },
+      { id: "crisis_duration", label: "How long does a typical crisis last?", type: "select", options: ["Under 5 minutes","5-15 minutes","15-30 minutes","30-60 minutes","Over an hour","Highly variable"] },
+      { id: "safety", label: "Are there safety concerns during crises? (Select all that apply)", type: "multi", options: ["Involuntary self-injury during meltdowns (hitting self, head-banging, biting \u2014 not intentional)","Intentional self-harm as an emotional regulation strategy (cutting, scratching, burning)","Aggression toward others","Running/bolting","Property destruction","None of the above","Prefer not to answer"], rationale: "These are clinically distinct and lead to very different recommendations. Involuntary meltdown behaviors and intentional self-harm require separate approaches \u2014 conflating them often leads to interventions that miss the mark or cause harm." },
+    ]
+  },
+  {
+    id: "daily", title: "Daily Living & Executive Function", discipline: "Navigating everyday routines and skills",
+    color: "var(--sky)", iconColor: "var(--sky)", bgColor: "var(--sky-light)",
+    subtitle: "How your child navigates the practical demands of daily life \u2014 routines, self-care, and organizational skills.",
+    questions: [
+      { id: "morning", label: "How do mornings typically go?", type: "select", options: ["Smooth \u2014 mornings are our best time","Mixed \u2014 some good, some hard","Difficult \u2014 mornings set a negative tone most days","Crisis-level \u2014 getting out the door is a daily battle"], rationale: "Morning cortisol spikes make mornings particularly vulnerable. The first hour sets the tone for the day." },
+      { id: "morning_desc", label: "Describe a typical morning from wake-up to leaving the house. Where do breakdowns occur?", type: "textarea" },
+      { id: "sleep", label: "How is your child's sleep?", type: "select", options: ["Sleeps well most nights","Takes a long time to fall asleep","Wakes frequently during the night","Both \u2014 hard to fall and stay asleep","Nightmares or night terrors","Refuses bedtime routine entirely"], rationale: "Sleep directly affects emotional regulation, sensory thresholds, and flexibility. Often the single most impactful intervention target." },
+      { id: "exec_function", label: "Rate your child's executive function challenges (select all that are significant):", type: "multi", options: ["Planning and organizing","Time management / sense of time","Working memory (forgetting instructions)","Task initiation (can't get started)","Flexibility (can't adapt when plans change)","Emotional control during tasks","Self-monitoring (noticing own mistakes)","Impulse control","Sustained attention","Organization of belongings"] },
+    ]
+  },
+  {
+    id: "social", title: "Social & Relational Landscape", discipline: "Mapping your child's social world",
+    color: "var(--accent)", iconColor: "var(--accent)", bgColor: "rgba(108,99,255,0.08)",
+    subtitle: "Mapping your child's social world and the connections that matter most.",
+    questions: [
+      { id: "school_setting", label: "What is your child\u2019s current educational setting?", type: "select", options: ["General education (full inclusion)","General education with pull-out support services","Resource room (part-time special education)","Self-contained special education classroom","Therapeutic day school","Residential school or program","Homeschool","Homeschool co-op or hybrid program","Not currently in school","Other"], rationale: "Educational placement directly shapes what the school section of the report recommends \u2014 strategies for a fully included child are very different from those in a self-contained setting." },
+      { id: "friendships", label: "Describe your child\u2019s friendship experience:", type: "select", options: ["Has close, reciprocal friendships","Has 1-2 close friends but struggles to expand","Wants friends but doesn\u2019t know how","Has acquaintances but no deep friendships","Prefers to be alone and seems content","Prefers adult company over peers","Is bullied, excluded, or isolated","Has online friends but struggles in person","Gets along in structured activities but struggles in unstructured time"], rationale: "\u2018Doesn\u2019t want friends\u2019 vs. \u2018wants friends but can\u2019t navigate social rules\u2019 completely changes the approach." },
+      { id: "school", label: "How would you describe your child\u2019s school experience overall?", type: "textarea", rationale: "School is where communication breakdowns have the highest stakes." },
+      { id: "child_voice", label: "In your child\u2019s own words \u2014 or as best as you can speak for them \u2014 how would they describe how they feel most of the time?", type: "textarea", placeholder: "For example: \u2018He says he always feels like he\u2019s in trouble even when he\u2019s not.\u2019 Or: \u2018She can\u2019t articulate it yet, but her body language tells us she feels like the world is too loud and too fast.\u2019 Even a best guess is valuable.", rationale: "The child\u2019s internal experience is the most important data point in the report. Even a proxy answer from a parent gives the AI critical context to frame recommendations from their perspective, not just the caregiver\u2019s." },
+      { id: "family_wish", label: "What do you wish the people in your child\u2019s life understood better about them?", type: "textarea", rationale: "This answer often contains the most important information in the entire assessment." },
+    ]
+  },
+  {
+    id: "strengths", title: "Strengths, Identity & Special Interests", discipline: "The heart of your child's story",
+    color: "var(--warm)", iconColor: "var(--warm)", bgColor: "var(--warm-light)",
+    subtitle: "This is the heart of the report. Understanding strengths is MORE important than cataloguing challenges.",
+    questions: [
+      { id: "strengths_list", label: "Which of these strengths describe your child? (Select all)", type: "multi", options: ["Pattern finder","Detail noticer","Deep thinker","Loyal friend","Creative mind","Honest communicator","Memory powerhouse","Special interest expert","Justice warrior","Empathetic feeler","Routine master","Visual thinker","Musical / rhythmic","Problem solver","Nature lover","Persistent","Brave","Funny"], rationale: "Special interests and natural strengths are the most effective regulation tools and learning pathways." },
+      { id: "special_interests", label: "Describe your child's passions \u2014 what lights them up?", type: "textarea", rationale: "Special interests are therapeutic gold. They regulate, motivate, connect, and teach." },
+      { id: "identity", label: "How does your child understand their own neurodivergence?", type: "select", options: ["Knows their diagnosis and understands it","Knows they're 'different' but lacks language for it","Doesn't know about their diagnosis","Knows but feels shame about it","Knows and is proud of their identity","Rejects the label","Too young for this conversation"] },
+      { id: "proud_moment", label: "Describe a moment you were especially proud of your child's unique way of seeing the world.", type: "textarea", rationale: "This story often reveals the child's core identity more clearly than any checklist or questionnaire." },
+    ]
+  },
+  {
+    id: "family", title: "Family System & Support Network", discipline: "Your family's support ecosystem",
+    color: "var(--lavender)", iconColor: "var(--lavender)", bgColor: "var(--lavender-light)",
+    subtitle: "The family is the child's primary regulatory environment.",
+    questions: [
+      { id: "household", label: "Describe your household \u2014 who lives at home, key relationships, and any sibling dynamics:", type: "textarea", rationale: "Sibling dynamics, parental alignment, and household stress all affect outcomes." },
+      { id: "sibling_impact", label: "If your child has siblings, how has this journey affected them? (Select all that apply)", type: "multi", options: ["Siblings are generally understanding and supportive","Sibling conflict is frequent and intense","Siblings feel overlooked or like they come second","A sibling acts as a protector or ally","Siblings have their own anxiety related to the situation","Siblings have been physically hurt during crises","Siblings don\u2019t fully understand what\u2019s happening","We\u2019ve had productive conversations with siblings about it","No siblings","Prefer not to answer"], rationale: "Sibling wellbeing is often the invisible casualty in neurodiverse families. Naming the dynamic helps the report include sibling-aware recommendations." },
+      { id: "support_team", label: "Who currently supports your child professionally?", type: "multi", options: ["Therapist / counselor","Psychiatrist","Pediatrician","Occupational therapist","Speech-language pathologist","ABA therapist","Social skills group","School psychologist","Special education teacher","1:1 aide","Tutor","No professional support currently"] },
+      { id: "therapy_history", label: "What therapeutic approaches have you tried? What has helped \u2014 even a little? What made things worse?", type: "textarea", placeholder: "For example: \u2018ABA at age 4 felt dehumanizing and increased anxiety. Play therapy helped him feel safe but didn\u2019t give us tools. DIR/Floortime has been the most useful so far because it follows his lead. We tried a reward chart and it backfired completely.\u2019 Any information is helpful \u2014 including approaches that failed.", rationale: "Knowing what has and hasn\u2019t worked prevents the AI from recommending approaches that have already been harmful or ineffective for this specific child." },
+      { id: "family_response", label: "How does your extended family respond to your child\u2019s needs?", type: "select", options: ["Very supportive \u2014 everyone is on the same page","Some understand, others don\u2019t","Extended family minimizes the challenges","Family members blame parenting","We feel isolated \u2014 no one truly understands","We\u2019ve stopped attending gatherings because it\u2019s too hard"] },
+    ]
+  },
+  {
+    id: "goals", title: "Goals, Priorities & Urgent Needs", discipline: "What matters most to your family",
+    color: "var(--sage)", iconColor: "var(--sage)", bgColor: "var(--sage-light)",
+    subtitle: "What does success look like for your family? There are no wrong answers.",
+    questions: [
+      { id: "goals_child", label: "What are your top goals for your child? (Select up to 5)", type: "multi", options: ["Better emotional regulation","Improved communication","Making and keeping friends","Less anxiety","Better school experience","Greater independence","Understanding their own brain","Self-advocacy","Fewer crises","Better sleep","Improved family harmony","Feeling proud of who they are"] },
+      { id: "child_goal", label: "If your child could set their own goal, what do you think they would want most?", type: "textarea", rationale: "The child's voice is essential. Strategies work better when the child sees the value." },
+      { id: "urgent", label: "What is MOST URGENT \u2014 what do you need help with THIS WEEK?", type: "textarea", rationale: "This drives the Immediate Action Items \u2014 because families don't need a 12-week plan when they're in crisis NOW." },
+    ]
+  },
+  {
+    id: "open_letter", title: "In Your Own Words", discipline: "The section many parents say matters most",
+    color: "var(--accent)", iconColor: "var(--accent)", bgColor: "rgba(108,99,255,0.07)",
+    subtitle: "No checkboxes. No right answers. Just space for you to say anything about your child that hasn\u2019t fit neatly into any question so far \u2014 their quirks, their magic, your worries, your hopes. Many parents say this is the most valuable part of the whole process. Write as little or as much as you need \u2014 or skip ahead if now isn\u2019t the time.",
+    optional: true,
+    questions: [
+      {
+        id: "open_child",
+        label: "Tell us about your child \u2014 in your own words.",
+        type: "textarea",
+        optional: true,
+        placeholder: "This space is yours. Share their personality, the things that make them laugh, the things that break your heart, what you want the world to know about them, what nobody seems to understand, your hopes for who they\u2019ll become\u2026 anything at all. There is no wrong way to use this space.",
+        rationale: "Families often hold the most important insights that no checklist can capture. This open space frequently reveals the heart of the child more clearly than any structured question."
+      },
+      {
+        id: "open_family",
+        label: "What has this journey been like for your family?",
+        type: "textarea",
+        optional: true,
+        placeholder: "The hard parts, the unexpected joys, the moments that changed you, what you wish someone had told you earlier, what you\u2019ve learned about yourself as a parent\u2026 share whatever feels right.",
+        rationale: "Understanding the family\u2019s experience helps shape recommendations that are realistic for your actual life \u2014 not a hypothetical one."
+      },
+      {
+        id: "open_hopes",
+        label: "What are your deepest hopes for your child\u2019s future?",
+        type: "textarea",
+        optional: true,
+        placeholder: "Not goals or milestones \u2014 hopes. The things you picture for them at 25, at 40. Who you hope they\u2019ll be. What you hope they\u2019ll feel about themselves.",
+        rationale: "Long-term hopes help anchor the report in what truly matters to this family \u2014 and often reveal values and priorities that short-term goals miss entirely."
+      },
+    ]
+  },
+  {
+    id: "caregiver", title: "Caregiver Wellbeing Check-in", discipline: "Because you matter too",
+    color: "var(--rose)", iconColor: "var(--rose)", bgColor: "var(--rose-light)",
+    subtitle: "You can\u2019t pour from an empty cup. Your wellbeing directly affects your child\u2019s outcomes \u2014 you deserve support too. If you\u2019re struggling yourself right now, you\u2019re not alone. The 988 Suicide &amp; Crisis Lifeline (call or text 988) is free, confidential, and available 24/7 for anyone in distress.",
+    questions: [
+      { id: "caregiver_needs", label: "What do YOU need most right now? (Select all)", type: "multi", options: ["Strategies that actually work","To feel understood and validated","Less daily conflict","Help communicating with school","Connection with other families","A break without guilt","Help explaining to extended family","A clear plan to follow","Reassurance that I'm doing enough","Professional guidance on next steps","Hope"] },
+      { id: "caregiver_state", label: "How are you doing \u2014 physically, emotionally, in your relationships? Be honest.", type: "textarea", rationale: "Caregiver burnout directly impacts your ability to support your child. Taking care of YOU is taking care of them." },
+    ]
+  },
+];
+
+// ═══════════════ FOCUSED ISSUE PHASE (Path 2 only) ═══════════════
+const specificFocusPhase = {
+  id: "specific_focus", title: "Tell Us About This Challenge", discipline: "Focused issue deep-dive",
+  color: "var(--rose)", iconColor: "var(--rose)", bgColor: "var(--rose-light)",
+  subtitle: "The more specifically you describe what's happening, the more targeted and useful your report will be. There are no wrong answers here.",
+  questions: [
+    { id: "issue_duration", label: "How long has this been a significant challenge?", type: "select", options: ["Less than a month","1\u20133 months","3\u20136 months","6 months \u2014 1 year","1\u20132 years","More than 2 years","It comes and goes in cycles"] },
+    { id: "issue_context", label: "When does this typically happen? Describe the circumstances as specifically as you can.", type: "textarea", placeholder: "For example: 'It happens every time someone says the word stop, even in a completely normal context like stop at a red light. It started after a restraint incident at school last year and has been getting more intense...'" },
+    { id: "issue_looks_like", label: "Describe exactly what it looks like when this challenge occurs \u2014 what you see, hear, and feel in the room.", type: "textarea", placeholder: "What does your child do? What do they say? What does their body do? How long does it last? What does the aftermath look like?" },
+    { id: "issue_who_affected", label: "Who else is significantly affected by this challenge?", type: "multi", options: ["Other parent/co-parent","Siblings","Extended family","Teachers or school staff","Peers","Neighbors or community","Therapist or treatment team","The child themselves","The whole household"] },
+    { id: "issue_tried", label: "What have you already tried to address this?", type: "multi", options: ["Ignoring / not reacting","Redirecting","Consequences or discipline","Rewards and incentives","Individual therapy","Family therapy","Medication","Environmental changes","Sensory supports","Social stories or scripts","Talking it through calmly","Avoiding the trigger entirely","Consulting with school","Nothing yet \u2014 this is new","Other"] },
+    { id: "issue_tried_result", label: "Of what you've tried \u2014 what helped even a little? What made things worse?", type: "textarea", placeholder: "Partial progress counts. Even knowing what does NOT work is valuable information." },
+    { id: "issue_success", label: "What does 'better' look like to you? Describe what success would mean for your family.", type: "textarea", placeholder: "Not a cure. Not perfection. Just better. What would you notice first that would tell you things were improving?" },
+  ]
+};
+
+function getActivePhases() {
+  if (pathType === 'specific') {
+    const result = [...phases];
+    result.splice(1, 0, specificFocusPhase);
+    return result;
+  }
+  return phases;
+}
+
+// ═══════════════ APP STATE ═══════════════
+let currentStep = 0;
+let answers = {};
+let authMode = 'signup';
+let pathType = 'general';
+let specificIssueCategory = '';
+let specificIssueText = '';
+
+function showPage(page, mode) {
+  document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page-' + page).classList.remove('hidden');
+  window.scrollTo(0, 0);
+
+  if (page === 'auth' && mode) {
+    authMode = mode;
+    document.getElementById('auth-title').textContent = mode === 'signup' ? 'Create Your Account' : 'Welcome Back';
+    document.getElementById('auth-subtitle').textContent = mode === 'signup' ? 'Start building your child\'s personalized profile.' : 'Continue where you left off.';
+    document.getElementById('auth-name-group').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('auth-submit').textContent = mode === 'signup' ? 'Create Account & Start' : 'Log In';
+    document.getElementById('auth-switch').textContent = mode === 'signup' ? 'Already have an account? Log in' : 'Need an account? Sign up';
+  }
+  if (page === 'questionnaire') renderStep();
+  if (page === 'loading') startLoading();
+  if (page === 'report') renderReport();
+}
+
+function toggleAuth() {
+  showPage('auth', authMode === 'signup' ? 'login' : 'signup');
+}
+
+// ═══════════════ PATH SELECTION ═══════════════
+function selectPath(path) {
+  pathType = path;
+  const genCard = document.getElementById('path-card-general');
+  const specCard = document.getElementById('path-card-specific');
+  const followup = document.getElementById('specific-followup');
+  const beginBtn = document.getElementById('begin-btn');
+
+  // Reset card styles
+  genCard.style.borderColor = 'var(--border)';
+  genCard.style.background = 'white';
+  specCard.style.borderColor = 'var(--border)';
+  specCard.style.background = 'white';
+  document.getElementById('path-check-general').style.display = 'none';
+  document.getElementById('path-check-specific').style.display = 'none';
+
+  if (path === 'general') {
+    genCard.style.borderColor = 'var(--sage)';
+    genCard.style.background = 'rgba(39,174,96,0.04)';
+    document.getElementById('path-check-general').style.display = 'flex';
+    followup.style.display = 'none';
+    beginBtn.style.opacity = '1';
+    beginBtn.style.pointerEvents = 'auto';
+  } else {
+    specCard.style.borderColor = 'var(--accent)';
+    specCard.style.background = 'rgba(108,99,255,0.04)';
+    document.getElementById('path-check-specific').style.display = 'flex';
+    followup.style.display = 'block';
+    // Begin only enabled after category chosen
+    beginBtn.style.opacity = '0.4';
+    beginBtn.style.pointerEvents = 'none';
+  }
+}
+
+function selectIssueCategory(btn, cat) {
+  specificIssueCategory = cat;
+  document.querySelectorAll('#issue-category-grid .select-card').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const beginBtn = document.getElementById('begin-btn');
+  beginBtn.style.opacity = '1';
+  beginBtn.style.pointerEvents = 'auto';
+}
+
+function beginQuestionnaire() {
+  currentStep = 0;
+  answers = {};
+  if (pathType === 'specific') {
+    answers['issue_category'] = specificIssueCategory;
+    answers['issue_brief'] = specificIssueText;
+  }
+  showPage('questionnaire');
+}
+
+// ═══════════════ QUESTIONNAIRE RENDERING ═══════════════
+function renderStep() {
+  const activePhases = getActivePhases();
+  const phase = activePhases[currentStep];
+  const pct = ((currentStep + 1) / activePhases.length) * 100;
+  document.getElementById('q-progress').style.width = pct + '%';
+  document.getElementById('q-step-text').textContent = (currentStep + 1) + '/' + activePhases.length;
+
+  const isOptionalPhase = phase.optional === true;
+
+  let html = `
+    <div class="q-header">
+      <div class="q-icon" style="background:${phase.bgColor}">
+        <svg style="width:22px;height:22px;color:${phase.iconColor}"><use href="#icon-brain"/></svg>
+      </div>
+      <div class="q-title">${phase.title}</div>
+    </div>
+    <div class="q-discipline">${phase.discipline}</div>
+    <div style="font-size:12px;color:var(--text-light);text-align:right;margin-bottom:12px;opacity:0.7">&#10003; Your progress is saved automatically &mdash; close anytime and return where you left off.</div>
+    ${isOptionalPhase ? `
+    <div style="margin:0 0 16px;padding:14px 18px;background:rgba(108,99,255,0.06);border-radius:12px;border:1px solid rgba(108,99,255,0.15);display:flex;align-items:flex-start;gap:10px">
+      <span style="font-size:18px;line-height:1">&#9997;&#65039;</span>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:3px">This section is completely optional</div>
+        <div style="font-size:13px;color:var(--text-light);line-height:1.5">There are no right or wrong answers here. Write as little or as much as feels right. If you prefer to skip, just click <strong>Continue</strong> below &mdash; your report will be just as complete.</div>
+      </div>
+    </div>` : ''}
+    ${phase.sectionWarning ? `
+    <div style="margin:0 0 20px;padding:16px 20px;background:rgba(217,91,114,0.06);border-radius:12px;border:1px solid rgba(217,91,114,0.2);display:flex;align-items:flex-start;gap:12px">
+      <span style="font-size:20px;line-height:1;flex-shrink:0">&#128591;</span>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--rose);margin-bottom:4px">Heads Up</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.6">${phase.sectionWarning}</div>
+      </div>
+    </div>` : ''}
+    <div class="q-subtitle">${phase.subtitle}</div>
+  `;
+
+  phase.questions.forEach((q, qi) => {
+    html += `<div class="question-block" style="${isOptionalPhase ? 'border-left:3px solid rgba(108,99,255,0.25);padding-left:16px;' : ''}">`;
+    const optionalTag = (q.optional || isOptionalPhase) ? `<span style="font-size:11px;font-weight:600;color:var(--text-light);background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle">Optional</span>` : '';
+    html += `<div class="question-label">${q.label}${optionalTag}</div>`;
+    if (q.rationale && !isOptionalPhase) html += `<div class="question-rationale">Why we ask: ${q.rationale}</div>`;
+
+    if (q.type === 'text') {
+      html += `<input type="text" class="form-group" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);font-size:14px;font-family:inherit" value="${answers[q.id]||''}" oninput="answers['${q.id}']=this.value" placeholder="${q.placeholder || 'Type your answer...'}">`;
+    } else if (q.type === 'textarea') {
+      const ph = q.placeholder || (isOptionalPhase ? 'Write as much or as little as you like\u2026' : 'Take your time \u2014 the more detail you share, the more personalized the plan will be...');
+      const minH = isOptionalPhase ? '160px' : '100px';
+      html += `<textarea class="form-group" style="width:100%;padding:14px 16px;border-radius:10px;border:1px solid var(--border);font-size:14px;font-family:inherit;min-height:${minH};resize:vertical;line-height:1.6" oninput="answers['${q.id}']=this.value" placeholder="${ph}">${answers[q.id]||''}</textarea>`;
+    } else if (q.type === 'select') {
+      html += `<div class="select-grid">`;
+      q.options.forEach(opt => {
+        const sel = answers[q.id] === opt ? ' selected' : '';
+        html += `<button class="select-card${sel}" onclick="answers['${q.id}']='${opt.replace(/'/g,"\\'")}';renderStep()">${opt}</button>`;
+      });
+      html += `</div>`;
+    } else if (q.type === 'multi') {
+      html += `<div class="pill-grid">`;
+      q.options.forEach(opt => {
+        const arr = answers[q.id] || [];
+        const sel = arr.includes(opt) ? ' selected' : '';
+        html += `<button class="pill${sel}" onclick="toggleMulti('${q.id}','${opt.replace(/'/g,"\\'")}')">${sel ? '\u2713 ' : ''}${opt}</button>`;
+      });
+      html += `</div>`;
+    } else if (q.type === 'slider') {
+      const val = answers[q.id] || 5;
+      html += `<div class="slider-container">
+        <input type="range" min="${q.min}" max="${q.max}" value="${val}" oninput="answers['${q.id}']=parseInt(this.value);document.getElementById('sv-${q.id}').textContent=this.value">
+        <div class="slider-labels"><span>${q.labels[0]}</span><span id="sv-${q.id}" style="font-weight:600;color:var(--accent)">${val}</span><span>${q.labels[2]}</span></div>
+      </div>`;
+    }
+    html += `</div>`;
+  });
+
+  const isLast = currentStep === activePhases.length - 1;
+  html += `
+    <div class="q-nav">
+      <button class="btn btn-outline" onclick="prevStep()" ${currentStep === 0 ? 'disabled style="opacity:0.4"' : ''}>
+        <svg style="width:14px;height:14px"><use href="#icon-chevron-left"/></svg> Previous
+      </button>
+      ${isOptionalPhase ? `<button class="btn btn-outline" style="color:var(--text-light)" onclick="nextStep()">Skip this section <svg style="width:14px;height:14px"><use href="#icon-chevron-right"/></svg></button>` : ''}
+      <button class="btn btn-primary" onclick="${isLast ? 'showPage(\'loading\')' : 'nextStep()'}">
+        ${isLast ? 'Generate My Report \u2728' : 'Continue'} <svg style="width:14px;height:14px"><use href="#icon-chevron-right"/></svg>
+      </button>
+    </div>
+  `;
+
+  document.getElementById('q-content').innerHTML = html;
+}
+
+function toggleMulti(qId, opt) {
+  if (!answers[qId]) answers[qId] = [];
+  const idx = answers[qId].indexOf(opt);
+  if (idx > -1) answers[qId].splice(idx, 1);
+  else answers[qId].push(opt);
+  renderStep();
+}
+
+function nextStep() {
+  // Block if consent question has unresolved questions
+  if (currentStep === 0 && answers['consent'] === 'I have questions before proceeding') {
+    alert('We\u2019d love to answer your questions before you begin.\n\nEmail us at hello@piecesofperception.com \u2014 we respond to every message personally. You can also continue the questionnaire and reach out afterward. Your progress is saved automatically at every step.');
+    return;
+  }
+  if (currentStep < getActivePhases().length - 1) { currentStep++; renderStep(); window.scrollTo(0,0); }
+}
+function prevStep() { if (currentStep > 0) { currentStep--; renderStep(); window.scrollTo(0,0); } }
+
+// ═══════════════ LOADING ANIMATION ═══════════════
+function startLoading() {
+  const name = answers.child_name || 'Your Child';
+  document.getElementById('loading-name').textContent = name;
+  const generalSteps = [
+    'Analyzing communication patterns...',
+    `Building ${name}'s sensory profile map...`,
+    'Identifying regulation strategies...',
+    'Mapping trigger patterns and safety protocols...',
+    'Generating personalized communication scripts...',
+    'Creating visual aids and action items...',
+    'Compiling your comprehensive report...',
+  ];
+  const specificSteps = [
+    `Analyzing the specific challenge you described...`,
+    `Cross-referencing with ${name}'s full profile...`,
+    'Identifying root patterns and underlying drivers...',
+    'Researching targeted intervention strategies...',
+    'Building a step-by-step de-escalation protocol...',
+    'Generating environmental and communication adjustments...',
+    'Compiling your focused support report...',
+  ];
+  const steps = pathType === 'specific' ? specificSteps : generalSteps;
+  let html = '';
+  steps.forEach((s,i) => {
+    html += `<div class="loading-step inactive" id="ls-${i}"><div class="step-dot pending" id="ld-${i}"></div><span>${s}</span></div>`;
+  });
+  document.getElementById('loading-steps').innerHTML = html;
+
+  let current = 0;
+  function advance() {
+    if (current > 0) {
+      document.getElementById('ls-'+(current-1)).className = 'loading-step done';
+      document.getElementById('ld-'+(current-1)).className = 'step-dot done';
+      document.getElementById('ld-'+(current-1)).innerHTML = '<svg style="width:14px;height:14px;color:white"><use href="#icon-check"/></svg>';
+    }
+    if (current < steps.length) {
+      document.getElementById('ls-'+current).className = 'loading-step active';
+      document.getElementById('ld-'+current).className = 'step-dot active';
+      document.getElementById('ld-'+current).innerHTML = '<div style="width:8px;height:8px;border-radius:50%;background:white"></div>';
+      current++;
+      setTimeout(advance, 1600);
+    } else {
+      setTimeout(() => showPage('report'), 800);
+    }
+  }
+  advance();
+}
+
+// ═══════════════ REPORT RENDERING ═══════════════
+function renderReport() {
+  const name = answers.child_name || 'Sample Child';
+  const age = answers.child_age || '9-11 years';
+  const diag = (answers.diagnosis || ['Autism Spectrum (Level 1)','Anxiety Disorder']).join(', ');
+  const strengths = answers.strengths_list || ['Pattern finder','Deep thinker','Loyal friend','Creative mind','Honest communicator'];
+  const hardThings = answers.trigger_situations || ['Transitions between activities','Unexpected changes in routine','Being corrected or told they\'re wrong'];
+  const regTools = answers.caregiver_needs ? [] : ['Deep pressure (hugs, weighted items)','Quiet space alone','Drawing or art','Movement (jumping, swinging)','Music (listening)','Special interest engagement'];
+  const goals = answers.goals_child || ['Better emotional regulation','Improved communication','Making and keeping friends','Less anxiety','Better school experience'];
+
+  const sensory = {
+    'Sound': { val: answers.sensory_sound||7, icon: '\uD83D\uDD0A' },
+    'Light': { val: answers.sensory_light||5, icon: '\uD83D\uDCA1' },
+    'Touch': { val: answers.sensory_touch||8, icon: '\u270B' },
+    'Taste/Smell': { val: answers.sensory_taste||6, icon: '\uD83D\uDC43' },
+    'Movement': { val: answers.sensory_movement||3, icon: '\uD83C\uDFC3' },
+    'Body Awareness': { val: answers.sensory_proprioception||4, icon: '\uD83E\uDDBE' },
+    'Internal Signals': { val: answers.sensory_interoception||7, icon: '\u2764\uFE0F' },
+  };
+
+  const colors = ['var(--accent)','var(--warm)','var(--sage)','var(--sky)','var(--lavender)','var(--rose)'];
+  const today = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+
+  const isSpecificPath = pathType === 'specific';
+  const reportTitle = isSpecificPath ? `Focused Support Report for ${name}` : `Action Report for ${name}`;
+  const reportBadge = isSpecificPath
+    ? `<div style="display:inline-block;padding:4px 12px;background:var(--rose-light);color:var(--rose);border-radius:20px;font-size:12px;font-weight:700;margin-bottom:12px">&#127987;&#65039; FOCUSED ISSUE SUPPORT</div>`
+    : `<div style="display:inline-block;padding:4px 12px;background:var(--accent-bg);color:var(--accent);border-radius:20px;font-size:12px;font-weight:700;margin-bottom:12px">&#129514; COMPREHENSIVE PROFILE</div>`;
+  const focusedIssueBanner = isSpecificPath && (answers.issue_category || specificIssueCategory) ? `
+    <div style="margin-bottom:20px;padding:16px 20px;background:linear-gradient(135deg,var(--rose-light),rgba(255,255,255,0.8));border-radius:14px;border-left:4px solid var(--rose)">
+      <div style="font-size:12px;font-weight:700;color:var(--rose);margin-bottom:4px;letter-spacing:.5px">FOCUSED CHALLENGE</div>
+      <div style="font-size:15px;font-weight:700;color:var(--deep)">${answers.issue_category || specificIssueCategory}</div>
+      ${(answers.issue_brief || specificIssueText) ? `<p style="font-size:13px;color:var(--text-light);margin:6px 0 0;line-height:1.5;font-style:italic">"${(answers.issue_brief || specificIssueText).substring(0,280)}${(answers.issue_brief||specificIssueText).length > 280 ? '...' : ''}"</p>` : ''}
+    </div>` : '';
+
+  let html = `
+    <div class="report-header">
+      <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:12px">
+        <svg style="width:32px;height:32px;color:var(--accent)"><use href="#icon-brain"/></svg>
+        <span style="font-size:22px;font-weight:700;color:var(--text)">Pieces of Perception</span>
+      </div>
+      ${reportBadge}
+      <h1>${reportTitle}</h1>
+      <p class="meta">Age: ${age} | ${diag}</p>
+      <p class="meta" style="font-size:13px;margin-top:4px">Generated ${today}</p>
+    </div>
+
+    ${focusedIssueBanner}
+
+    <!-- Executive Summary -->
+    <div class="report-gradient" style="background:linear-gradient(135deg,rgba(108,99,255,0.06),var(--lavender-light));border-left:4px solid var(--accent)">
+      <h3 style="color:var(--accent)">${isSpecificPath ? 'Focused Summary' : 'Summary'}</h3>
+      <p style="line-height:1.7;font-size:15px">
+        ${name} is a ${age.toLowerCase()} child with ${diag} who brings remarkable strengths as a
+        ${strengths.slice(0,2).join(' and ').toLowerCase()}.
+        ${isSpecificPath
+          ? `This report focuses on the specific challenge described by the family${answers.issue_category ? ' — ' + answers.issue_category.toLowerCase() : ''}. The strategies below are targeted to this issue and grounded in ${name}'s broader profile.`
+          : `Their sensory profile shows particular sensitivity in the tactile and auditory systems, and they communicate most effectively when given time to process in a calm, quiet environment. ${answers.biggest_concern ? 'The family\'s most pressing concern is: ' + answers.biggest_concern.substring(0,200) : 'The primary areas of focus include emotional regulation, communication support, and building strategies for the environments where breakdowns most often occur.'}`
+        }
+      </p>
+      <div style="margin-top:16px;padding:14px 18px;background:rgba(255,255,255,0.7);border-radius:12px;border:1px solid rgba(108,99,255,0.1)">
+        <div style="font-size:12px;font-weight:700;color:var(--deep);margin-bottom:8px">A reminder about this report:</div>
+        <p style="font-size:13px;color:var(--text-light);margin:0;line-height:1.6">This is a guide &mdash; not a guarantee. It is a map drawn from what you shared, designed to help the people in ${name}'s life understand and support them more effectively. Real change takes <strong>patience</strong>, <strong>communication</strong> with everyone involved, and <strong>commitment</strong> to trying, noticing what works, and adjusting. Bring this report to your child's professional team. You know your child best &mdash; we're just helping you tell their story.</p>
+      </div>
+    </div>
+
+    <!-- Sensory Profile -->
+    <div class="report-section">
+      <h3>Sensory Profile Map</h3>
+      ${Object.entries(sensory).map(([name, data]) => {
+        const pct = (data.val / 10) * 100;
+        const c = data.val <= 3 ? 'var(--sky)' : data.val <= 6 ? 'var(--sage)' : data.val <= 8 ? 'var(--warm)' : 'var(--rose)';
+        return `<div class="sensory-bar">
+          <div class="sensory-bar-header"><span>${data.icon} ${name}</span><span>${data.val}/10</span></div>
+          <div class="sensory-bar-track"><div class="sensory-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--sky),${c})"></div></div>
+        </div>`;
+      }).join('')}
+      <div class="sensory-bar-note">1 = seeks more input &middot; 5 = neutral &middot; 10 = highly sensitive / avoidant</div>
+    </div>
+
+    <!-- Strengths -->
+    <div class="report-section">
+      <h3>Identified Strengths</h3>
+      <div class="strength-badges">
+        ${strengths.map((s,i) => `<span class="strength-badge" style="background:${colors[i%colors.length]}15;color:${colors[i%colors.length]};border-color:${colors[i%colors.length]}40">${s}</span>`).join('')}
+      </div>
+    </div>
+
+    <!-- Regulation Toolkit -->
+    <div class="report-gradient" style="background:linear-gradient(135deg,var(--sky-light),var(--sage-light))">
+      <h3>Personalized Regulation Toolkit</h3>
+      <div class="reg-grid">
+        ${regTools.map((t,i) => `<div class="reg-card"><div class="reg-num" style="background:rgba(126,200,160,0.2);color:var(--sage)">${i+1}</div>${t}</div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Communication Guide -->
+    <div class="report-section">
+      <h3>Communication Guide</h3>
+      <div class="comm-grid">
+        <div>
+          <h5 style="color:var(--rose)">When ${name} is upset, they may:</h5>
+          <ul>
+            ${(answers.when_upset || ['Go completely quiet / shut down','Need to move','Become aggressive','Seem fine outside but struggle internally']).slice(0,4).map(s => `<li>${s}</li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <h5 style="color:var(--sage)">${name} communicates BEST when:</h5>
+          <ul>
+            ${(answers.expressive || ['Given time to process','Using written words','In a calm, quiet environment','The topic is a special interest']).slice(0,4).map(s => `<li>${s}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+      ${answers.trigger_words ? `<div class="trigger-box"><h5>Trigger Words/Phrases to Avoid:</h5><p style="font-size:14px">${answers.trigger_words}</p></div>` : '<div class="trigger-box"><h5>Trigger Words/Phrases to Avoid:</h5><p style="font-size:14px">Review the Trigger Word section of the questionnaire to identify specific language that causes outsized reactions, and alternatives to use instead.</p></div>'}
+    </div>
+
+    <!-- Goals -->
+    <div class="report-section">
+      <h3>Priority Goals</h3>
+      ${goals.map((g,i) => `
+        <div class="goal-item" style="background:${i===0?'rgba(108,99,255,0.05)':'var(--bg)'};border:1px solid ${i===0?'rgba(108,99,255,0.2)':'var(--border)'}">
+          <div class="goal-num" style="background:${i===0?'var(--accent)':'var(--border)'};color:${i===0?'white':'var(--text-light)'}">${i+1}</div>
+          <span style="font-size:14px">${g}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- Action Items -->
+    <div class="report-gradient" style="background:linear-gradient(135deg,var(--warm-light),var(--rose-light))">
+      <h3>Immediate Action Items (This Week)</h3>
+      ${answers.urgent ? `<div style="background:white;border-radius:12px;padding:16px;margin-bottom:12px;border:2px solid var(--warm)"><p style="font-size:14px"><strong>Urgent priority:</strong> ${answers.urgent}</p></div>` : ''}
+      ${[
+        `Create a visual 1-10 scale that ${name} can use to communicate distress levels without words`,
+        `Establish a "regulation station" at home with their top 3 sensory tools`,
+        `Share this report's Communication Guide section with ${name}'s teacher and/or therapist`,
+        `Practice the morning regulation sequence: body first (movement), then sensory grounding, then calm engagement`,
+        `Identify and replace trigger words in daily family vocabulary with safer alternatives`,
+      ].map(item => `<div class="action-item"><div class="action-checkbox"></div><span>${item}</span></div>`).join('')}
+    </div>
+
+    <!-- Quick Reference Cheat Sheet -->
+    <div class="report-section" style="border:2px solid var(--warm);background:linear-gradient(135deg,var(--warm-light),rgba(255,255,255,0.8))">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div>
+          <div style="display:inline-block;padding:3px 10px;background:var(--warm);color:white;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:6px">INCLUDED WITH ALL PLANS</div>
+          <h3 style="color:var(--warm);margin:0">Quick Reference Cheat Sheet</h3>
+        </div>
+        <button class="btn" style="background:var(--warm);color:white;border:none;padding:10px 22px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer" onclick="alert('In production: generates and downloads the one-page Quick Reference Card as a printable PDF')">Download Cheat Sheet &nbsp;&#8595;</button>
+      </div>
+      <p style="font-size:14px;color:var(--text);margin-bottom:16px;line-height:1.6">A single-page printable card that gives anyone who works with ${name} everything they need at a glance &mdash; no reading required. Hand it to a babysitter, pin it to the classroom wall, or share it before a playdate.</p>
+      <!-- Preview of cheat sheet -->
+      <div style="background:white;border-radius:14px;border:1px solid var(--border);padding:20px;font-size:13px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--warm)">
+          <div>
+            <div style="font-size:16px;font-weight:800;color:var(--deep)">${name}&rsquo;s Quick Reference Card</div>
+            <div style="font-size:12px;color:var(--text-light)">Prepared by Pieces of Perception &nbsp;&bull;&nbsp; ${new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'})}</div>
+          </div>
+          <div style="width:40px;height:40px;border-radius:50%;background:var(--warm-light);display:flex;align-items:center;justify-content:center;font-size:20px">&#129395;</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--warm);letter-spacing:.5px;margin-bottom:4px">WHO I AM</div>
+            <p style="margin:0;color:var(--text);line-height:1.5">${name} is a <strong>creative, deeply feeling</strong> individual who experiences the world with intensity and authenticity. I notice everything &mdash; details, patterns, and emotions that others miss.</p>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--sage);letter-spacing:.5px;margin-bottom:4px">WHAT HELPS ME</div>
+            <ul style="margin:0;padding-left:16px;color:var(--text);line-height:1.8">
+              <li>Advance warning before transitions</li>
+              <li>Quiet space when overwhelmed</li>
+              <li>Choices instead of demands</li>
+              <li>Calm, low tone of voice</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--rose);letter-spacing:.5px;margin-bottom:4px">&#9888; TRIGGERS TO AVOID</div>
+            <ul style="margin:0;padding-left:16px;color:var(--text);line-height:1.8">
+              <li>Unexpected changes to plans</li>
+              <li>Being corrected in front of others</li>
+              <li>Loud, chaotic environments</li>
+              <li>Being rushed or timed</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.5px;margin-bottom:4px">MY CALMING STRATEGIES</div>
+            <ul style="margin:0;padding-left:16px;color:var(--text);line-height:1.8">
+              <li>Headphones &amp; preferred music</li>
+              <li>Heavy work / movement break</li>
+              <li>10-min alone time to decompress</li>
+              <li>Fidget or sensory tool</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--lavender);letter-spacing:.5px;margin-bottom:4px">WHAT I LOVE</div>
+            <p style="margin:0;color:var(--text);line-height:1.5">Special interests &amp; passions (from questionnaire), creative expression, animals, patterns, and topics they have deep expertise in.</p>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--sky);letter-spacing:.5px;margin-bottom:4px">MY CURRENT GOALS</div>
+            <ul style="margin:0;padding-left:16px;color:var(--text);line-height:1.8">
+              <li>Better emotional regulation</li>
+              <li>Feeling understood at school</li>
+              <li>Stronger friendships</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--text-light);text-align:center">
+          This card is a family-provided informational summary. For clinical guidance, consult qualified professionals. &nbsp;|&nbsp; piecesofperception.com
+        </div>
+      </div>
+    </div>
+
+    <!-- IEP Goal Recommendations Add-On -->
+    <div class="report-section" style="border:2px solid var(--lavender);background:linear-gradient(135deg,var(--lavender-light),rgba(255,255,255,0.8))">
+      <div style="display:inline-block;padding:3px 10px;background:var(--lavender);color:white;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;margin-bottom:8px">OPTIONAL ADD-ON &mdash; $9.99</div>
+      <h3 style="color:var(--lavender)">IEP Goal Recommendations Report</h3>
+      <p style="font-size:14px;color:var(--text);margin-bottom:16px;line-height:1.6">Walk into your next IEP meeting with specific, measurable goal language tailored to ${name}&rsquo;s unique needs &mdash; covering communication, emotional regulation, executive function, sensory access, and social skills. Also includes a prioritized accommodations list and parent conversation starters.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px">
+        ${[
+          {icon:'&#127919;',label:'Measurable Goal Language',desc:'IDEA-aligned goal statements with baselines and benchmarks'},
+          {icon:'&#128203;',label:'Accommodations List',desc:'Prioritized supports tied to their sensory and regulation profile'},
+          {icon:'&#128172;',label:'Conversation Starters',desc:'Questions to ask the IEP team and red flags to watch for'},
+        ].map(f => '<div style="background:white;border-radius:10px;padding:14px;border:1px solid var(--border);text-align:center"><div style="font-size:22px;margin-bottom:6px">' + f.icon + '</div><div style="font-size:12px;font-weight:700;color:var(--lavender);margin-bottom:4px">' + f.label + '</div><p style="font-size:12px;color:var(--text-light);margin:0;line-height:1.4">' + f.desc + '</p></div>').join('')}
+      </div>
+      <div style="text-align:center">
+        <button class="btn" style="background:var(--lavender);color:white;border:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer" onclick="alert('In production: adds IEP Goal Recommendations Report for $9.99 and generates the report')">Add IEP Report &mdash; $9.99</button>
+        <p style="font-size:12px;color:var(--text-light);margin-top:8px;max-width:480px;margin-left:auto;margin-right:auto">This report provides suggested goal language as an informational starting point for family advocacy. It is not legal advice and does not constitute an official IEP document.</p>
+      </div>
+    </div>
+
+    <!-- Care Guides -->
+    <div class="report-section" style="border:2px solid var(--sage);background:linear-gradient(135deg,var(--sage-light),var(--sky-light))">
+      <h3 style="color:var(--sage)">Share the Knowledge: Personalized Care Guides</h3>
+      <p style="font-size:14px;color:var(--text);margin-bottom:16px;line-height:1.6">
+        Consistency is everything. Generate abridged quick-reference guides from ${name}'s report so every person in their life follows the same approach:
+      </p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        ${[
+          {title:'Babysitter / Respite Care Guide',desc:'Essential 2-3 page card: triggers, regulation tools, dos and donts, emergency contacts'},
+          {title:'Grandparent / Family Guide',desc:'Plain-language explanation of your childs brain, what helps vs. hurts, how to be supportive'},
+          {title:'Sibling Guide',desc:'Age-appropriate guide that validates siblings experience and makes them part of the team'},
+          {title:'Teacher / School Staff Guide',desc:'Professional guide with accommodations, de-escalation steps, and communication approach'},
+        ].map(g => '<div style="background:white;border-radius:10px;padding:14px;border:1px solid var(--border)"><strong style="font-size:13px;color:var(--deep)">' + g.title + '</strong><p style="font-size:12px;color:var(--text-light);margin:4px 0 0;line-height:1.5">' + g.desc + '</p></div>').join('')}
+      </div>
+      <div style="text-align:center">
+        <button class="btn btn-primary" style="margin-right:8px" onclick="alert('In production: generates and downloads the selected care guide PDF for $4.99 each')">Individual Guide &mdash; $4.99</button>
+        <button class="btn" style="background:var(--sage);color:white;border:none;padding:10px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer" onclick="alert('In production: generates all 4 care guide PDFs for $14.99 (save $5)')">Bundle All 4 &mdash; $14.99</button>
+      </div>
+    </div>
+
+    <!-- Upgrade CTA -->
+    <div class="upgrade-cta">
+      <svg style="width:24px;height:24px;color:var(--warm)"><use href="#icon-lock"/></svg>
+      <h3>Unlock the Full Comprehensive Support Plan</h3>
+      <p>Get a complete therapeutic protocol with communication scripts for every audience, a 12-week implementation timeline, visual scale templates, crisis de-escalation playbook, and ongoing progress tracking.</p>
+      <button class="btn btn-warm btn-large" onclick="showPage('payment')">Upgrade to Full Plan &mdash; $299</button>
+    </div>
+
+    <!-- Report Disclaimer -->
+    <div style="margin-top:24px;padding:20px;background:rgba(108,99,255,0.04);border-radius:12px;border:1px solid rgba(108,99,255,0.1)">
+      <p style="font-size:12px;color:var(--text-light);line-height:1.6;margin:0">
+        <strong>Disclaimer:</strong> This report is an informational resource generated from family-reported data using AI technology. It is not a clinical evaluation, diagnosis, or treatment plan. This report is designed to be used as a supplementary tool &mdash; we encourage you to share it with your child&rsquo;s doctors, psychologists, therapists, school teams, and other qualified professionals to support collaborative care. Always consult licensed healthcare providers for diagnosis, treatment decisions, and clinical guidance. In an emergency, call 911. For crisis support, contact the 988 Suicide &amp; Crisis Lifeline.
+      </p>
+    </div>
+  `;
+
+  document.getElementById('report-content').innerHTML = html;
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => showPage('landing'));
+</script>
+</body>
+</html>
