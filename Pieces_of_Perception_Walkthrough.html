@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pieces of Perception — How It Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --deep:#16162A; --accent:#6C63FF; --accent-dark:#5349e0; --accent-bg:rgba(108,99,255,0.07);
+    --warm:#E8845A; --warm-light:rgba(232,132,90,0.10);
+    --sage:#52B788; --sage-light:rgba(82,183,136,0.10);
+    --sky:#3FA8CC; --sky-light:rgba(63,168,204,0.10);
+    --lavender:#8E7FC4; --lavender-light:rgba(142,127,196,0.12);
+    --rose:#D95B72; --rose-light:rgba(217,91,114,0.10);
+    --text:#2C2C3E; --text-light:#6B6B80; --border:#E6E8F0; --bg:#F7F8FC; --white:#fff;
+  }
+  html,body { height:100%; }
+  body {
+    font-family:'DM Sans',system-ui,sans-serif; color:var(--text); -webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108,99,255,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(232,132,90,0.13) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 10% 80%, rgba(82,183,136,0.10) 0%, transparent 60%),
+      #FBFBFE;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:30px 20px;
+  }
+  .serif { font-family:'Playfair Display',Georgia,serif; }
+
+  /* ── Top brand row ── */
+  .top-brand { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+  .top-brand .name { font-size:15px; font-weight:700; color:var(--deep); letter-spacing:-0.2px; }
+  .top-brand .tag { font-size:13px; color:var(--text-light); font-weight:500; }
+  .top-brand .pipe { color:var(--border); }
+
+  /* ── Browser frame ── */
+  .frame {
+    width: min(960px, 96vw);
+    background:white; border-radius:18px;
+    box-shadow:0 4px 24px rgba(22,22,42,0.10), 0 24px 80px rgba(22,22,42,0.18);
+    overflow:hidden; position:relative;
+    border:1px solid var(--border);
+  }
+  .frame-bar {
+    height:36px; background:#F2F3F8; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; padding:0 14px; gap:8px;
+  }
+  .dot { width:11px; height:11px; border-radius:50%; }
+  .dot.r { background:#FF5F57; }
+  .dot.y { background:#FEBC2E; }
+  .dot.g { background:#28C840; }
+  .frame-url {
+    flex:1; margin:0 12px; height:22px; background:white; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11.5px; color:var(--text-light); font-weight:500;
+    border:1px solid var(--border);
+  }
+  .stage {
+    position:relative; height:520px; overflow:hidden;
+    background:white;
+  }
+  @media (max-width: 720px) { .stage { height: 460px; } }
+
+  /* Each scene is absolutely stacked, only one visible at a time */
+  .scene {
+    position:absolute; inset:0; padding:32px 36px;
+    opacity:0; transition: opacity .6s ease;
+    overflow:hidden;
+  }
+  .scene.active { opacity:1; }
+  .scene.is-hero { padding: 44px 36px; }
+
+  /* ── Logo SVG used in scenes ── */
+  .pop-logo { display:inline-block; vertical-align:middle; }
+
+  /* ── Scene 1: Hero ── */
+  .hero-bg {
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108,99,255,0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(232,132,90,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 10% 80%, rgba(82,183,136,0.08) 0%, transparent 60%),
+      white;
+  }
+  .hero-content { position:relative; text-align:center; padding-top:30px; }
+  .hero-badge-mock {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:7px 18px; background:white; border:1px solid var(--border);
+    border-radius:30px; font-size:12.5px; color:var(--text-light); font-weight:500;
+    margin-bottom:22px; box-shadow:0 2px 12px rgba(22,22,42,0.06);
+  }
+  .hero-h1 {
+    font-family:'Playfair Display',serif; font-weight:900;
+    font-size:42px; line-height:1.1; color:var(--deep);
+    max-width:680px; margin:0 auto 18px; letter-spacing:-1px;
+  }
+  .hero-h1 .gradient {
+    background:linear-gradient(135deg, var(--accent) 0%, #a78bfa 50%, var(--warm) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .hero-sub {
+    font-size:15px; color:var(--text-light); max-width:480px; margin:0 auto 22px; line-height:1.7;
+  }
+  .hero-cta {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:13px 28px; background:var(--accent); color:white;
+    border-radius:14px; font-size:14px; font-weight:700;
+    box-shadow:0 6px 20px rgba(108,99,255,0.35);
+  }
+
+  /* ── Scene 2: Auth/Signup card ── */
+  .scene-card-center { display:flex; align-items:center; justify-content:center; height:100%; }
+  .auth-mock {
+    width:380px; max-width:90%; background:white; border-radius:20px;
+    border:1px solid var(--border); padding:32px;
+    box-shadow:0 8px 40px rgba(22,22,42,0.08);
+    text-align:center;
+  }
+  .auth-mock h3 { font-family:'Playfair Display',serif; font-size:22px; color:var(--deep); margin-bottom:6px; font-weight:800; }
+  .auth-mock p { font-size:13px; color:var(--text-light); margin-bottom:22px; }
+  .auth-field {
+    background:#F7F8FC; border:1px solid var(--border); border-radius:10px;
+    padding:11px 14px; font-size:13px; color:var(--text); text-align:left;
+    margin-bottom:10px;
+  }
+  .auth-field.focus { border-color:var(--accent); background:white; box-shadow:0 0 0 3px rgba(108,99,255,0.12); }
+  .auth-cursor::after {
+    content:''; display:inline-block; width:1.5px; height:13px; background:var(--accent);
+    vertical-align:-2px; margin-left:1px; animation: blink 1s infinite;
+  }
+  @keyframes blink { 0%,49%{opacity:1;} 50%,100%{opacity:0;} }
+  .auth-btn {
+    margin-top:6px; padding:11px; background:var(--accent); color:white;
+    border-radius:10px; font-size:13px; font-weight:700;
+    box-shadow:0 4px 14px rgba(108,99,255,0.3);
+  }
+
+  /* ── Scene 3: Commitment screen ── */
+  .commit-card {
+    background:white; border-radius:18px; border:1px solid var(--border);
+    padding:24px; box-shadow:0 4px 24px rgba(22,22,42,0.06);
+    max-width:680px; margin:0 auto;
+  }
+  .commit-eyebrow { font-size:10px; font-weight:700; letter-spacing:1.2px; color:var(--accent); margin-bottom:8px; }
+  .commit-h2 { font-family:'Playfair Display',serif; font-size:24px; font-weight:800; color:var(--deep); margin-bottom:10px; line-height:1.25; }
+  .commit-p { font-size:13px; color:var(--text); line-height:1.7; margin-bottom:14px; }
+  .commit-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .commit-box { padding:14px 16px; border-radius:12px; }
+  .commit-box.is { background:rgba(82,183,136,0.07); border:1px solid rgba(82,183,136,0.2); }
+  .commit-box.isnt { background:rgba(217,91,114,0.07); border:1px solid rgba(217,91,114,0.2); }
+  .commit-box .lbl { font-size:11.5px; font-weight:700; margin-bottom:6px; }
+  .commit-box.is .lbl { color:var(--sage); }
+  .commit-box.isnt .lbl { color:var(--rose); }
+  .commit-box li { list-style:none; font-size:11.5px; color:var(--text); padding:2px 0; line-height:1.5; }
+
+  /* ── Scene 4: Path Select ── */
+  .path-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; max-width:680px; margin:36px auto 0; }
+  .path-card {
+    background:white; border:2px solid var(--border); border-radius:18px;
+    padding:22px; transition:all .5s; position:relative;
+  }
+  .path-card.selected {
+    border-color:var(--accent);
+    box-shadow:0 6px 24px rgba(108,99,255,0.18);
+    transform:translateY(-2px);
+  }
+  .path-card .check {
+    position:absolute; top:14px; right:14px; width:24px; height:24px; border-radius:50%;
+    background:var(--accent); display:flex; align-items:center; justify-content:center;
+    color:white; font-size:12px; font-weight:800; opacity:0; transition:opacity .4s .2s;
+  }
+  .path-card.selected .check { opacity:1; }
+  .path-icon { font-size:28px; margin-bottom:10px; }
+  .path-card h4 { font-size:14px; font-weight:800; color:var(--deep); margin-bottom:6px; }
+  .path-card p { font-size:12px; color:var(--text-light); line-height:1.55; margin-bottom:10px; }
+  .path-meta { font-size:11px; color:var(--text-light); }
+
+  /* ── Scene 5: Questionnaire question ── */
+  .q-mock { max-width:560px; margin:0 auto; }
+  .q-progress {
+    display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .q-progress-track { flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+  .q-progress-fill {
+    height:100%; background:linear-gradient(90deg, var(--accent), var(--warm));
+    border-radius:3px; transition: width 1.4s ease;
+  }
+  .q-progress-text { font-size:11.5px; color:var(--text-light); font-weight:600; }
+  .q-eyebrow { font-size:11px; font-weight:700; letter-spacing:.6px; color:var(--accent); margin-bottom:6px; text-transform:uppercase; }
+  .q-h { font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:var(--deep); margin-bottom:18px; line-height:1.3; }
+  .q-label { font-size:14px; font-weight:600; margin-bottom:14px; color:var(--text); }
+  .q-rationale { font-size:11.5px; color:var(--text-light); font-style:italic; padding-left:10px; border-left:2px solid var(--border); margin-bottom:14px; }
+  .pill-row { display:flex; flex-wrap:wrap; gap:7px; }
+  .q-pill {
+    padding:7px 14px; border-radius:18px; border:1.5px solid var(--border);
+    background:white; font-size:12px; color:var(--text); transition: all .35s;
+  }
+  .q-pill.selected {
+    border-color:var(--accent); background:rgba(108,99,255,0.1);
+    color:var(--accent); font-weight:600;
+  }
+  .slider-mock { margin-top:12px; }
+  .slider-track {
+    height:6px; background:var(--border); border-radius:3px; position:relative;
+  }
+  .slider-fill {
+    position:absolute; left:0; top:0; height:100%; border-radius:3px;
+    background:linear-gradient(90deg, var(--accent), var(--warm));
+    width:0; transition: width 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .slider-thumb {
+    position:absolute; top:50%; width:18px; height:18px; border-radius:50%;
+    background:white; border:3px solid var(--accent); transform:translate(-50%,-50%);
+    left:0; transition: left 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow:0 2px 8px rgba(108,99,255,0.3);
+  }
+  .slider-labels { display:flex; justify-content:space-between; margin-top:8px; font-size:10.5px; color:var(--text-light); }
+
+  /* ── Scene 6: Loading ── */
+  .loading-wrap { text-align:center; max-width:420px; margin:30px auto 0; }
+  .loading-icon-wrap {
+    width:84px; height:84px; margin:0 auto 22px; border-radius:50%;
+    background:linear-gradient(135deg, rgba(108,99,255,0.2), rgba(142,127,196,0.15));
+    display:flex; align-items:center; justify-content:center;
+    animation: lpulse 1.8s ease-in-out infinite;
+  }
+  @keyframes lpulse { 0%,100% {transform:scale(1);} 50%{transform:scale(1.08);} }
+  .loading-h { font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:var(--deep); margin-bottom:24px; }
+  .loading-step {
+    display:flex; align-items:center; gap:12px; margin-bottom:12px;
+    font-size:13px; color:var(--text); text-align:left;
+    transition: opacity .5s;
+  }
+  .loading-step .step-dot {
+    width:24px; height:24px; border-radius:50%; background:var(--border); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-size:12px; font-weight:800;
+    transition: background .5s;
+  }
+  .loading-step.active .step-dot { background:var(--accent); }
+  .loading-step.done .step-dot { background:var(--sage); }
+  .loading-step.pending { opacity:.4; }
+
+  /* ── Scene 7: Report — Sensory ── */
+  .report-card {
+    background:white; border:1px solid var(--border); border-radius:16px;
+    padding:24px; max-width:660px; margin:0 auto;
+    box-shadow:0 4px 24px rgba(22,22,42,0.05);
+  }
+  .report-h { font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:var(--deep); margin-bottom:6px; }
+  .report-meta { font-size:11.5px; color:var(--text-light); margin-bottom:18px; }
+  .report-eyebrow { font-size:10.5px; font-weight:700; letter-spacing:1px; color:var(--accent); margin-bottom:6px; text-transform:uppercase; }
+  .report-section-h { font-size:14px; font-weight:800; color:var(--deep); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+
+  .sbar { margin-bottom:11px; }
+  .sbar-row { display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px; }
+  .sbar-row .lbl { font-weight:600; color:var(--text); }
+  .sbar-row .val { color:var(--text-light); font-weight:500; }
+  .sbar-track { height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
+  .sbar-fill { height:100%; border-radius:4px; width:0; transition: width 1.3s cubic-bezier(0.22,1,0.36,1); }
+
+  /* ── Scene 8: Report — Strengths ── */
+  .strength-row { display:flex; flex-wrap:wrap; gap:8px; }
+  .strength-chip {
+    padding:7px 14px; border-radius:20px; font-size:12px; font-weight:600;
+    border:1px solid; opacity:0; transform:translateY(8px);
+    transition: opacity .4s, transform .4s;
+  }
+  .strength-chip.show { opacity:1; transform:translateY(0); }
+  .strength-chip.c1 { color:var(--accent); background:var(--accent-bg); border-color:rgba(108,99,255,0.25); }
+  .strength-chip.c2 { color:var(--warm); background:var(--warm-light); border-color:rgba(232,132,90,0.3); }
+  .strength-chip.c3 { color:var(--sage); background:var(--sage-light); border-color:rgba(82,183,136,0.3); }
+  .strength-chip.c4 { color:var(--sky); background:var(--sky-light); border-color:rgba(63,168,204,0.3); }
+  .strength-chip.c5 { color:var(--lavender); background:var(--lavender-light); border-color:rgba(142,127,196,0.3); }
+
+  /* ── Scene 9: Report — Action checklist ── */
+  .action-row {
+    display:flex; gap:10px; align-items:flex-start;
+    background:#F7F8FC; border-radius:10px; padding:12px 14px;
+    margin-bottom:8px;
+    opacity:0; transform:translateX(-10px);
+    transition: opacity .4s, transform .4s;
+  }
+  .action-row.show { opacity:1; transform:translateX(0); }
+  .action-check {
+    width:20px; height:20px; border-radius:6px; border:2px solid var(--sage);
+    flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center;
+    background:var(--sage); color:white; font-size:11px; font-weight:800;
+  }
+  .action-row .text { font-size:12.5px; color:var(--text); line-height:1.5; }
+
+  /* ── Scene 10: Final CTA ── */
+  .final-wrap {
+    text-align:center; padding-top:50px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108,99,255,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 100%, rgba(232,132,90,0.12) 0%, transparent 60%),
+      white;
+    height:100%;
+  }
+  .final-h { font-family:'Playfair Display',serif; font-size:34px; font-weight:900; color:var(--deep); margin:18px 0 12px; line-height:1.15; letter-spacing:-0.5px; }
+  .final-h .gradient {
+    background:linear-gradient(135deg, var(--accent) 0%, #a78bfa 50%, var(--warm) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .final-sub { font-size:14px; color:var(--text-light); max-width:440px; margin:0 auto 22px; line-height:1.7; }
+  .final-cta {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:13px 28px; background:var(--accent); color:white;
+    border-radius:14px; font-size:14px; font-weight:700;
+    box-shadow:0 6px 20px rgba(108,99,255,0.35);
+  }
+  .final-url { margin-top:14px; font-size:12.5px; color:var(--text-light); font-weight:500; }
+
+  /* ── Caption / progress bar (below frame) ── */
+  .caption-area {
+    width:min(960px, 96vw); margin-top:18px; text-align:center;
+  }
+  .caption {
+    font-family:'Playfair Display',serif;
+    font-size:18px; font-weight:600; font-style:italic;
+    color:var(--deep); line-height:1.5; min-height:54px;
+    transition: opacity .5s;
+  }
+  .progress-dots {
+    display:flex; justify-content:center; gap:7px; margin-top:14px;
+  }
+  .pd {
+    width:8px; height:8px; border-radius:50%; background:var(--border);
+    transition: all .35s;
+  }
+  .pd.active { background:var(--accent); width:24px; border-radius:5px; }
+  .pd.done { background:rgba(108,99,255,0.4); }
+
+  /* ── Replay button ── */
+  .replay-btn {
+    margin-top:14px; display:none; padding:9px 22px; border:1.5px solid var(--accent);
+    background:white; color:var(--accent); border-radius:30px;
+    font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+  }
+  .replay-btn:hover { background:var(--accent); color:white; }
+  .replay-btn.show { display:inline-flex; align-items:center; gap:6px; }
+
+  /* ── Brand footer ── */
+  .footer-mark {
+    margin-top:22px; display:flex; align-items:center; gap:8px;
+    font-size:12px; color:var(--text-light);
+  }
+
+  @media (max-width: 720px) {
+    .hero-h1 { font-size:30px; }
+    .scene { padding: 22px 18px; }
+    .commit-grid { grid-template-columns:1fr; }
+    .path-grid { grid-template-columns:1fr; }
+    .caption { font-size:15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Inline SVG sprite -->
+<svg width="0" height="0" style="position:absolute" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="pop-logo" viewBox="0 0 40 32">
+    <defs><clipPath id="pop-clip"><rect x="2" y="1" width="36" height="30" rx="2.5"/></clipPath></defs>
+    <g clip-path="url(#pop-clip)">
+      <path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/>
+      <path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/>
+    </g>
+    <circle cx="20" cy="16" r="7" fill="#52B788"/>
+    <circle cx="20" cy="16" r="2.5" fill="white"/>
+  </symbol>
+</svg>
+
+<!-- ── TOP BRAND ROW ── -->
+<div class="top-brand">
+  <svg class="pop-logo" width="28" height="22"><use href="#pop-logo"/></svg>
+  <span class="name">Pieces of Perception</span>
+  <span class="pipe">·</span>
+  <span class="tag">How it works</span>
+</div>
+
+<!-- ── BROWSER FRAME ── -->
+<div class="frame">
+  <div class="frame-bar">
+    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+    <div class="frame-url">🔒 piecesofperception.com</div>
+  </div>
+  <div class="stage" id="stage">
+
+    <!-- ── Scene 1: Hero ── -->
+    <div class="scene is-hero" data-scene="0">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <div class="hero-badge-mock">For Families Raising Neurodiverse Children</div>
+        <h1 class="hero-h1">Every brain tells its story in <span class="gradient">pieces</span>.<br>We help you see the whole picture.</h1>
+        <p class="hero-sub">A personalized guide built around your child — their strengths, sensory needs, communication style, and what every person in their life needs to know.</p>
+        <div class="hero-cta">Reserve Your Spot →</div>
+      </div>
+    </div>
+
+    <!-- ── Scene 2: Auth/Signup ── -->
+    <div class="scene" data-scene="1">
+      <div class="scene-card-center">
+        <div class="auth-mock">
+          <svg width="40" height="32" style="margin-bottom:14px"><use href="#pop-logo"/></svg>
+          <h3>Create Your Account</h3>
+          <p>Start building your child's personalized profile.</p>
+          <div class="auth-field">Full Name</div>
+          <div class="auth-field focus auth-cursor" id="email-field">parent@email.com</div>
+          <div class="auth-field">••••••••</div>
+          <div class="auth-btn">Create Account &amp; Start →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Scene 3: Commitment ── -->
+    <div class="scene" data-scene="2">
+      <div class="commit-card">
+        <div class="commit-eyebrow">BEFORE YOU BEGIN</div>
+        <h2 class="commit-h2">This is a Map — Not a Magic Fix.</h2>
+        <p class="commit-p">A personalized blueprint of how your child experiences the world, what they need, and how the people in their life can support them more effectively.</p>
+        <div class="commit-grid">
+          <div class="commit-box is">
+            <div class="lbl">✓  What this IS</div>
+            <li>A personalized guide built from your child's profile</li>
+            <li>A communication tool for schools, therapists, family</li>
+            <li>An act of advocacy for your child</li>
+          </div>
+          <div class="commit-box isnt">
+            <div class="lbl">✗  What this ISN'T</div>
+            <li>A diagnosis or clinical evaluation</li>
+            <li>A guaranteed solution or cure</li>
+            <li>A substitute for professional care</li>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Scene 4: Path Select ── -->
+    <div class="scene" data-scene="3">
+      <div style="text-align:center">
+        <div class="commit-eyebrow" style="margin-bottom:8px">CHOOSE YOUR PATH</div>
+        <h2 class="commit-h2" style="font-size:22px">What kind of support are you looking for today?</h2>
+      </div>
+      <div class="path-grid">
+        <div class="path-card" id="path-1">
+          <div class="check">✓</div>
+          <div class="path-icon">🧭</div>
+          <h4>Comprehensive Profile</h4>
+          <p>Build a complete picture — strengths, sensory profile, communication style, emotional patterns, and a full action plan.</p>
+          <div class="path-meta">⏱ About 20–30 min · 12 sections</div>
+        </div>
+        <div class="path-card">
+          <div class="check">✓</div>
+          <div class="path-icon">🎯</div>
+          <h4>Focused Issue Support</h4>
+          <p>Something specific is happening right now and you need targeted strategies. Digs deep into the challenge.</p>
+          <div class="path-meta">⏱ About 25–35 min · 13 sections</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Scene 5: Questionnaire — Sensory slider ── -->
+    <div class="scene" data-scene="4">
+      <div class="q-mock">
+        <div class="q-progress">
+          <div class="q-progress-track"><div class="q-progress-fill" id="qpf-1" style="width:20%"></div></div>
+          <span class="q-progress-text">3/12</span>
+        </div>
+        <div class="q-eyebrow">Sensory Profile</div>
+        <h3 class="q-h">How does sound affect your child?</h3>
+        <p class="q-rationale">Hearing sensitivity is one of the most commonly overlooked sources of overwhelm.</p>
+        <div class="q-label">Auditory sensitivity</div>
+        <div class="slider-mock">
+          <div class="slider-track">
+            <div class="slider-fill" id="sl-fill"></div>
+            <div class="slider-thumb" id="sl-thumb"></div>
+          </div>
+          <div class="slider-labels">
+            <span>Doesn't notice</span><span>Typical</span><span>Highly sensitive</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Scene 6: Questionnaire — Pills ── -->
+    <div class="scene" data-scene="5">
+      <div class="q-mock">
+        <div class="q-progress">
+          <div class="q-progress-track"><div class="q-progress-fill" id="qpf-2" style="width:55%"></div></div>
+          <span class="q-progress-text">7/12</span>
+        </div>
+        <div class="q-eyebrow">Communication</div>
+        <h3 class="q-h">How does your child express big feelings?</h3>
+        <p class="q-rationale">Knowing how they communicate when overwhelmed shapes every script in the report.</p>
+        <div class="pill-row" id="pill-row">
+          <div class="q-pill">Withdraws / shuts down</div>
+          <div class="q-pill">Verbal outburst</div>
+          <div class="q-pill">Physical reaction</div>
+          <div class="q-pill">Goes very quiet</div>
+          <div class="q-pill">Repeats scripts/phrases</div>
+          <div class="q-pill">Seeks deep pressure</div>
+          <div class="q-pill">Hides or finds dark space</div>
+          <div class="q-pill">Becomes hyperverbal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Scene 7: Loading ── -->
+    <div class="scene" data-scene="6">
+      <div class="loading-wrap">
+        <div class="loading-icon-wrap">
+          <svg width="48" height="38"><use href="#pop-logo"/></svg>
+        </div>
+        <h3 class="loading-h">Building Your Child's Perception Profile</h3>
+        <div class="loading-step" id="ls-1"><div class="step-dot">1</div><span>Analyzing sensory profile</span></div>
+        <div class="loading-step pending" id="ls-2"><div class="step-dot">2</div><span>Mapping strengths and communication style</span></div>
+        <div class="loading-step pending" id="ls-3"><div class="step-dot">3</div><span>Building regulation toolkit and action plan</span></div>
+        <div class="loading-step pending" id="ls-4"><div class="step-dot">4</div><span>Writing personalized scripts and quick-reference card</span></div>
+      </div>
+    </div>
+
+    <!-- ── Scene 8: Report — Sensory bars ── -->
+    <div class="scene" data-scene="7">
+      <div class="report-card">
+        <div class="report-eyebrow">REPORT · SECTION 1</div>
+        <h3 class="report-h">Sensory Profile Map</h3>
+        <p class="report-meta">A visual breakdown across all 7 sensory systems</p>
+        <div class="sbar">
+          <div class="sbar-row"><span class="lbl">🔊 Auditory</span><span class="val">Highly sensitive</span></div>
+          <div class="sbar-track"><div class="sbar-fill" id="sb-1" style="background:var(--rose)"></div></div>
+        </div>
+        <div class="sbar">
+          <div class="sbar-row"><span class="lbl">👁 Visual</span><span class="val">Moderate</span></div>
+          <div class="sbar-track"><div class="sbar-fill" id="sb-2" style="background:var(--warm)"></div></div>
+        </div>
+        <div class="sbar">
+          <div class="sbar-row"><span class="lbl">✋ Touch</span><span class="val">Seeks input</span></div>
+          <div class="sbar-track"><div class="sbar-fill" id="sb-3" style="background:var(--sage)"></div></div>
+        </div>
+        <div class="sbar">
+          <div class="sbar-row"><span class="lbl">🏃 Movement</span><span class="val">Seeks input</span></div>
+          <div class="sbar-track"><div class="sbar-fill" id="sb-4" style="background:var(--accent)"></div></div>
+        </div>
+        <div class="sbar">
+          <div class="sbar-row"><span class="lbl">💪 Body Awareness</span><span class="val">Typical</span></div>
+          <div class="sbar-track"><div class="sbar-fill" id="sb-5" style="background:var(--sky)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Scene 9: Report — Strengths + Checklist ── -->
+    <div class="scene" data-scene="8">
+      <div class="report-card">
+        <div class="report-eyebrow">REPORT · SECTIONS 2 &amp; 6</div>
+        <h3 class="report-h">Strengths &amp; Week-One Actions</h3>
+        <p class="report-meta">Celebrating who they are. Concrete steps for this week.</p>
+        <div style="font-size:12px; font-weight:700; color:var(--text); margin:6px 0 10px">⭐  Strengths Spotlight</div>
+        <div class="strength-row" id="strength-row">
+          <div class="strength-chip c1">Pattern recognition</div>
+          <div class="strength-chip c2">Deep empathy</div>
+          <div class="strength-chip c3">Encyclopedic memory</div>
+          <div class="strength-chip c4">Loyalty</div>
+          <div class="strength-chip c5">Vivid imagination</div>
+          <div class="strength-chip c1">Honesty</div>
+        </div>
+        <div style="font-size:12px; font-weight:700; color:var(--text); margin:18px 0 10px">✅  Week-One Action Checklist</div>
+        <div id="action-list">
+          <div class="action-row"><div class="action-check">✓</div><div class="text">Replace overhead fluorescents in bedroom with warm-tone lamp before Tuesday.</div></div>
+          <div class="action-row"><div class="action-check">✓</div><div class="text">Share the Quick Reference Cheat Sheet with your child's teacher and after-school sitter.</div></div>
+          <div class="action-row"><div class="action-check">✓</div><div class="text">Add a 5-minute "decompression" buffer between school pick-up and any conversation.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Scene 10: Final CTA ── -->
+    <div class="scene" data-scene="9">
+      <div class="final-wrap">
+        <svg width="56" height="44"><use href="#pop-logo"/></svg>
+        <h2 class="final-h">Built with love by a mom who <span class="gradient">gets it</span>.</h2>
+        <p class="final-sub">Pieces of Perception is launching soon for families raising neurodiverse children.</p>
+        <div class="final-cta">Join the Waitlist →</div>
+        <div class="final-url">piecesofperception.com</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── CAPTION + PROGRESS ── -->
+<div class="caption-area">
+  <div class="caption" id="caption">When you're raising a neurodiverse child, you become the translator.</div>
+  <div class="progress-dots" id="dots"></div>
+  <button class="replay-btn" id="replay">↻  Replay</button>
+</div>
+
+<div class="footer-mark">
+  <svg width="20" height="16"><use href="#pop-logo"/></svg>
+  <span>© 2026 Pieces of Perception LLC · piecesofperception.com</span>
+</div>
+
+<script>
+  // ── SCENE TIMELINE ──
+  // Each scene has duration (ms), caption, and an optional "onEnter" hook to trigger animations
+  const SCENES = [
+    { dur: 6500, caption: "When you're raising a neurodiverse child, you become the translator." },
+    { dur: 4500, caption: "Start your child's profile in just a few minutes." },
+    { dur: 6500, caption: "We're honest about what this is — and what it isn't." },
+    { dur: 5500, caption: "Choose the path that fits where you are right now." },
+    { dur: 5500, caption: "A guided conversation — not a clinical checklist.",
+      onEnter: () => {
+        const fill = document.getElementById('sl-fill');
+        const thumb = document.getElementById('sl-thumb');
+        setTimeout(() => { fill.style.width = '78%'; thumb.style.left = '78%'; }, 600);
+      } },
+    { dur: 5500, caption: "Built around your child's actual experience.",
+      onEnter: () => {
+        const pills = document.querySelectorAll('#pill-row .q-pill');
+        const toSelect = [0, 3, 6];
+        toSelect.forEach((idx, i) => {
+          setTimeout(() => pills[idx]?.classList.add('selected'), 600 + i * 700);
+        });
+      } },
+    { dur: 5500, caption: "AI builds a plan around your child.",
+      onEnter: () => {
+        const steps = ['ls-1','ls-2','ls-3','ls-4'];
+        steps.forEach((id, i) => {
+          setTimeout(() => {
+            steps.forEach((sid, si) => {
+              const s = document.getElementById(sid);
+              s.classList.remove('active','done','pending');
+              if (si < i) s.classList.add('done');
+              else if (si === i) s.classList.add('active');
+              else s.classList.add('pending');
+            });
+          }, 300 + i * 1100);
+        });
+      } },
+    { dur: 5500, caption: "Visual maps that everyone in their life can understand.",
+      onEnter: () => {
+        const widths = ['90%','55%','70%','75%','45%'];
+        widths.forEach((w, i) => {
+          setTimeout(() => {
+            const el = document.getElementById('sb-' + (i+1));
+            if (el) el.style.width = w;
+          }, 300 + i * 200);
+        });
+      } },
+    { dur: 6500, caption: "A celebration of who they are — and concrete steps for this week.",
+      onEnter: () => {
+        const chips = document.querySelectorAll('#strength-row .strength-chip');
+        chips.forEach((c, i) => setTimeout(() => c.classList.add('show'), 200 + i * 180));
+        const acts = document.querySelectorAll('#action-list .action-row');
+        acts.forEach((a, i) => setTimeout(() => a.classList.add('show'), 1500 + i * 350));
+      } },
+    { dur: 6500, caption: "No family should have to fight this hard just to be understood." }
+  ];
+
+  const stage = document.getElementById('stage');
+  const sceneEls = stage.querySelectorAll('.scene');
+  const captionEl = document.getElementById('caption');
+  const dotsEl = document.getElementById('dots');
+  const replayBtn = document.getElementById('replay');
+
+  // Build progress dots
+  SCENES.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'pd';
+    dotsEl.appendChild(d);
+  });
+  const dotEls = dotsEl.querySelectorAll('.pd');
+
+  let currentScene = -1;
+  let timer = null;
+
+  function resetScene(idx) {
+    // Reset any animations in scene `idx` so a replay starts fresh
+    if (idx === 4) {
+      document.getElementById('sl-fill').style.width = '0';
+      document.getElementById('sl-thumb').style.left = '0';
+    }
+    if (idx === 5) {
+      document.querySelectorAll('#pill-row .q-pill').forEach(p => p.classList.remove('selected'));
+    }
+    if (idx === 6) {
+      ['ls-1','ls-2','ls-3','ls-4'].forEach((id, i) => {
+        const el = document.getElementById(id);
+        el.classList.remove('active','done');
+        if (i === 0) el.classList.remove('pending');
+        else el.classList.add('pending');
+      });
+    }
+    if (idx === 7) {
+      for (let i = 1; i <= 5; i++) {
+        const el = document.getElementById('sb-' + i);
+        if (el) el.style.width = '0';
+      }
+    }
+    if (idx === 8) {
+      document.querySelectorAll('#strength-row .strength-chip').forEach(c => c.classList.remove('show'));
+      document.querySelectorAll('#action-list .action-row').forEach(a => a.classList.remove('show'));
+    }
+  }
+
+  function showScene(idx) {
+    if (idx === currentScene) return;
+    sceneEls.forEach(s => s.classList.remove('active'));
+    sceneEls[idx]?.classList.add('active');
+
+    // Caption update with fade
+    captionEl.style.opacity = 0;
+    setTimeout(() => {
+      captionEl.textContent = SCENES[idx].caption;
+      captionEl.style.opacity = 1;
+    }, 300);
+
+    // Dots update
+    dotEls.forEach((d, i) => {
+      d.classList.remove('active','done');
+      if (i < idx) d.classList.add('done');
+      else if (i === idx) d.classList.add('active');
+    });
+
+    currentScene = idx;
+    if (typeof SCENES[idx].onEnter === 'function') {
+      // Slight delay so opacity transition starts first
+      setTimeout(() => SCENES[idx].onEnter(), 200);
+    }
+  }
+
+  function play(startIdx = 0) {
+    replayBtn.classList.remove('show');
+    let i = startIdx;
+    // Reset any later-scene animations
+    for (let j = startIdx; j < SCENES.length; j++) resetScene(j);
+
+    function next() {
+      if (i >= SCENES.length) {
+        replayBtn.classList.add('show');
+        return;
+      }
+      showScene(i);
+      timer = setTimeout(() => {
+        i++;
+        next();
+      }, SCENES[i].dur);
+    }
+    next();
+  }
+
+  replayBtn.addEventListener('click', () => {
+    if (timer) clearTimeout(timer);
+    play(0);
+  });
+
+  // Kick off
+  play(0);
+</script>
+
+</body>
+</html>
