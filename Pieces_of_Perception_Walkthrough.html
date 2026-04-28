@@ -364,22 +364,32 @@
     .top-brand .tag { font-size:11px; }
     .frame-bar { height:30px; padding:0 10px; }
     .frame-url { font-size:10.5px; height:18px; }
-    .stage { height:420px; }
-    .scene { padding:16px 14px; }
+    .stage { height:480px; }
+    .scene { padding:14px 12px; }
     .scene.is-hero { padding:22px 14px; }
     .hero-content { padding-top:6px; }
     .hero-badge-mock { padding:5px 14px; font-size:11px; margin-bottom:14px; }
     .hero-h1 { font-size:24px; margin-bottom:12px; }
     .hero-sub { font-size:13px; margin-bottom:16px; }
     .hero-cta { padding:11px 22px; font-size:13px; }
-    .commit-card { padding:16px; }
-    .commit-h2 { font-size:18px; margin-bottom:8px; }
-    .commit-p { font-size:12px; margin-bottom:10px; }
-    .commit-box { padding:10px 12px; }
-    .commit-box li { font-size:11px; }
-    .path-card { padding:14px 16px; }
-    .path-card h4 { font-size:13px; }
-    .path-card p { font-size:11.5px; }
+    /* Commitment screen — compact for mobile */
+    .commit-card { padding:14px; }
+    .commit-eyebrow { font-size:9.5px; margin-bottom:6px; }
+    .commit-h2 { font-size:17px; margin-bottom:6px; line-height:1.2; }
+    .commit-p { font-size:11.5px; line-height:1.55; margin-bottom:10px; }
+    .commit-grid { gap:8px; }
+    .commit-box { padding:9px 11px; }
+    .commit-box .lbl { font-size:10.5px; margin-bottom:4px; }
+    .commit-box li { font-size:10.5px; padding:1px 0; line-height:1.4; }
+    /* Path select — compact, two-column even on mobile */
+    .path-grid { grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+    .path-card { padding:11px 10px; }
+    .path-icon { font-size:22px; margin-bottom:6px; }
+    .path-card h4 { font-size:12px; margin-bottom:4px; }
+    .path-card p { font-size:10.5px; line-height:1.45; margin-bottom:6px; }
+    .path-meta { font-size:10px; }
+    .path-card .check { width:18px; height:18px; font-size:10px; top:8px; right:8px; }
+    /* Questionnaire */
     .q-h { font-size:17px; margin-bottom:12px; }
     .q-label { font-size:13px; margin-bottom:10px; }
     .q-pill { padding:5px 11px; font-size:11px; }
@@ -405,9 +415,13 @@
     .footer-mark { margin-top:14px; font-size:11px; }
   }
   @media (max-width: 380px) {
-    .stage { height:400px; }
+    .stage { height:460px; }
     .hero-h1 { font-size:21px; }
-    .commit-h2 { font-size:16px; }
+    .commit-h2 { font-size:15px; }
+    .commit-p { font-size:11px; }
+    .commit-box li { font-size:10px; }
+    .path-card h4 { font-size:11px; }
+    .path-card p { font-size:10px; }
     .q-h { font-size:15px; }
     .final-h { font-size:21px; }
   }
