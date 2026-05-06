@@ -5,6 +5,8 @@ User-agent: *
 Allow: /
 Disallow: /auth.html
 Disallow: /dashboard.html
+Disallow: /beta-portal.html
+Disallow: /beta-dashboard.html
 Disallow: /questionnaire.html
 Disallow: /generating.html
 

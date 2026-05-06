@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6C63FF">
+  <title>Questionnaire | Pieces of Perception</title>
+  <meta name="description" content="Tell us about your child — Pieces of Perception will build a personalized action report covering strengths, sensory needs, communication, and regulation.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://piecesofperception.com/questionnaire.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pieces of Perception">
+  <meta property="og:title" content="Questionnaire | Pieces of Perception">
+  <meta property="og:description" content="Answer guided questions about your child to build a personalized action report.">
+  <meta property="og:url" content="https://piecesofperception.com/questionnaire.html">
+  <meta property="og:image" content="https://piecesofperception.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://piecesofperception.com/og-image.png">
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #6C63FF;
+      --accent-dark:  #5349e0;
+      --accent-bg:    rgba(108,99,255,0.07);
+      --warm:         #E8845A;
+      --warm-light:   rgba(232,132,90,0.10);
+      --sage:         #52B788;
+      --sage-light:   rgba(82,183,136,0.10);
+      --sky:          #3FA8CC;
+      --sky-light:    rgba(63,168,204,0.10);
+      --lavender:     #8E7FC4;
+      --lavender-light: rgba(142,127,196,0.12);
+      --rose:         #D95B72;
+      --deep:         #16162A;
+      --text:         #2C2C3E;
+      --text-light:   #6B6B80;
+      --border:       #E6E8F0;
+      --border-soft:  rgba(108,99,255,0.12);
+      --bg:           #F7F8FC;
+      --white:        #ffffff;
+      --card-shadow:  0 2px 8px rgba(22,22,42,0.06), 0 8px 32px rgba(22,22,42,0.08);
+      --card-shadow-hover: 0 4px 16px rgba(22,22,42,0.10), 0 16px 48px rgba(22,22,42,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand .brand-name { font-size: 17px; font-weight: 700; color: var(--deep); letter-spacing: -0.3px; }
+    .nav-right { display: flex; align-items: center; gap: 18px; }
+    .nav-link {
+      font-size: 13.5px; color: var(--text-light); font-weight: 500;
+      text-decoration: none;
+    }
+    .nav-link:hover { color: var(--accent); }
+    .btn-signout {
+      padding: 8px 16px;
+      font-size: 13.5px; font-weight: 600;
+      background: white;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all .2s;
+    }
+    .btn-signout:hover {
+      border-color: var(--rose);
+      color: var(--rose);
+    }
+    @media (max-width: 600px) {
+      .nav { padding: 0 18px; }
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 28px; border-radius: 12px; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all .22s; border: none;
+      font-family: 'DM Sans', sans-serif; letter-spacing: -0.1px;
+    }
+    .btn-primary {
+      background: var(--accent); color: white;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.25);
+    }
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108,99,255,0.35);
+    }
+    .btn-large { padding: 15px 36px; font-size: 16px; border-radius: 14px; }
+    .btn-warm { background: var(--warm); color: white; box-shadow: 0 2px 8px rgba(232,132,90,0.25); }
+    .btn-warm:hover { background: #d4744a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,132,90,0.35); }
+    .btn-outline { background: white; color: var(--accent); border: 1.5px solid rgba(108,99,255,0.3); }
+    .btn-outline:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .btn-ghost { background: transparent; color: var(--text-light); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      padding: 40px 24px 80px;
+      max-width: 760px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) { main { padding: 24px 16px 60px; } }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      margin-bottom: 32px;
+    }
+    .progress-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--text-light); font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .progress-meta .step-label { color: var(--accent); font-weight: 600; }
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--sky));
+      border-radius: 999px;
+      transition: width .35s ease;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 40px 36px;
+      position: relative;
+    }
+    @media (max-width: 600px) { .card { padding: 28px 20px; border-radius: 18px; } }
+
+    .step-eyebrow {
+      display: inline-block;
+      padding: 5px 14px;
+      background: var(--accent-bg); color: var(--accent);
+      border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.4px;
+      margin-bottom: 14px; border: 1px solid var(--border-soft);
+    }
+    .step-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(24px, 3.6vw, 30px); font-weight: 800;
+      color: var(--deep); line-height: 1.2; margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+    .step-sub {
+      font-size: 15px; color: var(--text-light);
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+
+    /* ── FORM CONTROLS ── */
+    .field { margin-bottom: 22px; }
+    .field-label {
+      display: block;
+      font-size: 14.5px; font-weight: 600;
+      color: var(--deep);
+      margin-bottom: 8px;
+    }
+    .field-help {
+      font-size: 13px; color: var(--text-light);
+      margin-top: -4px; margin-bottom: 8px;
+    }
+    .req { color: var(--rose); margin-left: 3px; }
+
+    .input, .textarea, .select {
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .input:focus, .textarea:focus, .select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(108,99,255,0.12);
+    }
+    .textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+    .select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3e%3cpath fill='%236B6B80' d='M6 8L0 0h12z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 18px center;
+      background-size: 12px 8px;
+      padding-right: 44px;
+    }
+
+    /* radio/checkbox card group */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .options-grid.cols-1 { grid-template-columns: 1fr; }
+    @media (max-width: 520px) { .options-grid { grid-template-columns: 1fr; } }
+
+    .opt {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 13px 15px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, transform .12s;
+      background: white;
+      font-size: 14.5px;
+      color: var(--text);
+      line-height: 1.45;
+      user-select: none;
+    }
+    .opt:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .opt input { margin-top: 3px; accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+    .opt.selected { border-color: var(--accent); background: var(--accent-bg); }
+    .opt-text { flex: 1; }
+
+    /* flow-choice cards (entry step) */
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 8px;
+    }
+    @media (max-width: 700px) { .flow-grid { grid-template-columns: 1fr; } }
+
+    .flow-card {
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 26px 24px;
+      cursor: pointer;
+      transition: all .22s;
+      background: white;
+      display: flex; flex-direction: column;
+    }
+    .flow-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--card-shadow); }
+    .flow-card.featured { border-color: var(--accent); background: linear-gradient(145deg, rgba(108,99,255,0.04), white); position: relative; }
+    .flow-card.featured::after {
+      content: 'Most Comprehensive';
+      position: absolute;
+      top: 14px; right: 14px;
+      background: var(--accent); color: white;
+      font-size: 10.5px; font-weight: 700; letter-spacing: 0.3px;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .flow-icon { font-size: 30px; margin-bottom: 10px; }
+    .flow-card h3 { font-size: 18px; font-weight: 700; color: var(--deep); margin-bottom: 4px; letter-spacing: -0.3px; }
+    .flow-tagline { font-size: 13px; color: var(--text-light); margin-bottom: 12px; }
+    .flow-price { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 800; color: var(--deep); margin-bottom: 10px; letter-spacing: -1px; }
+    .flow-price .currency { font-size: 16px; vertical-align: super; margin-right: 2px; }
+    .flow-desc { font-size: 13.5px; color: var(--text); line-height: 1.55; margin-bottom: 16px; flex: 1; }
+    .flow-card .btn { width: 100%; }
+
+    /* ── NAV ROW ── */
+    .step-actions {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 14px; margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .step-actions .right-side { display: flex; gap: 10px; align-items: center; }
+
+    /* ── REVIEW ── */
+    .review-section {
+      margin-bottom: 24px;
+      padding: 18px 18px;
+      background: var(--bg);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .review-section h4 {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.4px;
+      color: var(--accent); text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .review-row {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 14px;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 14px;
+    }
+    .review-row:last-child { border-bottom: none; }
+    .review-key { color: var(--text-light); font-weight: 500; }
+    .review-val { color: var(--text); font-weight: 500; word-wrap: break-word; }
+    @media (max-width: 600px) {
+      .review-row { grid-template-columns: 1fr; gap: 4px; }
+    }
+
+    /* ── IEP ADD-ON ── */
+    .addon-card {
+      border: 2px solid var(--warm);
+      border-radius: 18px;
+      padding: 24px;
+      background: linear-gradient(145deg, rgba(232,132,90,0.06), white);
+      margin-bottom: 22px;
+    }
+    .addon-flag {
+      display: inline-block;
+      background: var(--warm); color: white;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.4px;
+      padding: 4px 10px; border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .addon-card h3 { font-size: 19px; font-weight: 700; color: var(--deep); margin-bottom: 6px; }
+    .addon-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 800; color: var(--warm);
+      margin-bottom: 12px;
+    }
+    .addon-features { list-style: none; margin-bottom: 16px; }
+    .addon-features li {
+      font-size: 13.5px; color: var(--text);
+      padding: 5px 0; padding-left: 22px; position: relative;
+      line-height: 1.5;
+    }
+    .addon-features li::before {
+      content: '✓'; position: absolute; left: 0; top: 5px;
+      color: var(--warm); font-weight: 700;
+    }
+    .addon-toggle {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-weight: 600; font-size: 14.5px;
+      cursor: pointer; user-select: none;
+      transition: border-color .15s, background .15s;
+    }
+    .addon-toggle:hover { border-color: var(--warm); }
+    .addon-toggle.selected { border-color: var(--warm); background: var(--warm-light); }
+    .addon-toggle input { accent-color: var(--warm); width: 18px; height: 18px; cursor: pointer; }
+
+    /* ── ALERTS ── */
+    .alert-error {
+      background: rgba(217,91,114,0.08);
+      border: 1px solid rgba(217,91,114,0.22);
+      color: var(--rose);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .alert-error.visible { display: block; }
+
+    /* ── LOADING ── */
+    #loading {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 60vh;
+      color: var(--text-light); font-size: 15px;
+    }
+    #content { display: none; }
+    #content.ready { display: block; }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin-right: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* draft-saved nudge */
+    .saved-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--sage);
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .saved-pill.show { opacity: 1; }
+    .saved-pill::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--sage);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 28px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-light);
+      border-top: 1px solid var(--border);
+      background: white;
+    }
+    footer a { color: var(--text-light); text-decoration: none; margin: 0 10px; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/beta-dashboard.html">
+    <svg width="36" height="30" viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-label="Pieces of Perception logo"><defs><clipPath id="pop-d"><rect x="2" y="1" width="36" height="30" rx="2.5"/></clipPath></defs><g clip-path="url(#pop-d)"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/></g><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg>
+    <span class="brand-name">Pieces of Perception</span>
+  </a>
+  <div class="nav-right">
+    <a href="/beta-dashboard.html" class="nav-link">← Dashboard</a>
+    <button class="btn-signout" id="btn-signout" onclick="signOut()">Sign Out</button>
+  </div>
+</nav>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <span>Loading questionnaire...</span>
+</div>
+
+<main id="content">
+
+  <div class="progress-wrap" id="progress-wrap" style="display:none;">
+    <div class="progress-meta">
+      <span><span class="step-label" id="step-counter">Step 1</span> of <span id="step-total">8</span></span>
+      <span class="saved-pill" id="saved-pill">Draft saved</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="card" id="step-card">
+    <!-- Steps render here -->
+  </div>
+
+</main>
+
+<footer>
+  <a href="/index.html">Home</a>
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <a href="/disclaimer.html">Disclaimer</a>
+  <span style="margin-left:10px">&copy; 2026 Pieces of Perception LLC</span>
+</footer>
+
+<script>
+  // ─────────────────────────────────────────────────────────────
+  // CONFIG
+  // ─────────────────────────────────────────────────────────────
+  const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6YmVyamdtd2RhaGlsanpwcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjAwMDQsImV4cCI6MjA5MjM5NjAwNH0.S-dDookJKoiBDq4BxMVH21_FOSaHXgt9qDrQ6u8bOJI';
+  const DRAFT_KEY = 'pop_questionnaire_draft';
+
+  // ─────────────────────────────────────────────────────────────
+  // SESSION
+  // ─────────────────────────────────────────────────────────────
+  function getSession() {
+    try {
+      const raw = localStorage.getItem('pop_session');
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s.access_token || !s.user_id) return null;
+      if (s.expires_at && s.expires_at < Date.now()) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+  function clearSession() { try { localStorage.removeItem('pop_session'); } catch (_) {} }
+  function redirectToAuth() { window.location.href = '/beta-portal.html'; }
+  async function signOut() {
+    const session = getSession();
+    if (session) {
+      try {
+        await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}` }
+        });
+      } catch (_) {}
+    }
+    clearSession();
+    window.location.href = '/index.html';
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // STATE
+  // ─────────────────────────────────────────────────────────────
+  // answers shape: { flow: 'action'|'comprehensive', step: number, data: {...}, addon_iep: bool }
+  let state = {
+    flow: null,        // 'action' | 'comprehensive' — null until chosen
+    step: 0,           // 0 = flow-choice; 1..N = question steps; N+1 = review; N+2 = addon
+    data: {},
+    addon_iep: false
+  };
+
+  function loadDraft() {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d && typeof d === 'object') {
+        state = Object.assign(state, d);
+      }
+    } catch (_) {}
+  }
+  function saveDraft() {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+      const pill = document.getElementById('saved-pill');
+      if (pill) {
+        pill.classList.add('show');
+        clearTimeout(window.__savedTimer);
+        window.__savedTimer = setTimeout(() => pill.classList.remove('show'), 1400);
+      }
+    } catch (_) {}
+  }
+  function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (_) {} }
+
+  // ─────────────────────────────────────────────────────────────
+  // STEP DEFINITIONS
+  // Each step has: id, title, eyebrow, sub, fields[], optional validate()
+  // Field types: 'text', 'textarea', 'select', 'radio', 'checkbox' (multi), 'number'
+  // ─────────────────────────────────────────────────────────────
+  const SHARED_STEPS = [
+    {
+      id: 'basics',
+      eyebrow: 'About your child',
+      title: 'Tell us a little about them.',
+      sub: 'These basics help us tune the tone and developmental lens of your report.',
+      fields: [
+        { key: 'child_first_name', type: 'text', label: 'Child\'s first name', required: true, placeholder: 'e.g., Joey' },
+        { key: 'child_age', type: 'number', label: 'Age', required: true, min: 1, max: 25, placeholder: '7' },
+        { key: 'grade_level', type: 'select', label: 'Grade level', required: true, options: [
+            'Pre-K / Early intervention','Kindergarten','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','Post-secondary','Not in school'
+          ] },
+        { key: 'diagnoses', type: 'checkbox', label: 'Primary diagnosis or diagnoses', help: 'Select all that apply.', required: true, options: [
+            'Autism / ASD','ADHD','Anxiety','Sensory Processing Disorder','Dyslexia','Other'
+          ] },
+      ]
+    },
+    {
+      id: 'who',
+      eyebrow: 'About you',
+      title: 'Who is filling this out?',
+      sub: 'We tailor the language of the report to who will be reading it most.',
+      fields: [
+        { key: 'filler_role', type: 'radio', label: 'Your role', required: true, options: [
+            'Parent','Guardian','Therapist','Educator'
+          ] },
+        { key: 'biggest_challenge', type: 'textarea', label: 'What is your biggest challenge right now?', required: true,
+          placeholder: 'e.g., Mornings are really hard. Getting out the door for school often ends in a meltdown for both of us.' },
+      ]
+    },
+    {
+      id: 'communication',
+      eyebrow: 'Communication',
+      title: 'How does your child communicate?',
+      sub: 'Pick the option that fits most days. We know it can change from moment to moment.',
+      fields: [
+        { key: 'communication_style', type: 'radio', label: 'Primary communication style', required: true, options: [
+            'Verbal','Mostly verbal with support','AAC device','Limited verbal','Non-speaking'
+          ] },
+      ]
+    },
+    {
+      id: 'regulation',
+      eyebrow: 'Regulation',
+      title: 'How often do meltdowns or shutdowns happen?',
+      sub: 'There are no wrong answers here — we just need an honest baseline.',
+      fields: [
+        { key: 'meltdown_frequency', type: 'radio', label: 'Frequency of meltdowns / shutdowns', required: true, options: [
+            'Rarely','Weekly','Daily','Multiple times per day'
+          ] },
+      ]
+    },
+    {
+      id: 'sensory',
+      eyebrow: 'Sensory profile',
+      title: 'Any significant sensory sensitivities?',
+      sub: 'Select every category that often impacts your child\'s day.',
+      fields: [
+        { key: 'sensory_sensitivities', type: 'checkbox', label: 'Sensory areas', required: true, options: [
+            'Sound','Touch','Light','Food / taste','Smell','Proprioceptive / movement','None significant'
+          ] },
+      ]
+    },
+    {
+      id: 'school',
+      eyebrow: 'School',
+      title: 'What\'s the school setting?',
+      sub: 'This helps us frame strategies that will actually fit their day.',
+      fields: [
+        { key: 'school_setting', type: 'radio', label: 'Current setting', required: true, options: [
+            'General ed','Inclusion','Self-contained','Homeschool','Not in school'
+          ] },
+      ]
+    },
+  ];
+
+  const ACTION_STEPS = [
+    {
+      id: 'action_situation',
+      eyebrow: 'What brought you here',
+      title: 'What\'s happening right now?',
+      sub: 'A short paragraph is great — even bullet points work.',
+      fields: [
+        { key: 'action_situation', type: 'textarea', required: true, label: 'What specific situation or behavior prompted you to seek support today?',
+          placeholder: 'e.g., He\'s been refusing to do homework for 3 weeks. It started after his teacher changed seating arrangements.' },
+      ]
+    },
+    {
+      id: 'action_tried',
+      eyebrow: 'What you\'ve tried',
+      title: 'What have you already tried?',
+      sub: 'Even things that didn\'t work are useful — we\'ll suggest what to try next.',
+      fields: [
+        { key: 'action_tried', type: 'textarea', required: true, label: 'Strategies, supports, or routines you\'ve tested so far',
+          placeholder: 'e.g., Reward charts, a quiet corner, talking it through after dinner.' },
+      ]
+    },
+    {
+      id: 'action_success',
+      eyebrow: 'Looking ahead',
+      title: 'What does success look like in 3 months?',
+      sub: 'Paint the picture — even small wins count.',
+      fields: [
+        { key: 'action_success', type: 'textarea', required: true, label: 'Your "if this works, here\'s what we\'ll see" answer',
+          placeholder: 'e.g., One smooth morning a week. He asks for a break instead of melting down.' },
+      ]
+    },
+  ];
+
+  const COMPREHENSIVE_STEPS = [
+    {
+      id: 'strengths',
+      eyebrow: 'Strengths',
+      title: 'Tell us what your child does beautifully.',
+      sub: 'We anchor every plan in strengths first.',
+      fields: [
+        { key: 'strengths', type: 'textarea', required: true, label: 'Describe your child\'s strengths',
+          placeholder: 'e.g., She remembers everything she reads. She\'s very gentle with younger kids.' },
+      ]
+    },
+    {
+      id: 'goals',
+      eyebrow: 'Your goals',
+      title: 'Top 3 goals right now.',
+      sub: 'These can be social, academic, daily-living — anything.',
+      fields: [
+        { key: 'top_goals', type: 'textarea', required: true, label: 'Your top 3 current goals for your child',
+          placeholder: '1.\n2.\n3.' },
+      ]
+    },
+    {
+      id: 'sleep_eating',
+      eyebrow: 'Daily life',
+      title: 'Sleep and eating.',
+      sub: 'These two anchors shape almost every other behavior.',
+      fields: [
+        { key: 'sleep', type: 'radio', label: 'Sleep patterns', required: true, options: [
+            'Good','Some difficulty','Significant difficulty'
+          ] },
+        { key: 'eating', type: 'radio', label: 'Eating / food', required: true, options: [
+            'No issues','Some selective eating','Significant feeding challenges'
+          ] },
+      ]
+    },
+    {
+      id: 'social_regulation',
+      eyebrow: 'Connection & regulation',
+      title: 'Social and emotional supports.',
+      sub: 'How they connect, and what helps them recover.',
+      fields: [
+        { key: 'social_skills', type: 'radio', label: 'Social skills', required: true, options: [
+            'Makes friends easily','Has a few friends','Struggles socially','Prefers to be alone'
+          ] },
+        { key: 'regulation_tools', type: 'checkbox', label: 'Emotional regulation tools that currently help', required: true, options: [
+            'Deep pressure','Movement breaks','Quiet space','Music','Fidgets','Breathing','Weighted items','Nothing consistent yet'
+          ] },
+      ]
+    },
+    {
+      id: 'school_plan',
+      eyebrow: 'School supports',
+      title: 'IEP, 504, or evaluation status?',
+      sub: 'We\'ll tailor the school-facing language of your plan.',
+      fields: [
+        { key: 'iep_504_status', type: 'radio', label: 'School support plan', required: true, options: [
+            'IEP','504','Neither','In evaluation'
+          ] },
+      ]
+    },
+    {
+      id: 'family',
+      eyebrow: 'Family dynamics',
+      title: 'About your family.',
+      sub: 'Sibling context often shapes what\'s realistic at home.',
+      fields: [
+        { key: 'has_siblings', type: 'radio', label: 'Does your child have siblings?', required: true, options: ['Yes','No'] },
+        { key: 'sibling_notes', type: 'textarea', required: false, label: 'If yes — any sibling challenges related to your child\'s needs?',
+          placeholder: 'e.g., Younger brother gets scared during meltdowns. Older sister sometimes resents extra attention.' },
+      ]
+    },
+    {
+      id: 'good_day',
+      eyebrow: 'Good days',
+      title: 'What does a good day look like?',
+      sub: 'The shape of a good day tells us what\'s working.',
+      fields: [
+        { key: 'good_day', type: 'textarea', required: true, label: 'A "good day" for your child',
+          placeholder: 'e.g., Slept in, had pancakes, played outside, got time alone in his room.' },
+      ]
+    },
+    {
+      id: 'hard_day',
+      eyebrow: 'Hard days',
+      title: 'What does a hard day look like?',
+      sub: 'No need to soften — the harder you are honest, the better the plan.',
+      fields: [
+        { key: 'hard_day', type: 'textarea', required: true, label: 'A "hard day" for your child',
+          placeholder: 'e.g., Loud morning, no warning before transitions, ends with a meltdown after school.' },
+      ]
+    },
+    {
+      id: 'extras',
+      eyebrow: 'Anything else',
+      title: 'Is there anything else we should know?',
+      sub: 'Optional — but often the most useful field.',
+      fields: [
+        { key: 'extras', type: 'textarea', required: false, label: 'Anything else the AI should know',
+          placeholder: 'Family changes, recent diagnoses, things you\'ve noticed but haven\'t mentioned yet.' },
+      ]
+    },
+  ];
+
+  function getQuestionSteps() {
+    if (state.flow === 'action')        return SHARED_STEPS.concat(ACTION_STEPS);
+    if (state.flow === 'comprehensive') return SHARED_STEPS.concat(COMPREHENSIVE_STEPS);
+    return [];
+  }
+  function totalSteps() {
+    // After flow is chosen: N question steps + 1 review + 1 add-on
+    // (the flow-choice step is shown without a progress bar)
+    if (!state.flow) return 1;
+    return getQuestionSteps().length + 2;
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // RENDER
+  // ─────────────────────────────────────────────────────────────
+  function el(tag, attrs, children) {
+    const e = document.createElement(tag);
+    if (attrs) {
+      for (const k in attrs) {
+        if (k === 'className') e.className = attrs[k];
+        else if (k === 'html')  e.innerHTML  = attrs[k];
+        else if (k.startsWith('on') && typeof attrs[k] === 'function') e.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+        else e.setAttribute(k, attrs[k]);
+      }
+    }
+    if (children) {
+      (Array.isArray(children) ? children : [children]).forEach(c => {
+        if (c == null) return;
+        if (typeof c === 'string') e.appendChild(document.createTextNode(c));
+        else e.appendChild(c);
+      });
+    }
+    return e;
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function updateProgress() {
+    const wrap = document.getElementById('progress-wrap');
+    if (!state.flow) { wrap.style.display = 'none'; return; }
+    wrap.style.display = '';
+    const tot = totalSteps();
+    const cur = state.step + 1; // 1-indexed for display
+    document.getElementById('step-counter').textContent = `Step ${cur}`;
+    document.getElementById('step-total').textContent   = tot;
+    const pct = Math.round((cur / tot) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  function render() {
+    const card = document.getElementById('step-card');
+    card.innerHTML = '';
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (!state.flow) { renderFlowChoice(card); return; }
+
+    const qSteps = getQuestionSteps();
+
+    if (state.step < qSteps.length) {
+      renderStep(card, qSteps[state.step]);
+    } else if (state.step === qSteps.length) {
+      renderReview(card);
+    } else if (state.step === qSteps.length + 1) {
+      renderAddon(card);
+    } else {
+      // submission step (handled inline)
+    }
+  }
+
+  function renderFlowChoice(card) {
+    card.appendChild(el('div', { className: 'step-eyebrow' }, 'CHOOSE YOUR REPORT'));
+    card.appendChild(el('h2', { className: 'step-title serif' }, 'How deep do you want to go?'));
+    card.appendChild(el('p', { className: 'step-sub' }, 'You can come back later for the deeper plan — but if you\'re ready, the Comprehensive Plan is the one most families say changed how they parent.'));
+
+    const grid = el('div', { className: 'flow-grid' });
+
+    // Action card
+    const actionCard = el('div', { className: 'flow-card', onclick: () => chooseFlow('action') });
+    actionCard.appendChild(el('div', { className: 'flow-icon' }, '🎯'));
+    actionCard.appendChild(el('h3', null, 'Action Report'));
+    actionCard.appendChild(el('div', { className: 'flow-tagline' }, 'Quick, focused, ready to share.'));
+    actionCard.appendChild(el('div', { className: 'flow-price', html: '<span class="currency">$</span>149' }));
+    actionCard.appendChild(el('div', { className: 'flow-desc' }, 'About 10 short questions. Best when you have one specific challenge you\'re trying to solve right now.'));
+    actionCard.appendChild(el('button', { className: 'btn btn-warm', onclick: (e) => { e.stopPropagation(); chooseFlow('action'); } }, 'Choose Action Report →'));
+    grid.appendChild(actionCard);
+
+    // Comprehensive card
+    const compCard = el('div', { className: 'flow-card featured', onclick: () => chooseFlow('comprehensive') });
+    compCard.appendChild(el('div', { className: 'flow-icon' }, '📘'));
+    compCard.appendChild(el('h3', null, 'Comprehensive Plan'));
+    compCard.appendChild(el('div', { className: 'flow-tagline' }, 'Deep detail. Built to grow with your child.'));
+    compCard.appendChild(el('div', { className: 'flow-price', html: '<span class="currency">$</span>299' }));
+    compCard.appendChild(el('div', { className: 'flow-desc' }, 'About 18 questions across daily life, school, sensory, social, and family. Best when you want a plan an IEP team or therapist can use.'));
+    compCard.appendChild(el('button', { className: 'btn btn-primary', onclick: (e) => { e.stopPropagation(); chooseFlow('comprehensive'); } }, 'Choose Comprehensive Plan →'));
+    grid.appendChild(compCard);
+
+    card.appendChild(grid);
+  }
+
+  function chooseFlow(flow) {
+    state.flow = flow;
+    state.step = 0;
+    saveDraft();
+    render();
+  }
+
+  function renderStep(card, step) {
+    card.appendChild(el('div', { className: 'step-eyebrow' }, step.eyebrow.toUpperCase()));
+    card.appendChild(el('h2', { className: 'step-title serif' }, step.title));
+    if (step.sub) card.appendChild(el('p', { className: 'step-sub' }, step.sub));
+
+    const errorBox = el('div', { className: 'alert-error', id: 'step-error' });
+    card.appendChild(errorBox);
+
+    step.fields.forEach(f => card.appendChild(renderField(f)));
+
+    card.appendChild(renderStepActions({ showBack: true, nextLabel: 'Continue →' }));
+  }
+
+  function renderField(f) {
+    const wrap = el('div', { className: 'field' });
+
+    const labelEl = el('label', { className: 'field-label', for: 'fld_' + f.key },
+      f.label + (f.required ? '' : ' (optional)'));
+    if (f.required) {
+      labelEl.appendChild(el('span', { className: 'req' }, '*'));
+    }
+    wrap.appendChild(labelEl);
+    if (f.help) wrap.appendChild(el('div', { className: 'field-help' }, f.help));
+
+    const cur = state.data[f.key];
+
+    if (f.type === 'text' || f.type === 'number') {
+      const input = el('input', {
+        type: f.type, className: 'input', id: 'fld_' + f.key,
+        placeholder: f.placeholder || '',
+        value: cur == null ? '' : cur
+      });
+      if (f.min != null) input.setAttribute('min', f.min);
+      if (f.max != null) input.setAttribute('max', f.max);
+      input.addEventListener('input', () => { state.data[f.key] = input.value; saveDraft(); });
+      wrap.appendChild(input);
+    }
+    else if (f.type === 'textarea') {
+      const ta = el('textarea', {
+        className: 'textarea', id: 'fld_' + f.key,
+        placeholder: f.placeholder || '',
+        rows: 5
+      });
+      ta.value = cur == null ? '' : cur;
+      ta.addEventListener('input', () => { state.data[f.key] = ta.value; saveDraft(); });
+      wrap.appendChild(ta);
+    }
+    else if (f.type === 'select') {
+      const sel = el('select', { className: 'select', id: 'fld_' + f.key });
+      sel.appendChild(el('option', { value: '' }, '— Select —'));
+      f.options.forEach(opt => {
+        const o = el('option', { value: opt }, opt);
+        if (cur === opt) o.setAttribute('selected', 'selected');
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', () => { state.data[f.key] = sel.value; saveDraft(); });
+      wrap.appendChild(sel);
+    }
+    else if (f.type === 'radio') {
+      const grid = el('div', { className: 'options-grid' + (f.options.length <= 4 ? '' : ' cols-1') });
+      f.options.forEach(opt => {
+        const isSel = cur === opt;
+        const optEl = el('label', { className: 'opt' + (isSel ? ' selected' : '') });
+        const radio = el('input', { type: 'radio', name: f.key, value: opt });
+        if (isSel) radio.setAttribute('checked', 'checked');
+        radio.addEventListener('change', () => {
+          state.data[f.key] = opt;
+          // refresh selected styling
+          grid.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+          optEl.classList.add('selected');
+          saveDraft();
+        });
+        optEl.appendChild(radio);
+        optEl.appendChild(el('span', { className: 'opt-text' }, opt));
+        grid.appendChild(optEl);
+      });
+      wrap.appendChild(grid);
+    }
+    else if (f.type === 'checkbox') {
+      const grid = el('div', { className: 'options-grid' });
+      const arr = Array.isArray(cur) ? cur.slice() : [];
+      f.options.forEach(opt => {
+        const isSel = arr.indexOf(opt) > -1;
+        const optEl = el('label', { className: 'opt' + (isSel ? ' selected' : '') });
+        const cb = el('input', { type: 'checkbox', name: f.key, value: opt });
+        if (isSel) cb.setAttribute('checked', 'checked');
+        cb.addEventListener('change', () => {
+          let current = Array.isArray(state.data[f.key]) ? state.data[f.key].slice() : [];
+          if (cb.checked) {
+            if (current.indexOf(opt) === -1) current.push(opt);
+          } else {
+            current = current.filter(x => x !== opt);
+          }
+          state.data[f.key] = current;
+          if (cb.checked) optEl.classList.add('selected');
+          else optEl.classList.remove('selected');
+          saveDraft();
+        });
+        optEl.appendChild(cb);
+        optEl.appendChild(el('span', { className: 'opt-text' }, opt));
+        grid.appendChild(optEl);
+      });
+      wrap.appendChild(grid);
+    }
+
+    return wrap;
+  }
+
+  function renderStepActions(opts) {
+    const row = el('div', { className: 'step-actions' });
+    if (opts.showBack) {
+      row.appendChild(el('button', {
+        className: 'btn btn-ghost',
+        onclick: goBack
+      }, '← Back'));
+    } else {
+      row.appendChild(el('span'));
+    }
+    const right = el('div', { className: 'right-side' });
+    if (opts.extra) right.appendChild(opts.extra);
+    right.appendChild(el('button', {
+      className: opts.nextClass || 'btn btn-primary',
+      onclick: opts.onNext || goNext
+    }, opts.nextLabel || 'Continue →'));
+    row.appendChild(right);
+    return row;
+  }
+
+  function validateCurrentStep() {
+    const qSteps = getQuestionSteps();
+    if (state.step >= qSteps.length) return { ok: true };
+    const step = qSteps[state.step];
+    for (const f of step.fields) {
+      if (!f.required) continue;
+      const v = state.data[f.key];
+      if (f.type === 'checkbox') {
+        if (!Array.isArray(v) || v.length === 0) {
+          return { ok: false, msg: `Please answer: ${f.label}` };
+        }
+      } else if (f.type === 'number') {
+        if (v == null || v === '' || isNaN(Number(v))) {
+          return { ok: false, msg: `Please enter a number for: ${f.label}` };
+        }
+        if (f.min != null && Number(v) < f.min) return { ok: false, msg: `${f.label} must be at least ${f.min}.` };
+        if (f.max != null && Number(v) > f.max) return { ok: false, msg: `${f.label} can\'t be more than ${f.max}.` };
+      } else {
+        if (v == null || String(v).trim() === '') {
+          return { ok: false, msg: `Please answer: ${f.label}` };
+        }
+      }
+    }
+    return { ok: true };
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('step-error');
+    if (!box) { alert(msg); return; }
+    box.textContent = msg;
+    box.classList.add('visible');
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function goNext() {
+    const v = validateCurrentStep();
+    if (!v.ok) { showError(v.msg); return; }
+    state.step += 1;
+    saveDraft();
+    render();
+  }
+  function goBack() {
+    if (state.step > 0) {
+      state.step -= 1;
+    } else {
+      // back from step 0 → flow-choice
+      state.flow = null;
+    }
+    saveDraft();
+    render();
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // REVIEW STEP
+  // ─────────────────────────────────────────────────────────────
+  function renderReview(card) {
+    card.appendChild(el('div', { className: 'step-eyebrow' }, 'REVIEW'));
+    card.appendChild(el('h2', { className: 'step-title serif' }, 'Take a quick look.'));
+    card.appendChild(el('p', { className: 'step-sub' }, 'Make sure everything reflects your child. You can edit any answer before we generate your report.'));
+
+    // Group steps into review sections
+    const qSteps = getQuestionSteps();
+    qSteps.forEach((step, idx) => {
+      const sec = el('div', { className: 'review-section' });
+      const head = el('div', { style: 'display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;' });
+      head.appendChild(el('h4', null, step.eyebrow));
+      const editBtn = el('button', {
+        className: 'btn btn-ghost', style: 'padding:6px 14px; font-size:12.5px;',
+        onclick: () => { state.step = idx; saveDraft(); render(); }
+      }, 'Edit');
+      head.appendChild(editBtn);
+      sec.appendChild(head);
+
+      step.fields.forEach(f => {
+        const v = state.data[f.key];
+        const display = formatAnswer(v, f);
+        const row = el('div', { className: 'review-row' });
+        row.appendChild(el('div', { className: 'review-key' }, f.label));
+        row.appendChild(el('div', { className: 'review-val' }, display || '—'));
+        sec.appendChild(row);
+      });
+
+      card.appendChild(sec);
+    });
+
+    card.appendChild(renderStepActions({
+      showBack: true,
+      nextLabel: 'Looks good, continue →',
+      nextClass: 'btn btn-primary'
+    }));
+  }
+
+  function formatAnswer(v, f) {
+    if (v == null) return '';
+    if (Array.isArray(v)) return v.join(', ');
+    return String(v);
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // ADD-ON STEP
+  // ─────────────────────────────────────────────────────────────
+  function renderAddon(card) {
+    card.appendChild(el('div', { className: 'step-eyebrow' }, 'ONE LAST OPTION'));
+    card.appendChild(el('h2', { className: 'step-title serif' }, 'Add IEP Goal Recommendations?'));
+    card.appendChild(el('p', { className: 'step-sub' }, 'Optional — built specifically to drop into an IEP draft your team can refine. Most families add this when they\'re heading into an annual review or evaluation.'));
+
+    const addon = el('div', { className: 'addon-card' });
+    addon.appendChild(el('div', { className: 'addon-flag' }, 'POPULAR ADD-ON'));
+    addon.appendChild(el('h3', null, 'IEP Goal Recommendations'));
+    addon.appendChild(el('div', { className: 'addon-price', html: '<span style="font-size:14px;vertical-align:super;">$</span>99' }));
+    const ul = el('ul', { className: 'addon-features' });
+    [
+      'Measurable, IEP-ready goal language',
+      'Aligned to your child\'s strengths and challenges',
+      'Suggested accommodations and supports',
+      'Progress monitoring ideas your team can adopt'
+    ].forEach(t => ul.appendChild(el('li', null, t)));
+    addon.appendChild(ul);
+
+    const isSel = !!state.addon_iep;
+    const toggle = el('label', { className: 'addon-toggle' + (isSel ? ' selected' : '') });
+    const cb = el('input', { type: 'checkbox' });
+    if (isSel) cb.setAttribute('checked', 'checked');
+    cb.addEventListener('change', () => {
+      state.addon_iep = cb.checked;
+      if (cb.checked) toggle.classList.add('selected'); else toggle.classList.remove('selected');
+      saveDraft();
+      // update the submit label below
+      const submitBtn = document.getElementById('submit-btn');
+      if (submitBtn) submitBtn.textContent = submitLabel();
+    });
+    toggle.appendChild(cb);
+    toggle.appendChild(el('span', null, 'Yes — add IEP Goal Recommendations (+$99)'));
+    addon.appendChild(toggle);
+
+    card.appendChild(addon);
+
+    // skip notice
+    card.appendChild(el('p', { className: 'step-sub', style: 'font-size:13.5px; margin-top:-6px;' },
+      'No pressure — you can always add this later from your dashboard.'));
+
+    // Submit
+    const submitBtn = el('button', {
+      className: 'btn btn-primary btn-large',
+      id: 'submit-btn',
+      onclick: submitAndGenerate
+    }, submitLabel());
+
+    const row = el('div', { className: 'step-actions' });
+    row.appendChild(el('button', { className: 'btn btn-ghost', onclick: goBack }, '← Back'));
+    const right = el('div', { className: 'right-side' });
+    right.appendChild(submitBtn);
+    row.appendChild(right);
+    card.appendChild(row);
+  }
+
+  function submitLabel() {
+    const base = state.flow === 'comprehensive' ? 299 : 149;
+    const total = base + (state.addon_iep ? 99 : 0);
+    return `Submit & Generate Report ($${total})`;
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // SUBMISSION
+  // ─────────────────────────────────────────────────────────────
+  async function submitAndGenerate() {
+    const session = getSession();
+    if (!session) { redirectToAuth(); return; }
+
+    const btn = document.getElementById('submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving your answers...'; }
+
+    const payload = {
+      user_id: session.user_id,
+      flow: state.flow,
+      addon_iep: !!state.addon_iep,
+      child_first_name: state.data.child_first_name || null,
+      child_age: state.data.child_age != null && state.data.child_age !== '' ? Number(state.data.child_age) : null,
+      grade_level: state.data.grade_level || null,
+      diagnoses: state.data.diagnoses || [],
+      filler_role: state.data.filler_role || null,
+      biggest_challenge: state.data.biggest_challenge || null,
+      communication_style: state.data.communication_style || null,
+      meltdown_frequency: state.data.meltdown_frequency || null,
+      sensory_sensitivities: state.data.sensory_sensitivities || [],
+      school_setting: state.data.school_setting || null,
+      // pile every other field into a JSON blob so the table is forward-compatible
+      answers: state.data,
+      status: 'submitted'
+    };
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/questionnaire_responses`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Save failed (${res.status}): ${text}`);
+      }
+
+      const rows = await res.json();
+      const responseId = Array.isArray(rows) && rows.length ? rows[0].id : null;
+
+      // Stash a small handoff for the loading page
+      try {
+        sessionStorage.setItem('pop_last_submission', JSON.stringify({
+          response_id: responseId,
+          flow: state.flow,
+          addon_iep: state.addon_iep,
+          child_first_name: state.data.child_first_name || ''
+        }));
+      } catch (_) {}
+
+      clearDraft();
+      window.location.href = '/generating.html' + (responseId ? ('?id=' + encodeURIComponent(responseId)) : '');
+    } catch (err) {
+      console.error(err);
+      if (btn) { btn.disabled = false; btn.textContent = submitLabel(); }
+      showError('We couldn\'t save your answers just now. Please try again — your draft is still saved on this device.');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // BOOT
+  // ─────────────────────────────────────────────────────────────
+  function init() {
+    const session = getSession();
+    if (!session) { redirectToAuth(); return; }
+
+    loadDraft();
+
+    // Pre-fill flow from URL ?flow=action|comprehensive
+    try {
+      const url = new URL(window.location.href);
+      const f = url.searchParams.get('flow');
+      if ((f === 'action' || f === 'comprehensive') && !state.flow) {
+        state.flow = f;
+        state.step = 0;
+        saveDraft();
+      }
+    } catch (_) {}
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').classList.add('ready');
+    render();
+  }
+
+  init();
+</script>
+
+</body>
+</html>
