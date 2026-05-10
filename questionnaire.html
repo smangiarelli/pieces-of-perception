@@ -25,6 +25,14 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Privacy-friendly analytics by Plausible -->
+  <script async src="https://plausible.io/js/pa-RHzpSmPEbIjbaOmxsM1AW.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -489,6 +497,14 @@
   // SESSION
   // ─────────────────────────────────────────────────────────────
   function getSession() {
+    // Phase 2A preview bypass: ?preview=foundation skips auth so the
+    // staged file can be opened directly from the file system.
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('preview') === 'foundation') {
+        return { access_token: 'preview', user_id: 'preview-user', email: 'preview@local', name: 'Preview', expires_at: Date.now() + 3600000 };
+      }
+    } catch (_) {}
     try {
       const raw = localStorage.getItem('pop_session');
       if (!raw) return null;
@@ -549,227 +565,991 @@
   function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (_) {} }
 
   // ─────────────────────────────────────────────────────────────
+  // CART SUMMARY — surfaces opted-in Care Guides as "added to cart"
+  // ─────────────────────────────────────────────────────────────
+  function getCartItems() {
+    const items = [];
+    const flow = state.flow;
+    if (!flow) return items;
+    const base = flow === 'comprehensive'
+      ? { name: 'Comprehensive Plan', price: 299 }
+      : { name: 'Action Report',      price: 149 };
+    items.push(base);
+    function isYes(v) { return typeof v === 'string' && v.indexOf('Yes') === 0; }
+    if (isYes(state.data.addon_babysitter))       items.push({ name: 'Babysitter Care Guide',       price: null });
+    if (isYes(state.data.addon_extended_family))  items.push({ name: 'Extended Family Guide',       price: null });
+    if (isYes(state.data.addon_sibling))          items.push({ name: 'Sibling Guide',               price: null });
+    if (isYes(state.data.addon_teacher))          items.push({ name: 'Teacher / School Guide',      price: null });
+    if (isYes(state.data.addon_service_provider)) items.push({ name: 'Service Provider Guide',      price: null });
+    if (state.addon_iep)                          items.push({ name: 'IEP Goal Recommendations',    price: 99 });
+    return items;
+  }
+  function renderCartBadge() {
+    let badge = document.getElementById('cart-badge');
+    const items = getCartItems();
+    if (!state.flow || items.length === 0) {
+      if (badge) badge.remove();
+      return;
+    }
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'cart-badge';
+      badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:white;border:1px solid #E8E4DC;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,0.08);padding:14px 18px;font-family:-apple-system,sans-serif;font-size:13px;z-index:8888;max-width:280px;';
+      document.body.appendChild(badge);
+    }
+    let html = '<div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#6C63FF;margin-bottom:8px;">YOUR CART</div>';
+    items.forEach(it => {
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;color:#2C2A4A;">';
+      html += '<span>' + it.name + '</span>';
+      html += '<span style="color:#6B6982;font-size:12px;">' + (it.price != null ? ('$' + it.price) : 'add-on') + '</span>';
+      html += '</div>';
+    });
+    badge.innerHTML = html;
+  }
+
+  // ─────────────────────────────────────────────────────────────
   // STEP DEFINITIONS
   // Each step has: id, title, eyebrow, sub, fields[], optional validate()
   // Field types: 'text', 'textarea', 'select', 'radio', 'checkbox' (multi), 'number'
   // ─────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
+  // SHARED_STEPS — opening basics for both flows
+  // Sourced from Section A of both beta questionnaires (richer of the two).
+  // ─────────────────────────────────────────────────────────────
   const SHARED_STEPS = [
     {
-      id: 'basics',
+      id: 'basics_name_age',
       eyebrow: 'About your child',
       title: 'Tell us a little about them.',
       sub: 'These basics help us tune the tone and developmental lens of your report.',
       fields: [
-        { key: 'child_first_name', type: 'text', label: 'Child\'s first name', required: true, placeholder: 'e.g., Joey' },
-        { key: 'child_age', type: 'number', label: 'Age', required: true, min: 1, max: 25, placeholder: '7' },
-        { key: 'grade_level', type: 'select', label: 'Grade level', required: true, options: [
-            'Pre-K / Early intervention','Kindergarten','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','Post-secondary','Not in school'
-          ] },
-        { key: 'diagnoses', type: 'checkbox', label: 'Primary diagnosis or diagnoses', help: 'Select all that apply.', required: true, options: [
-            'Autism / ASD','ADHD','Anxiety','Sensory Processing Disorder','Dyslexia','Other'
-          ] },
+        { key: 'child_first_name', type: 'text', required: true, label: "Child's first name as it should appear in the report", placeholder: 'e.g., Sam' },
+        { key: 'child_last_initial', type: 'text', required: true, label: 'Last initial (e.g., "Sam R.")', placeholder: 'M' },
+        { key: 'child_age', type: 'number', required: true, min: 1, max: 25, label: 'Age today', placeholder: '7' },
+        { key: 'child_pronouns', type: 'text', required: true, label: 'Pronouns', help: 'he/him, she/her, they/them, etc.', placeholder: 'he/him' },
+        { key: 'grade_level', type: 'radio', required: true, label: 'Grade level (or developmental equivalent)',
+          options: ['Pre-K / Early intervention','Kindergarten','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th','Post-secondary','Not in school / Homeschool'] },
       ]
     },
     {
-      id: 'who',
+      id: 'basics_diagnoses',
+      eyebrow: 'Diagnoses',
+      title: 'What\'s the diagnostic picture?',
+      sub: "We'll tune the framing of the report based on what you share. There's no wrong answer — even \"in evaluation\" or \"unsure\" is useful.",
+      fields: [
+        { key: 'diagnoses', type: 'checkbox', required: true, triggersRerender: true,
+          label: 'Primary diagnosis or diagnoses (check all that apply)',
+          options: ['Autism / ASD','ADHD','Anxiety','Sensory Processing Disorder','Dyslexia','PTSD','OCD','Other (specify below)'] },
+        { key: 'diagnoses_other', type: 'textarea', required: false,
+          label: 'If "Other" — what?  And: when was each diagnosis received?',
+          help: 'Approximate dates / ages are fine. Helps frame how new the language is for your child and the family.',
+          placeholder: '',
+          showIf: function(s) { return Array.isArray(s.data.diagnoses) && s.data.diagnoses.indexOf('Other (specify below)') > -1; } },
+      ]
+    },
+    {
+      id: 'basics_who',
       eyebrow: 'About you',
       title: 'Who is filling this out?',
       sub: 'We tailor the language of the report to who will be reading it most.',
       fields: [
-        { key: 'filler_role', type: 'radio', label: 'Your role', required: true, options: [
-            'Parent','Guardian','Therapist','Educator'
-          ] },
-        { key: 'biggest_challenge', type: 'textarea', label: 'What is your biggest challenge right now?', required: true,
+        { key: 'filler_role', type: 'radio', required: true, triggersRerender: true,
+          label: 'Your role in completing this',
+          options: ['Parent','Guardian','Therapist','Educator','Other (specify below)'] },
+        { key: 'filler_role_other', type: 'text', required: false,
+          label: 'If "Other" — what role?',
+          placeholder: '',
+          showIf: function(s) { return s.data.filler_role === 'Other (specify below)'; } },
+        { key: 'biggest_challenge', type: 'textarea', required: true,
+          label: 'What is your biggest challenge right now — the thing that made you sit down to fill this out?',
+          help: 'One paragraph, your words. Mornings? Meltdowns? Sibling dynamics? Doctor visits? The thing weighing on you most.',
           placeholder: 'e.g., Mornings are really hard. Getting out the door for school often ends in a meltdown for both of us.' },
       ]
     },
+  ];
+
+  // ─────────────────────────────────────────────────────────────
+  // ACTION_STEPS — full Focused Issue Support beta content
+  // (PoP_Focused_Issue_Support_Questionnaire_FILL_IN.docx, sections B–D + F)
+  // ─────────────────────────────────────────────────────────────
+  const ACTION_STEPS = [
     {
-      id: 'communication',
+      id: 'comm_style_focused',
+      eyebrow: 'Communication',
+      title: 'How does your child communicate?',
+      sub: 'Be specific — this tunes the tone of the focused report.',
+      fields: [
+        { key: 'communication_style_freetext', type: 'textarea', required: true,
+          label: 'Communication style',
+          help: 'Verbal? Mostly verbal but loses words under stress? Uses an AAC device? Limited verbal? Non-speaking? Be specific.',
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'focused_issue_overview',
+      eyebrow: 'The focused issue',
+      title: 'What\'s the issue this report should focus on?',
+      sub: 'The heart of this report. One paragraph, your words.',
+      fields: [
+        { key: 'focused_issue_description', type: 'textarea', required: true,
+          label: "What's the one specific issue, trigger, trauma, or pattern this report should focus on?",
+          help: "Examples: 'Bedtime regression in the last 6 weeks — won't sleep alone after a thunderstorm.' 'New trigger word from a coach that produces shutdowns.' 'Sibling-dynamic spike since the baby was born.'",
+          placeholder: '' },
+        { key: 'focused_issue_start_date', type: 'text', required: true,
+          label: 'When did this start?',
+          help: 'Date or rough timeframe. Was there a clear precipitating event? Or did it creep in?',
+          placeholder: 'e.g., About 6 weeks ago, after the back-to-school transition' },
+        { key: 'focused_issue_frequency', type: 'textarea', required: true,
+          label: 'How often is it happening?',
+          help: 'Daily? Multiple times a day? Weekly? In specific settings only?',
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'focused_issue_appearance',
+      eyebrow: 'What it looks like',
+      title: "What does the issue look like, inside and out?",
+      sub: 'The more concrete, the better the report.',
+      fields: [
+        { key: 'focused_issue_physical_appearance', type: 'textarea', required: true,
+          label: 'What does it look like physically — what do you actually SEE happening?',
+          help: 'Be concrete. Body language, facial expression, vocalizations, things they say, things they do.',
+          placeholder: '' },
+        { key: 'focused_issue_emotional_appearance', type: 'textarea', required: true,
+          label: 'What does it look like emotionally — what do you sense is going on internally for them?',
+          help: "Even if it's a guess. 'I think he's afraid.' 'It feels like shame.' 'I think she's overstimulated and embarrassed at the same time.'",
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'focused_issue_triggers',
+      eyebrow: 'Triggers & negative space',
+      title: 'What sets it off — and when does it NOT happen?',
+      sub: 'Both halves matter. The negative space tells us what\'s protective.',
+      fields: [
+        { key: 'focused_issue_trigger_theory', type: 'textarea', required: true,
+          label: "What's the trigger — or your best theory of the trigger?",
+          help: "A specific person? A word? A place? A type of transition? A sensory input? Something that happened earlier? Even 'I don't know — that's part of why I'm here' is a useful answer.",
+          placeholder: '' },
+        { key: 'focused_issue_when_not_happening', type: 'textarea', required: true,
+          label: 'When does this NOT happen?',
+          help: 'When is your child OK? What contexts seem protective?',
+          placeholder: '' },
+        { key: 'recent_environmental_changes', type: 'textarea', required: false,
+          label: 'Has anything in the environment recently changed?',
+          help: 'New school year, new sibling, new medication, new schedule, family stressor, recent illness, recent travel, new device, anything.',
+          placeholder: '' },
+        { key: 'trauma_or_ptsd_component', type: 'textarea', required: false,
+          label: 'Is there a trauma or PTSD component you suspect or know about?',
+          help: "If yes, describe what's known. If no, just say 'no.' If you suspect something but don't know — name the suspicion.",
+          placeholder: '' },
+        { key: 'regulation_profile_in_general', type: 'textarea', required: true,
+          label: "What is your child's regulation profile in general?",
+          help: "What ALREADY helps them regulate, even when this issue isn't active? Hugs? Pressure? Music? Movement? Quiet space? Specific people?",
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'focused_already_tried',
+      eyebrow: "What you've tried",
+      title: "What have you already tried with this specific issue?",
+      sub: "Even things that didn't work are useful — we'll suggest what to try next.",
+      fields: [
+        { key: 'strategies_already_tried', type: 'textarea', required: true,
+          label: "List every strategy, intervention, or accommodation you've tried with this specific issue.",
+          help: "Be honest about how each fared. e.g., 'Reward chart — worked 3 days, then stopped. Visual schedule — helped a little. Removing screens before bed — no change.'",
+          placeholder: '' },
+        { key: 'positive_shifts_strategies', type: 'textarea', required: false,
+          label: "Which one or two things — even if they didn't fully solve the issue — produced ANY positive shift?",
+          help: 'Even a slight, brief improvement is data. Name them.',
+          placeholder: '' },
+        { key: 'ruled_out_strategies', type: 'textarea', required: false,
+          label: 'What strategies have you ruled out — and why?',
+          help: "Sometimes 'we tried that, it backfired badly' is the most important info to share.",
+          placeholder: '' },
+        { key: 'current_clinician_involvement', type: 'textarea', required: false,
+          label: 'Are any clinicians, therapists, or specialists currently involved with this specific issue?',
+          help: "If yes, who, and what's their angle? If no, is there a referral on the horizon?",
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'focused_success_4_weeks',
+      eyebrow: 'Success in 4 weeks',
+      title: 'What does Day 28 look like if this works?',
+      sub: 'Specific, observable, honest.',
+      fields: [
+        { key: 'success_day_28_vision', type: 'textarea', required: true,
+          label: 'If this report works perfectly, what does Day 28 look like?',
+          help: "Paint the picture. 'Three smooth bedtimes a week. He sleeps in his own bed. He asks for a hug instead of a meltdown.'",
+          placeholder: '' },
+        { key: 'family_bandwidth_for_implementation', type: 'textarea', required: true,
+          label: "What is the FAMILY's bandwidth for implementation right now?",
+          help: "Are you in a good window to adopt new routines, or surviving? Be honest. 'We have 15 minutes a day at most' is a real answer that shapes the report.",
+          placeholder: '' },
+        { key: 'implementer_of_plan', type: 'textarea', required: true,
+          label: 'Who in the family is in charge of implementing this?',
+          help: 'One parent? Both? Co-parents in different households? A grandparent? Will the implementer have support?',
+          placeholder: '' },
+        { key: 'unwilling_to_do', type: 'textarea', required: false,
+          label: 'What would you NOT be willing to do, even if it might help?',
+          help: "Boundaries matter. 'We won't medicate.' 'We won't go back to the previous therapist.' 'We can't change daycare.'",
+          placeholder: '' },
+      ]
+    },
+  ];
+
+  // ─────────────────────────────────────────────────────────────
+  // COMPREHENSIVE_STEPS — full Joey Beta content
+  // (Joey_Beta_Questionnaire_FILL_IN.docx, sections B-1 through B-12)
+  // ─────────────────────────────────────────────────────────────
+  const COMPREHENSIVE_STEPS = [
+    {
+      id: 'comp_b1_communication',
       eyebrow: 'Communication',
       title: 'How does your child communicate?',
       sub: 'Pick the option that fits most days. We know it can change from moment to moment.',
       fields: [
-        { key: 'communication_style', type: 'radio', label: 'Primary communication style', required: true, options: [
-            'Verbal','Mostly verbal with support','AAC device','Limited verbal','Non-speaking'
-          ] },
+        { key: 'communication_style', type: 'radio', required: true, triggersRerender: true,
+          label: "Primary communication style",
+          options: ['Verbal','Mostly verbal with support','AAC device (specify below)','Limited verbal','Non-speaking'] },
+        { key: 'communication_aac_device_details', type: 'textarea', required: false,
+          label: 'If they use an AAC device or other communication support, describe it briefly.',
+          help: 'Brand/model if you remember; how often they use it; anything quirky about how it shows up in their day.',
+          placeholder: '',
+          showIf: function(s) { return s.data.communication_style === 'AAC device (specify below)'; } },
+        { key: 'communication_when_overwhelmed', type: 'textarea', required: true,
+          label: "How do they communicate when they're stretched or overwhelmed?",
+          help: 'Does they go quiet? Repeat phrases? Shut down? Use their device differently? Hit walls? Be specific.',
+          placeholder: '' },
       ]
     },
     {
-      id: 'regulation',
+      id: 'comp_b2_regulation',
       eyebrow: 'Regulation',
-      title: 'How often do meltdowns or shutdowns happen?',
-      sub: 'There are no wrong answers here — we just need an honest baseline.',
+      title: 'Meltdowns, shutdowns, and recovery.',
+      sub: 'No need to soften — the more accurate, the better the plan.',
       fields: [
-        { key: 'meltdown_frequency', type: 'radio', label: 'Frequency of meltdowns / shutdowns', required: true, options: [
-            'Rarely','Weekly','Daily','Multiple times per day'
-          ] },
+        { key: 'meltdown_frequency', type: 'radio', required: true,
+          label: 'How often do meltdowns or shutdowns happen?',
+          options: ['Rarely','Weekly','Daily','Multiple times per day'] },
+        { key: 'dysregulation_physical_signs', type: 'textarea', required: true,
+          label: 'What does it look like — physically — when they are starting to dysregulate?',
+          help: 'Hands over ears? Pacing? Going quiet? Verbal stim-loops? Specific phrases they repeat?',
+          placeholder: '' },
+        { key: 'full_meltdown_appearance', type: 'textarea', required: true,
+          label: 'What does a full meltdown / shutdown look like for them?',
+          placeholder: '' },
+        { key: 'recovery_time_after_hard_moment', type: 'textarea', required: true,
+          label: 'How long does recovery typically take after a hard moment?',
+          help: 'Minutes? Hour? Half a day? Be specific.',
+          placeholder: '' },
       ]
     },
     {
-      id: 'sensory',
+      id: 'comp_b3_sensory',
       eyebrow: 'Sensory profile',
-      title: 'Any significant sensory sensitivities?',
-      sub: 'Select every category that often impacts your child\'s day.',
+      title: 'Sensory sensitivities, in detail.',
+      sub: "Select every category that often impacts your child's day.",
       fields: [
-        { key: 'sensory_sensitivities', type: 'checkbox', label: 'Sensory areas', required: true, options: [
-            'Sound','Touch','Light','Food / taste','Smell','Proprioceptive / movement','None significant'
+        { key: 'sensory_sensitivities', type: 'checkbox', required: true,
+          label: 'Sensory areas of significant sensitivity (check all that apply)',
+          options: [
+            'Sound (auditory)','Light (visual)','Touch (tactile)','Food / taste (gustatory)',
+            'Smell (olfactory)','Proprioceptive / movement','Vestibular (balance / spinning)',
+            'Interoceptive (body awareness — hunger, fullness, bathroom)','None significant'
           ] },
+        { key: 'sensory_trigger_examples', type: 'textarea', required: true,
+          label: 'For each sensory area you checked, give one or two concrete examples of triggers.',
+          help: "e.g., 'Sound: vacuum, blender, more than 2 voices talking at once. Light: fluorescent overhead at the store.'",
+          placeholder: '' },
+        { key: 'sensory_regulation_inputs', type: 'textarea', required: true,
+          label: 'What sensory inputs REGULATE them? (deep pressure, movement, music, etc.)',
+          help: "Be specific — exact tools or types. 'Weighted blanket,' 'trampoline 10 minutes,' 'audiobook with single narrator,' etc.",
+          placeholder: '' },
       ]
     },
     {
-      id: 'school',
-      eyebrow: 'School',
-      title: 'What\'s the school setting?',
-      sub: 'This helps us frame strategies that will actually fit their day.',
+      id: 'comp_b4_school',
+      eyebrow: 'School / learning environment',
+      title: "What's the school setting?",
+      sub: "This helps us frame strategies that will actually fit their day.",
       fields: [
-        { key: 'school_setting', type: 'radio', label: 'Current setting', required: true, options: [
-            'General ed','Inclusion','Self-contained','Homeschool','Not in school'
-          ] },
-      ]
-    },
-  ];
-
-  const ACTION_STEPS = [
-    {
-      id: 'action_situation',
-      eyebrow: 'What brought you here',
-      title: 'What\'s happening right now?',
-      sub: 'A short paragraph is great — even bullet points work.',
-      fields: [
-        { key: 'action_situation', type: 'textarea', required: true, label: 'What specific situation or behavior prompted you to seek support today?',
-          placeholder: 'e.g., He\'s been refusing to do homework for 3 weeks. It started after his teacher changed seating arrangements.' },
-      ]
-    },
-    {
-      id: 'action_tried',
-      eyebrow: 'What you\'ve tried',
-      title: 'What have you already tried?',
-      sub: 'Even things that didn\'t work are useful — we\'ll suggest what to try next.',
-      fields: [
-        { key: 'action_tried', type: 'textarea', required: true, label: 'Strategies, supports, or routines you\'ve tested so far',
-          placeholder: 'e.g., Reward charts, a quiet corner, talking it through after dinner.' },
+        { key: 'school_setting', type: 'radio', required: true, triggersRerender: true,
+          label: 'Current setting',
+          options: ['General ed','Inclusion','Self-contained','Homeschool','Hybrid (specify below)','Not in school'] },
+        { key: 'school_setting_hybrid_other', type: 'textarea', required: false,
+          label: 'If "Hybrid" — describe the mix.',
+          placeholder: '',
+          showIf: function(s) { return s.data.school_setting === 'Hybrid (specify below)'; } },
+        { key: 'iep_504_status', type: 'radio', required: true, triggersRerender: true,
+          label: 'Does they have an IEP or 504 plan?',
+          options: ['IEP','504','Neither','In evaluation'] },
+        { key: 'anticipate_needing_iep_504', type: 'textarea', required: false,
+          label: "If neither, but you anticipate needing one — what's driving that?",
+          help: 'Optional. Helps frame the school-facing language of the Comprehensive Plan and the IEP add-on.',
+          placeholder: '',
+          showIf: function(s) { return s.data.iep_504_status === 'Neither'; } },
       ]
     },
     {
-      id: 'action_success',
-      eyebrow: 'Looking ahead',
-      title: 'What does success look like in 3 months?',
-      sub: 'Paint the picture — even small wins count.',
-      fields: [
-        { key: 'action_success', type: 'textarea', required: true, label: 'Your "if this works, here\'s what we\'ll see" answer',
-          placeholder: 'e.g., One smooth morning a week. He asks for a break instead of melting down.' },
-      ]
-    },
-  ];
-
-  const COMPREHENSIVE_STEPS = [
-    {
-      id: 'strengths',
-      eyebrow: 'Strengths',
-      title: 'Tell us what your child does beautifully.',
+      id: 'comp_b5_strengths',
+      eyebrow: 'Strengths (the engine)',
+      title: 'Tell us what they do beautifully.',
       sub: 'We anchor every plan in strengths first.',
       fields: [
-        { key: 'strengths', type: 'textarea', required: true, label: 'Describe your child\'s strengths',
-          placeholder: 'e.g., She remembers everything she reads. She\'s very gentle with younger kids.' },
+        { key: 'strengths_list', type: 'textarea', required: true,
+          label: 'Tell us what they do beautifully — list at least 3-5 things.',
+          help: 'Pattern recognition, gentleness with animals, deep memory, art, humor, observational ability — whatever lights them up.',
+          placeholder: '' },
+        { key: 'special_interests', type: 'textarea', required: true,
+          label: 'Their special interests (the things they could talk about for an hour).',
+          help: "These become on-ramps into therapy, school, regulation. Be specific — 'weather,' 'dinosaurs,' 'a specific book series,' 'trains.'",
+          placeholder: '' },
       ]
     },
     {
-      id: 'goals',
+      id: 'comp_b6_goals',
       eyebrow: 'Your goals',
       title: 'Top 3 goals right now.',
-      sub: 'These can be social, academic, daily-living — anything.',
+      sub: 'Can be social, academic, daily-living, regulation, self-advocacy — anything.',
       fields: [
-        { key: 'top_goals', type: 'textarea', required: true, label: 'Your top 3 current goals for your child',
+        { key: 'top_3_goals', type: 'textarea', required: true,
+          label: 'Your top 3 current goals.',
           placeholder: '1.\n2.\n3.' },
       ]
     },
     {
-      id: 'sleep_eating',
-      eyebrow: 'Daily life',
+      id: 'comp_b7_sleep_eating',
+      eyebrow: 'Daily anchors',
       title: 'Sleep and eating.',
       sub: 'These two anchors shape almost every other behavior.',
       fields: [
-        { key: 'sleep', type: 'radio', label: 'Sleep patterns', required: true, options: [
-            'Good','Some difficulty','Significant difficulty'
-          ] },
-        { key: 'eating', type: 'radio', label: 'Eating / food', required: true, options: [
-            'No issues','Some selective eating','Significant feeding challenges'
-          ] },
+        { key: 'sleep_patterns', type: 'radio', required: true,
+          label: 'Sleep patterns',
+          options: ['Good','Some difficulty','Significant difficulty'] },
+        { key: 'sleep_details', type: 'textarea', required: false,
+          label: 'Anything specific about sleep we should know?',
+          help: 'Bedtime routine, what helps them fall asleep, night wakings, etc.',
+          placeholder: '' },
+        { key: 'eating_profile', type: 'radio', required: true,
+          label: 'Eating / food',
+          options: ['No issues','Some selective eating','Significant feeding challenges'] },
+        { key: 'eating_details', type: 'textarea', required: false,
+          label: 'Anything specific about eating?',
+          help: 'Texture preferences, safe foods, foods to skip, blood-sugar quirks, mealtime structure.',
+          placeholder: '' },
       ]
     },
     {
-      id: 'social_regulation',
+      id: 'comp_b8_social',
       eyebrow: 'Connection & regulation',
-      title: 'Social and emotional supports.',
+      title: 'Social style and what helps.',
       sub: 'How they connect, and what helps them recover.',
       fields: [
-        { key: 'social_skills', type: 'radio', label: 'Social skills', required: true, options: [
-            'Makes friends easily','Has a few friends','Struggles socially','Prefers to be alone'
+        { key: 'social_style', type: 'radio', required: true,
+          label: 'Their social style',
+          options: ['Makes friends easily','Has a few friends','Struggles socially','Prefers to be alone'] },
+        { key: 'emotional_regulation_tools', type: 'checkbox', required: true, triggersRerender: true,
+          label: 'Emotional regulation tools that currently help (check all that apply)',
+          options: [
+            'Deep pressure','Movement breaks','Quiet space','Music / audiobooks','Fidgets',
+            'Breathing exercises','Weighted items','Co-regulation with a parent',
+            'A specific person (not parent — name below)','Nothing consistent yet'
           ] },
-        { key: 'regulation_tools', type: 'checkbox', label: 'Emotional regulation tools that currently help', required: true, options: [
-            'Deep pressure','Movement breaks','Quiet space','Music','Fidgets','Breathing','Weighted items','Nothing consistent yet'
+        { key: 'regulation_specific_person', type: 'text', required: false,
+          label: "If you checked 'specific person,' who?",
+          placeholder: 'e.g., Aunt Jen; Coach Rivera',
+          showIf: function(s) { return Array.isArray(s.data.emotional_regulation_tools) && s.data.emotional_regulation_tools.indexOf('A specific person (not parent — name below)') > -1; } },
+      ]
+    },
+    {
+      id: 'comp_b10_good_hard_day',
+      eyebrow: 'The shape of a day',
+      title: 'A good day vs. a hard day.',
+      sub: 'The shape of each tells us what\'s working and what\'s not.',
+      fields: [
+        { key: 'good_day_description', type: 'textarea', required: true,
+          label: 'What does a GOOD day look like?',
+          help: 'Concrete — when they wake up, what they do, what they eat, who\'s around, what they say, how it ends.',
+          placeholder: '' },
+        { key: 'hard_day_description', type: 'textarea', required: true,
+          label: 'What does a HARD day look like?',
+          help: 'No need to soften.',
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'comp_b11_triggers',
+      eyebrow: 'Specific triggers',
+      title: 'Predictable triggers.',
+      sub: 'List the things you can brace for.',
+      fields: [
+        { key: 'predictable_dysregulation_triggers', type: 'textarea', required: true,
+          label: 'List the situations / words / events that you can predict will dysregulate them.',
+          help: "e.g., 'Fluorescent lights at the doctor.' 'Surprise touch.' 'The word stop.' 'Plans changing without warning.' Anything you brace for.",
+          placeholder: '' },
+        { key: 'trauma_words_to_avoid', type: 'textarea', required: false,
+          label: 'Are there words or phrases they react strongly to that we should make sure NEVER appear in any caregiver guide?',
+          help: 'Some kids have specific trauma-words from past experiences. Optional but important.',
+          placeholder: '' },
+      ]
+    },
+  ];
+
+  // ─────────────────────────────────────────────────────────────
+  // HOUSEHOLD_STEPS — multi-home aware family structure (Phase 2A foundation)
+  // ─────────────────────────────────────────────────────────────
+  const HOUSEHOLD_STEPS = [
+    {
+      id: 'household_structure',
+      eyebrow: 'Home & family',
+      title: "Tell us about your child's home(s).",
+      sub: 'This helps every guide we generate reflect the actual family — including divorced, separated, blended, and multi-home situations.',
+      fields: [
+        { key: 'household_num_homes', type: 'radio', required: true, triggersRerender: true,
+          label: 'How many homes does your child move between?',
+          options: [
+            'One (single household)',
+            'Two (e.g., divorced / separated co-parenting)',
+            'Three or more (specify below)',
+            'It varies — describe below'
           ] },
+        { key: 'household_primary_people', type: 'textarea', required: true,
+          label: 'Who lives in the primary household?',
+          help: 'List each person: name (or relationship), role, age range. e.g., "Maria (Mom), 42; Emma, sister, 14; the dog Buddy."',
+          placeholder: '' },
+        { key: 'household_second_people', type: 'textarea', required: false,
+          label: "If there's a second household: who lives there?",
+          help: 'Same format. Skip if N/A.',
+          placeholder: '',
+          showIf: function(s) {
+            const v = s.data.household_num_homes;
+            return v === 'Two (e.g., divorced / separated co-parenting)'
+                || v === 'Three or more (specify below)'
+                || v === 'It varies — describe below';
+          } },
+        { key: 'household_three_or_more_desc', type: 'textarea', required: false,
+          label: 'If there are three or more homes, describe them.',
+          help: "Include grandparents' homes the child stays at regularly, blended-family configurations, etc.",
+          placeholder: '',
+          showIf: function(s) {
+            const v = s.data.household_num_homes;
+            return v === 'Three or more (specify below)' || v === 'It varies — describe below';
+          } },
       ]
     },
     {
-      id: 'school_plan',
-      eyebrow: 'School supports',
-      title: 'IEP, 504, or evaluation status?',
-      sub: 'We\'ll tailor the school-facing language of your plan.',
+      id: 'household_coparenting',
+      eyebrow: 'Co-parenting & transitions',
+      title: 'How does your child move between homes?',
+      sub: 'These help the report give realistic, household-aware suggestions.',
       fields: [
-        { key: 'iep_504_status', type: 'radio', label: 'School support plan', required: true, options: [
-            'IEP','504','Neither','In evaluation'
+        { key: 'household_coparenting_style', type: 'radio', required: false,
+          label: 'Co-parenting style (if applicable)',
+          options: [
+            'Aligned and collaborative — same approach across homes',
+            'Mostly aligned with some friction',
+            'Significantly different parenting approaches',
+            'Limited or no contact between households',
+            'Not applicable (single household / single parent)'
           ] },
+        { key: 'household_transition_cadence', type: 'radio', required: false, triggersRerender: true,
+          label: 'Transition cadence between homes (if applicable)',
+          options: ['Daily','A few days per week','Weekly','Every other week','Other — describe below','Not applicable'] },
+        { key: 'household_other_cadence_desc', type: 'textarea', required: false,
+          label: 'If "Other" — describe the rhythm.',
+          help: "e.g., \"Mom's Mon–Fri school, Dad's Sat–Sun, rotates every other holiday.\"",
+          placeholder: '',
+          showIf: function(s) { return s.data.household_transition_cadence === 'Other — describe below'; } },
+        { key: 'household_transition_difficulty', type: 'radio', required: false, triggersRerender: true,
+          label: 'How does your child handle transitions between homes?',
+          options: [
+            'Smoothly — minimal disruption',
+            'Some difficulty — needs ramp-up time on either end',
+            'Significant difficulty — affects sleep, mood, or regulation for hours or days',
+            'Varies by direction (e.g., harder going to one home than the other)',
+            'Not applicable'
+          ] },
+        { key: 'household_transition_day_appearance', type: 'textarea', required: false,
+          label: 'Describe what transition days look like.',
+          help: 'Sleep change, mood, body language, things they say. Are some directions harder than others?',
+          placeholder: '',
+          showIf: function(s) {
+            const v = s.data.household_transition_difficulty;
+            return v && v !== 'Not applicable' && v !== 'Smoothly — minimal disruption';
+          } },
+        { key: 'household_transition_supports', type: 'textarea', required: false,
+          label: 'What rituals, objects, or routines help with transitions?',
+          help: 'A specific stuffed animal that travels? A comfort food the same in both homes? A goodbye phrase? Anything working now — or that has worked in the past.',
+          placeholder: '',
+          showIf: function(s) {
+            const v = s.data.household_transition_difficulty;
+            return v && v !== 'Not applicable';
+          } },
+        { key: 'household_differences_between_homes', type: 'textarea', required: false,
+          label: "What's DIFFERENT between the homes that affects your child?",
+          help: 'Sensory environment (loud / quiet / messy / minimalist). Rules and expectations. Schedule rigidity. Even the food. Be specific.',
+          placeholder: '',
+          showIf: function(s) {
+            const v = s.data.household_num_homes;
+            return v && v !== 'One (single household)';
+          } },
       ]
     },
     {
-      id: 'family',
-      eyebrow: 'Family dynamics',
-      title: 'About your family.',
-      sub: 'Sibling context often shapes what\'s realistic at home.',
+      id: 'household_other_adults_legal',
+      eyebrow: 'Other adults & sensitive notes',
+      title: "Anyone else regularly in your child's life?",
+      sub: 'Plus a private space for any custody or family-court considerations the report should be aware of.',
       fields: [
-        { key: 'has_siblings', type: 'radio', label: 'Does your child have siblings?', required: true, options: ['Yes','No'] },
-        { key: 'sibling_notes', type: 'textarea', required: false, label: 'If yes — any sibling challenges related to your child\'s needs?',
-          placeholder: 'e.g., Younger brother gets scared during meltdowns. Older sister sometimes resents extra attention.' },
+        { key: 'household_other_adults', type: 'textarea', required: false,
+          label: 'Other adults the child sees regularly — outside the homes.',
+          help: 'Step-parents, partners, grandparents who live elsewhere, aunts/uncles, caregivers, family friends.',
+          placeholder: '' },
+        { key: 'household_legal_considerations', type: 'radio', required: false, triggersRerender: true,
+          label: 'Are there custody, legal, or family-court considerations the report should be aware of?',
+          options: [
+            'No — straightforward family situation',
+            'Yes — some considerations worth noting (describe below)',
+            'Yes — significant considerations (describe below)',
+            'Prefer not to share'
+          ] },
+        { key: 'household_sensitive_notes', type: 'textarea', required: false,
+          label: 'If yes — what would you want a future therapist or care provider to know?',
+          help: 'Optional and sensitive. The report will frame anything you share in protective, neutral language.',
+          placeholder: '',
+          showIf: function(s) {
+            const v = s.data.household_legal_considerations;
+            return v === 'Yes — some considerations worth noting (describe below)'
+                || v === 'Yes — significant considerations (describe below)';
+          } },
+      ]
+    },
+  ];
+
+  // ─────────────────────────────────────────────────────────────
+  // SIBLING_STEPS — INFO-GATHERING ONLY
+  // No language about a Sibling Guide being purchased. This just captures
+  // sibling info as part of the family profile. The Sibling Guide opt-in
+  // is a separate add-on selection in ACTION/COMPREHENSIVE_ADDON_STEPS.
+  // ─────────────────────────────────────────────────────────────
+  const SIBLING_STEPS = [
+    {
+      id: 'sibling_block',
+      eyebrow: 'Siblings & close family kids',
+      title: 'Does your child have siblings?',
+      sub: 'Sibling dynamics often shape what\'s realistic at home — even if you don\'t want a Sibling Guide right now, this context helps every other report.',
+      fields: [
+        { key: 'has_siblings', type: 'radio', required: true, triggersRerender: true,
+          label: 'Does your child have siblings?',
+          options: ['Yes','No'] },
+        { key: 'siblings_list', type: 'textarea', required: false,
+          label: 'List each sibling: name, age, 2–3 things they LIKE, 1–2 things they find HARD, and how they react when your child is having a hard day.',
+          help: 'Format example: "Riley, 5 — likes dance, dogs, painting — finds hard: loud noises, being rushed — on hard days: gets very quiet and clings to me."',
+          placeholder: '',
+          showIf: function(s) { return s.data.has_siblings === 'Yes'; } },
+        { key: 'siblings_affected_on_hard_days', type: 'textarea', required: false,
+          label: "How are siblings affected on your child's hard days?",
+          placeholder: '',
+          showIf: function(s) { return s.data.has_siblings === 'Yes'; } },
+        { key: 'sibling_safe_adults', type: 'textarea', required: false,
+          label: "Who is each sibling's \"safe adult\" outside of you?",
+          help: '"Riley: Aunt Jen. Lucas: Coach Rivera and his older cousin Tom." Optional but helpful.',
+          placeholder: '',
+          showIf: function(s) { return s.data.has_siblings === 'Yes'; } },
+      ]
+    },
+  ];
+
+  // ─────────────────────────────────────────────────────────────
+  // ACTION_ADDON_STEPS — Care Guide opt-ins for Action Report
+  // All 5 guides available (Babysitter, Extended Family, Sibling,
+  // Teacher, Service Provider) — same set as Comprehensive Plan.
+  // Each "Yes" selection auto-adds the guide to the user's cart at checkout.
+  // ─────────────────────────────────────────────────────────────
+  const ACTION_ADDON_STEPS = [
+    {
+      id: 'action_addon_babysitter',
+      eyebrow: 'Add-on: Babysitter Guide',
+      title: 'Add a Babysitter / Respite Care Guide?',
+      sub: 'Optional — a focused-issue version of the Babysitter Care Guide, tuned to this 4-week intervention window. Yes = added to your cart.',
+      fields: [
+        { key: 'addon_babysitter', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Babysitter Care Guide tuned to this issue?',
+          options: [
+            'Yes — generate the Babysitter Guide (added to cart)',
+            'No — skip the Babysitter Guide'
+          ] },
+        { key: 'babysitter_emergency_contacts', type: 'textarea', required: false,
+          label: 'Emergency contacts + key allergies/medications + bedtime steps a sitter should follow',
+          help: 'One item per line. Same shape as the contacts card in the Comprehensive Plan.',
+          placeholder: 'MOM: Maria, 401-555-0100\nDAD: David, 401-555-0101\nPEDIATRICIAN: Dr. Patel, 401-555-0200\nALLERGIES: peanuts (Epi-Pen in front entry)\nBEDTIME: 8:30 — bath, audiobook, lights off by 9.',
+          showIf: function(s) { return s.data.addon_babysitter && s.data.addon_babysitter.indexOf('Yes') === 0; } },
       ]
     },
     {
-      id: 'good_day',
-      eyebrow: 'Good days',
-      title: 'What does a good day look like?',
-      sub: 'The shape of a good day tells us what\'s working.',
+      id: 'action_addon_extended_family',
+      eyebrow: 'Add-on: Extended Family Guide',
+      title: 'Add an Extended Family / Close Friends Guide?',
+      sub: 'Optional — warm, plain-language guide for grandparents, aunts/uncles, godparents. Yes = added to your cart.',
       fields: [
-        { key: 'good_day', type: 'textarea', required: true, label: 'A "good day" for your child',
-          placeholder: 'e.g., Slept in, had pancakes, played outside, got time alone in his room.' },
+        { key: 'addon_extended_family', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate an Extended Family / Close Friends Guide?',
+          options: [
+            'Yes — generate the Extended Family Guide (added to cart)',
+            'No — skip'
+          ] },
+        { key: 'extfam_avoid_phrases_from_upbringing', type: 'textarea', required: false,
+          label: "Phrases or attitudes from how YOU were raised that don't work for your child — and that you wish extended family would set down.",
+          help: "e.g., 'Toughen up.' 'Look me in the eye.' 'Because I said so.' 'Don't make a scene.'",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_extended_family === 'Yes — generate the Extended Family Guide (added to cart)'; } },
+        { key: 'extfam_relationships_with_specific_members', type: 'textarea', required: false,
+          label: 'Anything specific about how your child relates to particular extended-family members?',
+          help: "e.g., 'Grandma is regulating; Grandpa's tone often overwhelms him.'",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_extended_family === 'Yes — generate the Extended Family Guide (added to cart)'; } },
       ]
     },
     {
-      id: 'hard_day',
-      eyebrow: 'Hard days',
-      title: 'What does a hard day look like?',
-      sub: 'No need to soften — the harder you are honest, the better the plan.',
+      id: 'action_addon_sibling',
+      eyebrow: 'Add-on: Sibling Guide',
+      title: 'Add a Sibling Guide?',
+      sub: 'Optional — age-tiered (4–7 / 8–11 / 12+). Yes = added to your cart.',
       fields: [
-        { key: 'hard_day', type: 'textarea', required: true, label: 'A "hard day" for your child',
-          placeholder: 'e.g., Loud morning, no warning before transitions, ends with a meltdown after school.' },
+        { key: 'addon_sibling', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Sibling Guide?',
+          options: [
+            'Yes — for an actual sibling (added to cart)',
+            'Yes — for a close cousin / family-friend child (added to cart)',
+            'No — no siblings, or N/A'
+          ] },
+        { key: 'addon_sibling_close_cousin_details', type: 'textarea', required: false,
+          label: "If you chose option 2, give that child's name, age, and relationship.",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_sibling === 'Yes — for a close cousin / family-friend child (added to cart)'; } },
+        { key: 'sibling_guide_for_name', type: 'text', required: true,
+          label: 'Which sibling (or cousin/friend) is the Sibling Guide being generated FOR?',
+          help: 'Just the first name. The guide will use this name throughout.',
+          placeholder: 'e.g., Maya',
+          showIf: function(s) { return s.data.addon_sibling && s.data.addon_sibling.indexOf('Yes') === 0; } },
+        { key: 'sibling_guide_for_age', type: 'number', required: true, min: 1, max: 25,
+          label: 'Their age',
+          placeholder: 'e.g., 5',
+          showIf: function(s) { return s.data.addon_sibling && s.data.addon_sibling.indexOf('Yes') === 0; } },
+        { key: 'sibling_guide_for_age_tier', type: 'select', required: true,
+          label: 'Age tier (this picks the right Sibling Guide template)',
+          help: 'Pick the bucket their age falls into. We have three tier-specific Sibling Guide templates.',
+          options: ['4–7 (early childhood)','8–11 (middle childhood)','12+ (tween / teen)'],
+          showIf: function(s) { return s.data.addon_sibling && s.data.addon_sibling.indexOf('Yes') === 0; } },
+      ]
+    },
+    {
+      id: 'action_addon_teacher',
+      eyebrow: 'Add-on: Teacher / School Staff Guide',
+      title: 'Add a Teacher / School Staff Guide?',
+      sub: 'Optional — neuro-affirming professional guide for school teams or homeschool co-ops. Yes = added to your cart.',
+      fields: [
+        { key: 'addon_teacher', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Teacher / School Staff Guide?',
+          options: [
+            'Yes — for current school / co-op / specialist context (added to cart)',
+            'Yes — keep it on file for a future school re-entry scenario (added to cart)',
+            'No — skip'
+          ] },
+        { key: 'teacher_group_learning_environment', type: 'textarea', required: false,
+          label: 'If your child is in any group-learning environment (co-op, art class, sport), describe it briefly.',
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_teacher && s.data.addon_teacher.indexOf('Yes') === 0; } },
+        { key: 'teacher_accommodations_at_home', type: 'textarea', required: false,
+          label: "Specific accommodations YOU rely on at home that you'd want any group setting to know about.",
+          help: 'e.g., 25-min movement break minimum; first lesson always wolves; weighted lap pad on chair.',
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_teacher && s.data.addon_teacher.indexOf('Yes') === 0; } },
+      ]
+    },
+    {
+      id: 'action_addon_service_provider',
+      eyebrow: 'Add-on: Service Provider / Therapy Guide',
+      title: 'Add a Service Provider / Therapy Guide?',
+      sub: 'Optional — neuro-affirming clinical-bridge document for OTs, SLPs, social-skills facilitators, and other providers. Yes = added to your cart.',
+      fields: [
+        { key: 'addon_service_provider', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Service Provider / Therapy Guide?',
+          options: [
+            'Yes — generate the Service Provider Guide (added to cart)',
+            'No — skip'
+          ] },
+        { key: 'provider_current_providers', type: 'textarea', required: false,
+          label: 'Which providers does your child currently see, or which kind are you actively pursuing?',
+          help: "List specialty + frequency. e.g., 'OT, weekly, sees Dr. Lee at MercyCare.' 'SLP, on waitlist.'",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
+        { key: 'provider_clinical_goals', type: 'textarea', required: false,
+          label: 'What clinical goals does your child already have in any current therapy?',
+          help: 'Optional but very useful — lets the bridge document align home work with existing clinical goals.',
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
+        { key: 'provider_social_skills_history', type: 'textarea', required: false,
+          label: "Has your child been in a social-skills group before? If yes, what worked / what didn't?",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
+        { key: 'provider_quirks_preferences', type: 'textarea', required: false,
+          label: 'Any provider quirks / preferences?',
+          help: 'e.g., warms up to providers who match a special interest; shuts down when a new clinician greets them at the door.',
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
+      ]
+    },
+  ];
+
+  // ─────────────────────────────────────────────────────────────
+  // COMPREHENSIVE_ADDON_STEPS — Care Guide opt-ins for Comprehensive Plan
+  // (Joey_Beta_Questionnaire_FILL_IN.docx, Section C-1 through C-5)
+  // Per the SKILL: Pathway 1 supports Babysitter + Extended Family + Sibling
+  // + Teacher + Service Provider guides.
+  // ─────────────────────────────────────────────────────────────
+  const COMPREHENSIVE_ADDON_STEPS = [
+    {
+      id: 'comp_addon_babysitter',
+      eyebrow: 'Add-on: Babysitter Guide',
+      title: 'Add a Babysitter / Respite Care Guide?',
+      sub: 'Optional — a printable need-to-knows guide for anyone watching your child.',
+      fields: [
+        { key: 'addon_babysitter', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Babysitter / Respite Care Guide?',
+          options: ['Yes — generate the Babysitter Guide (added to cart)','No — skip'] },
+      ]
+    },
+    {
+      id: 'comp_addon_babysitter_details',
+      eyebrow: 'Babysitter Guide details',
+      title: 'Emergency contacts, food, and bedtime.',
+      sub: 'These populate the Babysitter Care Guide. Each line goes onto the printed contact card.',
+      showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; },
+      fields: [
+        { key: 'sitter_mom_name_number', type: 'text', required: true,
+          label: 'MOM · Name + Number', placeholder: 'Maria, 401-555-0100',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_dad_partner_name_number', type: 'text', required: true,
+          label: 'DAD / PARTNER · Name + Number', placeholder: '',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_close_neighbor_name_number', type: 'text', required: false,
+          label: 'CLOSE NEIGHBOR · Name + Number',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_backup_family_name_number', type: 'text', required: false,
+          label: 'BACKUP FAMILY MEMBER · Name + Number',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_pediatrician_name_number', type: 'text', required: true,
+          label: 'PEDIATRICIAN · Name + Number',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_after_hours_care_name_number', type: 'text', required: false,
+          label: 'AFTER-HOURS CARE · Name + Number',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_home_address', type: 'text', required: true,
+          label: 'HOME ADDRESS · Street, City, State, Zip',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_cross_streets_gate_code', type: 'text', required: false,
+          label: 'CROSS-STREETS / GATE CODE · If relevant',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_allergies_medications', type: 'text', required: true,
+          label: 'ALLERGIES / MEDICATIONS · List clearly',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_insurance_info', type: 'text', required: true,
+          label: 'INSURANCE INFO · Carrier + ID',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_local_er', type: 'text', required: true,
+          label: 'LOCAL ER · Name + Address',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_foods_loved', type: 'textarea', required: true,
+          label: "Foods they love (sitter can't go wrong with these)",
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_foods_to_skip', type: 'textarea', required: false,
+          label: "Foods to skip on a sitter's watch",
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+        { key: 'sitter_bedtime_routine', type: 'textarea', required: true,
+          label: 'Bedtime routine — exact steps a sitter should follow',
+          showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
+      ]
+    },
+    {
+      id: 'comp_addon_extended_family',
+      eyebrow: 'Add-on: Extended Family Guide',
+      title: 'Add an Extended Family / Close Friends Guide?',
+      sub: 'Optional — a warm, plain-language guide for grandparents, aunts/uncles, godparents, and the close friends who feel like family.',
+      fields: [
+        { key: 'addon_extended_family', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate an Extended Family / Close Friends Guide?',
+          options: ['Yes — generate the Extended Family Guide (added to cart)','No — skip'] },
+        { key: 'extfam_avoid_phrases_from_upbringing', type: 'textarea', required: false,
+          label: "Are there specific phrases or attitudes from how YOU were raised that don't work for your child — and that you wish extended family would set down?",
+          help: "e.g., 'Toughen up.' 'Look me in the eye.' 'Because I said so.' 'Don't make a scene.'",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_extended_family === 'Yes — generate the Extended Family Guide (added to cart)'; } },
+        { key: 'extfam_relationships_with_specific_members', type: 'textarea', required: false,
+          label: 'Anything specific about how your child relates to particular extended-family members?',
+          help: "e.g., 'Grandma is regulating; Grandpa's tone often overwhelms him.' Will tune the guide.",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_extended_family === 'Yes — generate the Extended Family Guide (added to cart)'; } },
+      ]
+    },
+    {
+      id: 'comp_addon_sibling',
+      eyebrow: 'Add-on: Sibling Guide',
+      title: 'Add a Sibling Guide?',
+      sub: 'Optional — age-tiered (4–7 / 8–11 / 12+). For an actual sibling OR a close cousin / family-friend child.',
+      fields: [
+        { key: 'addon_sibling', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Sibling Guide?',
+          options: [
+            'Yes — for an actual sibling (added to cart)',
+            'Yes — for a close cousin / family-friend child (details below — added to cart)',
+            'No — skip the Sibling Guide for now'
+          ] },
+        { key: 'addon_sibling_close_cousin_details', type: 'textarea', required: false,
+          label: "If you chose option 2, give that child's name, age, and relationship.",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_sibling === 'Yes — for a close cousin / family-friend child (details below — added to cart)'; } },
+        { key: 'sibling_guide_for_name', type: 'text', required: true,
+          label: 'Which sibling (or cousin/friend) is the Sibling Guide being generated FOR?',
+          help: 'Just the first name. The guide will use this name throughout.',
+          placeholder: 'e.g., Riley',
+          showIf: function(s) { return s.data.addon_sibling && s.data.addon_sibling.indexOf('Yes') === 0; } },
+        { key: 'sibling_guide_for_age', type: 'number', required: true, min: 1, max: 25,
+          label: 'Their age',
+          placeholder: 'e.g., 5',
+          showIf: function(s) { return s.data.addon_sibling && s.data.addon_sibling.indexOf('Yes') === 0; } },
+        { key: 'sibling_guide_for_age_tier', type: 'select', required: true,
+          label: 'Age tier (this picks the right Sibling Guide template)',
+          help: 'Pick the bucket their age falls into.',
+          options: ['4–7 (early childhood)','8–11 (middle childhood)','12+ (tween / teen)'],
+          showIf: function(s) { return s.data.addon_sibling && s.data.addon_sibling.indexOf('Yes') === 0; } },
+      ]
+    },
+    {
+      id: 'comp_addon_teacher',
+      eyebrow: 'Add-on: Teacher / School Staff Guide',
+      title: 'Add a Teacher / School Staff Guide?',
+      sub: 'Optional — neuro-affirming professional guide for school teams or homeschool co-ops.',
+      fields: [
+        { key: 'addon_teacher', type: 'radio', required: true, triggersRerender: true,
+          label: 'Should the Teacher Guide be generated?',
+          options: [
+            'Yes — for current school / co-op / specialist context (added to cart)',
+            'Yes — keep it on file for a future school re-entry scenario (added to cart)',
+            'No — skip'
+          ] },
+        { key: 'teacher_group_learning_environment', type: 'textarea', required: false,
+          label: 'If your child is in any group-learning environment (co-op, art class, sport), describe it briefly.',
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_teacher && s.data.addon_teacher.indexOf('Yes') === 0; } },
+        { key: 'teacher_accommodations_at_home', type: 'textarea', required: false,
+          label: "Specific accommodations YOU rely on at home that you'd want any group setting to know about.",
+          help: 'e.g., 25-min movement break minimum; first lesson always wolves; weighted lap pad on chair.',
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_teacher && s.data.addon_teacher.indexOf('Yes') === 0; } },
+      ]
+    },
+    {
+      id: 'comp_addon_service_provider',
+      eyebrow: 'Add-on: Service Provider / Therapy Guide',
+      title: 'Add a Service Provider / Therapy Guide?',
+      sub: 'Optional — neuro-affirming clinical-bridge document for OTs, SLPs, social-skills facilitators, and other providers.',
+      fields: [
+        { key: 'addon_service_provider', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Service Provider / Therapy Guide?',
+          options: ['Yes — generate the Service Provider Guide (added to cart)','No — skip'] },
+        { key: 'provider_current_providers', type: 'textarea', required: false,
+          label: 'Which providers does your child currently see, or which kind are you actively pursuing?',
+          help: "List specialty + frequency. e.g., 'OT, weekly, sees Dr. Lee at MercyCare.' 'SLP, on waitlist.'",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
+        { key: 'provider_clinical_goals', type: 'textarea', required: false,
+          label: 'What clinical goals does your child already have in any current therapy?',
+          help: 'Optional but very useful — lets the bridge document align home work with existing clinical goals.',
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
+        { key: 'provider_social_skills_history', type: 'textarea', required: false,
+          label: "Has your child been in a social-skills group before? If yes, what worked / what didn't?",
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
+        { key: 'provider_quirks_preferences', type: 'textarea', required: false,
+          label: 'Any provider quirks / preferences?',
+          help: 'e.g., warms up to providers who match a special interest; shuts down when a new clinician greets them at the door.',
+          placeholder: '',
+          showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
+      ]
+    },
+  ];
+
+  // ─────────────────────────────────────────────────────────────
+  // FINAL_STEPS — phrases that work, phrases that don't, anything-else
+  // Common to both flows. Pulled from File 1 Section F + File 2 Section D.
+  // ─────────────────────────────────────────────────────────────
+  const FINAL_STEPS = [
+    {
+      id: 'phrases_that_work',
+      eyebrow: 'Final touches',
+      title: 'What lands. What doesn\'t.',
+      sub: 'These phrases populate the SAY THIS / DON\'T SAY card in every guide.',
+      fields: [
+        { key: 'working_phrases_or_scripts', type: 'textarea', required: false,
+          label: "Specific phrases or scripts that ALREADY work in your household that you'd want any caregiver to also use.",
+          help: "e.g., 'I see you, take a breath with me.' 'I'm not going to feed that thought.' The things you've discovered that land for THIS child.",
+          placeholder: '' },
+        { key: 'phrases_that_do_not_work', type: 'textarea', required: false,
+          label: 'Specific phrases or words that DO NOT work — that we should make sure never appear in any caregiver guide.',
+          help: "e.g., 'STOP' is a trauma trigger. 'Calm down.' 'Because I said so.' Whatever has backfired.",
+          placeholder: '' },
       ]
     },
     {
       id: 'extras',
       eyebrow: 'Anything else',
-      title: 'Is there anything else we should know?',
-      sub: 'Optional — but often the most useful field.',
+      title: 'Anything else we should know?',
+      sub: 'The most-used field. Use it.',
       fields: [
-        { key: 'extras', type: 'textarea', required: false, label: 'Anything else the AI should know',
-          placeholder: 'Family changes, recent diagnoses, things you\'ve noticed but haven\'t mentioned yet.' },
+        { key: 'extras', type: 'textarea', required: false,
+          label: 'Anything else — anything at all — that you want this report to reflect.',
+          help: 'Family changes, recent diagnoses, big life events, things you\'ve never told anyone, anything.',
+          placeholder: '' },
       ]
     },
   ];
 
+
   function getQuestionSteps() {
-    if (state.flow === 'action')        return SHARED_STEPS.concat(ACTION_STEPS);
-    if (state.flow === 'comprehensive') return SHARED_STEPS.concat(COMPREHENSIVE_STEPS);
-    return [];
+    let steps = [];
+    if (state.flow === 'action') {
+      steps = SHARED_STEPS
+        .concat(ACTION_STEPS)
+        .concat(HOUSEHOLD_STEPS)
+        .concat(SIBLING_STEPS)
+        .concat(ACTION_ADDON_STEPS)
+        .concat(FINAL_STEPS);
+    } else if (state.flow === 'comprehensive') {
+      steps = SHARED_STEPS
+        .concat(COMPREHENSIVE_STEPS)
+        .concat(HOUSEHOLD_STEPS)
+        .concat(SIBLING_STEPS)
+        .concat(COMPREHENSIVE_ADDON_STEPS)
+        .concat(FINAL_STEPS);
+    } else {
+      return [];
+    }
+    return steps;
   }
+
+  // showIf: a field can declare `showIf: function(state) { return ... }`.
+  // Hidden fields are skipped during render AND validation.
+  // Parent fields that control showIf should set `triggersRerender: true`
+  // so changing them re-renders dependent fields.
+  function evalShowIf(f) {
+    if (typeof f.showIf !== 'function') return true;
+    try { return !!f.showIf(state); } catch (e) { return true; }
+  }
+
   function totalSteps() {
     // After flow is chosen: N question steps + 1 review + 1 add-on
     // (the flow-choice step is shown without a progress bar)
@@ -822,6 +1602,7 @@
     const card = document.getElementById('step-card');
     card.innerHTML = '';
     updateProgress();
+    setTimeout(renderCartBadge, 0);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (!state.flow) { renderFlowChoice(card); return; }
@@ -884,7 +1665,10 @@
     const errorBox = el('div', { className: 'alert-error', id: 'step-error' });
     card.appendChild(errorBox);
 
-    step.fields.forEach(f => card.appendChild(renderField(f)));
+    step.fields.forEach(f => {
+      if (!evalShowIf(f)) return;            // skip hidden conditional fields
+      card.appendChild(renderField(f));
+    });
 
     card.appendChild(renderStepActions({ showBack: true, nextLabel: 'Continue →' }));
   }
@@ -931,7 +1715,11 @@
         if (cur === opt) o.setAttribute('selected', 'selected');
         sel.appendChild(o);
       });
-      sel.addEventListener('change', () => { state.data[f.key] = sel.value; saveDraft(); });
+      sel.addEventListener('change', () => {
+        state.data[f.key] = sel.value;
+        saveDraft();
+        if (f.triggersRerender) render();
+      });
       wrap.appendChild(sel);
     }
     else if (f.type === 'radio') {
@@ -947,6 +1735,7 @@
           grid.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
           optEl.classList.add('selected');
           saveDraft();
+          if (f.triggersRerender) render();
         });
         optEl.appendChild(radio);
         optEl.appendChild(el('span', { className: 'opt-text' }, opt));
@@ -973,6 +1762,7 @@
           if (cb.checked) optEl.classList.add('selected');
           else optEl.classList.remove('selected');
           saveDraft();
+          if (f.triggersRerender) render();
         });
         optEl.appendChild(cb);
         optEl.appendChild(el('span', { className: 'opt-text' }, opt));
@@ -1010,6 +1800,7 @@
     const step = qSteps[state.step];
     for (const f of step.fields) {
       if (!f.required) continue;
+      if (!evalShowIf(f)) continue;          // skip required check on hidden fields
       const v = state.data[f.key];
       if (f.type === 'checkbox') {
         if (!Array.isArray(v) || v.length === 0) {
@@ -1176,21 +1967,70 @@
     const btn = document.getElementById('submit-btn');
     if (btn) { btn.disabled = true; btn.textContent = 'Saving your answers...'; }
 
+    // Map the radio's "Yes — generate the X" string to a boolean for the
+    // new add-on columns added in the Phase 2D Supabase migration.
+    function isYes(v) { return typeof v === 'string' && v.indexOf('Yes') === 0; }
+
     const payload = {
       user_id: session.user_id,
       flow: state.flow,
+
+      // Add-on opt-ins (booleans) — populate the new Phase 2D columns
       addon_iep: !!state.addon_iep,
+      addon_babysitter:        isYes(state.data.addon_babysitter),
+      addon_sibling:           isYes(state.data.addon_sibling),
+      addon_extended_family:   isYes(state.data.addon_extended_family),
+      addon_teacher:           isYes(state.data.addon_teacher),
+      addon_service_provider:  isYes(state.data.addon_service_provider),
+
+      // Promoted shared columns
       child_first_name: state.data.child_first_name || null,
       child_age: state.data.child_age != null && state.data.child_age !== '' ? Number(state.data.child_age) : null,
       grade_level: state.data.grade_level || null,
       diagnoses: state.data.diagnoses || [],
       filler_role: state.data.filler_role || null,
       biggest_challenge: state.data.biggest_challenge || null,
-      communication_style: state.data.communication_style || null,
+      communication_style: state.data.communication_style || state.data.communication_style_freetext || null,
       meltdown_frequency: state.data.meltdown_frequency || null,
       sensory_sensitivities: state.data.sensory_sensitivities || [],
       school_setting: state.data.school_setting || null,
-      // pile every other field into a JSON blob so the table is forward-compatible
+
+      // Sibling tier (picks the right age-tiered Sibling Guide template)
+      sibling_tier: state.data.sibling_guide_for_age_tier || null,
+
+      // Structured HOUSEHOLD jsonb (multi-home aware)
+      household: {
+        num_homes:                  state.data.household_num_homes               || null,
+        primary_people:             state.data.household_primary_people          || null,
+        second_people:              state.data.household_second_people           || null,
+        three_or_more_desc:         state.data.household_three_or_more_desc      || null,
+        coparenting_style:          state.data.household_coparenting_style       || null,
+        transition_cadence:         state.data.household_transition_cadence      || null,
+        other_cadence_desc:         state.data.household_other_cadence_desc      || null,
+        transition_difficulty:      state.data.household_transition_difficulty   || null,
+        transition_day_appearance:  state.data.household_transition_day_appearance || null,
+        transition_supports:        state.data.household_transition_supports     || null,
+        differences_between_homes:  state.data.household_differences_between_homes || null,
+        other_adults:               state.data.household_other_adults            || null,
+        legal_considerations:       state.data.household_legal_considerations    || null,
+        sensitive_notes:            state.data.household_sensitive_notes         || null,
+      },
+
+      // Structured SIBLINGS jsonb
+      siblings: {
+        has_siblings:                state.data.has_siblings                  || null,
+        list:                        state.data.siblings_list                 || null,
+        affected_on_hard_days:       state.data.siblings_affected_on_hard_days || null,
+        safe_adults:                 state.data.sibling_safe_adults           || null,
+        guide_for_name:              state.data.sibling_guide_for_name        || null,
+        guide_for_age:               state.data.sibling_guide_for_age != null && state.data.sibling_guide_for_age !== '' ? Number(state.data.sibling_guide_for_age) : null,
+        guide_for_age_tier:          state.data.sibling_guide_for_age_tier    || null,
+        close_cousin_details:        state.data.addon_sibling_close_cousin_details || null,
+      },
+
+      // Catch-all JSON blob — every field the user answered, forward-compatible.
+      // The promoted columns above are duplicated here on purpose so any field
+      // not yet promoted is still queryable.
       answers: state.data,
       status: 'submitted'
     };
@@ -1244,6 +2084,8 @@
     loadDraft();
 
     // Pre-fill flow from URL ?flow=action|comprehensive
+    // Phase 2A preview: ?preview=foundation pins a banner to the top so
+    // it's obvious you're not on the live form.
     try {
       const url = new URL(window.location.href);
       const f = url.searchParams.get('flow');
@@ -1251,6 +2093,14 @@
         state.flow = f;
         state.step = 0;
         saveDraft();
+      }
+      const p = url.searchParams.get('preview');
+      if (p === 'foundation') {
+        const banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#FFB100;color:#000;font-family:sans-serif;font-size:12.5px;font-weight:700;text-align:center;padding:6px 10px;z-index:9999;letter-spacing:0.4px;';
+        banner.textContent = 'PREVIEW MODE — Phase 2A staging copy. Submission disabled. Not in production.';
+        document.body.appendChild(banner);
+        document.body.style.paddingTop = '32px';
       }
     } catch (_) {}
 
