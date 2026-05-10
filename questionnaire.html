@@ -1184,7 +1184,7 @@
         { key: 'babysitter_emergency_contacts', type: 'textarea', required: false,
           label: 'Emergency contacts + key allergies/medications + bedtime steps a sitter should follow',
           help: 'One item per line. Same shape as the contacts card in the Comprehensive Plan.',
-          placeholder: 'MOM: Maria, 401-555-0100\nDAD: David, 401-555-0101\nPEDIATRICIAN: Dr. Patel, 401-555-0200\nALLERGIES: peanuts (Epi-Pen in front entry)\nBEDTIME: 8:30 — bath, audiobook, lights off by 9.',
+          placeholder: 'PARENT 1: Maria, 401-555-0100\nPARENT 2: David, 401-555-0101\nPEDIATRICIAN: Dr. Patel, 401-555-0200\nALLERGIES: peanuts (Epi-Pen in front entry)\nBEDTIME: 8:30 — bath, audiobook, lights off by 9.',
           showIf: function(s) { return s.data.addon_babysitter && s.data.addon_babysitter.indexOf('Yes') === 0; } },
       ]
     },
@@ -1330,10 +1330,10 @@
       showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; },
       fields: [
         { key: 'sitter_mom_name_number', type: 'text', required: true,
-          label: 'MOM · Name + Number', placeholder: 'Maria, 401-555-0100',
+          label: 'PARENT 1 · Name + Number', placeholder: 'Maria, 401-555-0100',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_dad_partner_name_number', type: 'text', required: true,
-          label: 'DAD / PARTNER · Name + Number', placeholder: '',
+          label: 'PARENT 2 · Name + Number', placeholder: '',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_close_neighbor_name_number', type: 'text', required: false,
           label: 'CLOSE NEIGHBOR · Name + Number',
