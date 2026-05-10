@@ -352,9 +352,13 @@
 <!-- Shown when beta_access is false -->
 <div id="no-access-view">
   <div class="no-access">
-    <h2 class="serif">Beta access not yet confirmed</h2>
-    <p>You're signed in, but your beta access hasn't been confirmed on this account yet. If you have an invite code, please contact us so we can sort it out.</p>
-    <p><a href="mailto:hello@piecesofperception.com?subject=Beta%20access%20question">hello@piecesofperception.com</a></p>
+    <h2 class="serif">One more step</h2>
+    <p>You're signed in, but your invite code hasn't been confirmed on this account yet. Enter it below to unlock your dashboard.</p>
+    <div id="redeem-msg" style="display:none; padding:10px 14px; border-radius:10px; font-size:13px; margin: 12px 0;"></div>
+    <input type="text" id="redeem-code-input" placeholder="POP-2026-XXXX"
+           style="width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; letter-spacing:1.5px; text-transform:uppercase; font-weight:600; text-align:center; margin: 8px 0 14px;">
+    <button class="btn btn-primary" id="redeem-btn" onclick="manualRedeem()" style="width:100%;">Redeem Code</button>
+    <p style="margin-top: 18px; font-size: 13px;">Don't have a code? Email <a href="mailto:hello@piecesofperception.com?subject=Beta%20access%20question">hello@piecesofperception.com</a></p>
     <button class="btn btn-outline" onclick="signOut()" style="margin-top: 12px;">Sign Out</button>
   </div>
 </div>
@@ -475,11 +479,32 @@
     } catch (e) { return null; }
   }
 
-  // Try to redeem any invite code that was saved at signup but never claimed
-  // (e.g. user had to confirm email before getting a session).
+  // Fetch invite_code from auth.users.user_metadata (server-side fallback
+  // when localStorage is empty — covers the "confirmed email in different
+  // browser" case that breaks localStorage continuity).
+  async function fetchInviteCodeFromMetadata(session) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+      if (!res.ok) return null;
+      const userData = await res.json();
+      return userData && userData.user_metadata && userData.user_metadata.invite_code || null;
+    } catch (e) { return null; }
+  }
+
+  // Try to redeem any invite code that was saved at signup but never claimed.
+  // Checks localStorage first, then falls back to server-side user_metadata
+  // so the redemption survives confirming email in a different browser.
   async function tryRedeemPendingCode(session) {
     let pendingCode = null;
     try { pendingCode = localStorage.getItem(PENDING_CODE_KEY); } catch (_) {}
+    if (!pendingCode) {
+      pendingCode = await fetchInviteCodeFromMetadata(session);
+    }
     if (!pendingCode) return false;
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/claim_beta_invite`, {
@@ -496,6 +521,60 @@
       return data && data.ok === true;
     } catch (e) {
       return false;
+    }
+  }
+
+  // Manual redemption from the no-access view's input field.
+  async function manualRedeem() {
+    const input = document.getElementById('redeem-code-input');
+    const msg = document.getElementById('redeem-msg');
+    const btn = document.getElementById('redeem-btn');
+    const code = (input.value || '').trim().toUpperCase();
+    msg.style.display = 'none';
+    if (!code) {
+      msg.style.display = 'block';
+      msg.style.background = 'rgba(217,91,114,0.08)';
+      msg.style.color = 'var(--rose)';
+      msg.textContent = 'Please enter your invite code.';
+      return;
+    }
+    const session = getSession();
+    if (!session) { redirectToAuth(); return; }
+    btn.disabled = true; btn.textContent = 'Redeeming...';
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/claim_beta_invite`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ invite_code: code })
+      });
+      const data = await res.json();
+      if (data && data.ok) {
+        msg.style.display = 'block';
+        msg.style.background = 'var(--sage-light)';
+        msg.style.color = 'var(--sage)';
+        msg.textContent = 'Confirmed! Loading your dashboard...';
+        try { localStorage.removeItem(PENDING_CODE_KEY); } catch (_) {}
+        setTimeout(() => { window.location.reload(); }, 700);
+      } else {
+        msg.style.display = 'block';
+        msg.style.background = 'rgba(217,91,114,0.08)';
+        msg.style.color = 'var(--rose)';
+        const err = (data && data.error) || 'unknown';
+        if (err === 'invalid_code') msg.textContent = "That code wasn't recognized. Double-check it.";
+        else if (err === 'already_used') msg.textContent = 'That code has already been redeemed by someone else.';
+        else msg.textContent = "We couldn't verify your code. Email hello@piecesofperception.com.";
+        btn.disabled = false; btn.textContent = 'Redeem Code';
+      }
+    } catch (e) {
+      msg.style.display = 'block';
+      msg.style.background = 'rgba(217,91,114,0.08)';
+      msg.style.color = 'var(--rose)';
+      msg.textContent = 'Network error. Please try again.';
+      btn.disabled = false; btn.textContent = 'Redeem Code';
     }
   }
 

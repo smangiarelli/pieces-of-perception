@@ -545,7 +545,7 @@
         body: JSON.stringify({
           email,
           password,
-          data: { name }
+          data: { name, invite_code: inviteCode }
         })
       });
       const signupData = await signupRes.json();
