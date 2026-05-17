@@ -397,6 +397,84 @@
       transition: background .15s, transform .12s;
     }
     .report-download:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+    /* ── ACKNOWLEDGMENT VIEW ── (Phase 3.5) */
+    #ack-view { display: none; }
+    #ack-view.show { display: block; }
+    .ack-card {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 44px 40px;
+      max-width: 620px;
+      margin: 50px auto;
+    }
+    .ack-card h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 28px; font-weight: 800;
+      color: var(--deep);
+      margin-bottom: 10px;
+      letter-spacing: -0.4px;
+    }
+    .ack-lede {
+      font-size: 15px; color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 26px;
+    }
+    .ack-item {
+      display: flex; align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      background: white;
+    }
+    .ack-item:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .ack-item:has(input:checked) {
+      border-color: var(--accent); background: var(--accent-bg);
+    }
+    .ack-item input[type="checkbox"] {
+      margin-top: 3px;
+      width: 18px; height: 18px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .ack-item-text {
+      flex: 1;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .ack-link {
+      color: var(--accent);
+      text-decoration: underline;
+      font-weight: 500;
+      font-size: 14px;
+      margin-left: 4px;
+    }
+    .ack-link:hover { color: var(--accent-dark); }
+    .ack-msg {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      margin: 14px 0;
+    }
+    #ack-continue {
+      width: 100%;
+      margin-top: 18px;
+    }
+    .ack-footnote {
+      font-size: 12.5px;
+      color: var(--text-light);
+      text-align: center;
+      margin-top: 18px;
+      line-height: 1.55;
+    }
   </style>
 </head>
 <body>
@@ -415,6 +493,20 @@
 <div id="loading">
   <div class="spinner"></div>
   <span>Loading your dashboard...</span>
+</div>
+
+<!-- Phase 3.5: Shown when one or more required policy acknowledgments are missing -->
+<div id="ack-view">
+  <div class="ack-card">
+    <h2 class="serif">A quick read before we begin</h2>
+    <p class="ack-lede">Please review and acknowledge each of the policies below. Each link opens the full policy in a new tab — read it, then check the box. Your acknowledgment is recorded with a timestamp.</p>
+    <div id="ack-list">
+      <!-- populated by JS -->
+    </div>
+    <div id="ack-msg"></div>
+    <button id="ack-continue" class="btn btn-primary btn-large" onclick="submitAcknowledgments()" disabled>Continue to Dashboard</button>
+    <p class="ack-footnote">By acknowledging each policy, you confirm you've reviewed it. You can revisit any policy any time at piecesofperception.com.</p>
+  </div>
 </div>
 
 <!-- Shown when beta_access is false -->
@@ -558,9 +650,6 @@
     } catch (e) { return null; }
   }
 
-  // Fetch invite_code from auth.users.user_metadata (server-side fallback
-  // when localStorage is empty — covers the "confirmed email in different
-  // browser" case that breaks localStorage continuity).
   async function fetchInviteCodeFromMetadata(session) {
     try {
       const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
@@ -575,9 +664,6 @@
     } catch (e) { return null; }
   }
 
-  // Try to redeem any invite code that was saved at signup but never claimed.
-  // Checks localStorage first, then falls back to server-side user_metadata
-  // so the redemption survives confirming email in a different browser.
   async function tryRedeemPendingCode(session) {
     let pendingCode = null;
     try { pendingCode = localStorage.getItem(PENDING_CODE_KEY); } catch (_) {}
@@ -603,7 +689,6 @@
     }
   }
 
-  // Manual redemption from the no-access view's input field.
   async function manualRedeem() {
     const input = document.getElementById('redeem-code-input');
     const msg = document.getElementById('redeem-msg');
@@ -657,12 +742,110 @@
     }
   }
 
+  // ── Phase 3.5: policy acknowledgment gate ──
+  const REQUIRED_POLICIES = [
+    { type: 'privacy',    version: 'v1.0', label: 'Privacy Policy',   url: '/privacy.html'    },
+    { type: 'terms',      version: 'v1.0', label: 'Terms of Service', url: '/terms.html'      },
+    { type: 'disclaimer', version: 'v1.0', label: 'Disclaimer',       url: '/disclaimer.html' },
+    { type: 'refund',     version: 'v1.0', label: 'Refund Policy',    url: '/refund.html'     }
+  ];
+
+  async function fetchAcknowledgments(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.${session.user_id}&select=policy_type,policy_version`,
+        {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Accept': 'application/json'
+          }
+        }
+      );
+      if (!res.ok) return new Set();
+      const rows = await res.json();
+      const set = new Set();
+      for (const r of rows) set.add(r.policy_type + ':' + r.policy_version);
+      return set;
+    } catch (e) { return new Set(); }
+  }
+
+  function missingAcknowledgments(ackSet) {
+    return REQUIRED_POLICIES.filter(p => !ackSet.has(p.type + ':' + p.version));
+  }
+
+  function renderAcknowledgmentView(missing) {
+    const listEl = document.getElementById('ack-list');
+    let html = '';
+    for (const p of missing) {
+      html +=
+        '<label class="ack-item">' +
+          '<input type="checkbox" data-policy-type="' + escapeText(p.type) + '" ' +
+                 'data-policy-version="' + escapeText(p.version) + '" ' +
+                 'onchange="updateAckContinueButton()">' +
+          '<span class="ack-item-text">' +
+            'I have reviewed the <strong>' + escapeText(p.label) + '</strong>' +
+            ' <a href="' + escapeText(p.url) + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>' +
+          '</span>' +
+        '</label>';
+    }
+    listEl.innerHTML = html;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('ack-view').classList.add('show');
+  }
+
+  function updateAckContinueButton() {
+    const boxes = document.querySelectorAll('#ack-list input[type="checkbox"]');
+    const allChecked = boxes.length > 0 &&
+      Array.from(boxes).every(b => b.checked);
+    document.getElementById('ack-continue').disabled = !allChecked;
+  }
+
+  async function submitAcknowledgments() {
+    const session = getSession();
+    if (!session) { redirectToAuth(); return; }
+    const btn = document.getElementById('ack-continue');
+    const msg = document.getElementById('ack-msg');
+    msg.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const boxes = document.querySelectorAll('#ack-list input[type="checkbox"]');
+    const rows = Array.from(boxes).map(b => ({
+      user_id:        session.user_id,
+      policy_type:    b.dataset.policyType,
+      policy_version: b.dataset.policyVersion
+    }));
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/policy_acknowledgments`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(rows)
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error('HTTP ' + res.status + ': ' + text);
+      }
+      window.location.reload();
+    } catch (e) {
+      msg.style.display = 'block';
+      msg.style.background = 'rgba(217,91,114,0.08)';
+      msg.style.color = 'var(--rose)';
+      msg.textContent = "We couldn't save your acknowledgments. Please try again.";
+      btn.disabled = false;
+      btn.textContent = 'Continue to Dashboard';
+    }
+  }
+
   // ── Phase 4.5: list + signed-URL download for the user's reports ──
   function humanizeReportName(filename) {
-    // Strip extension
     let n = filename.replace(/\.pdf$/i, '');
-    // Strip "{ChildFirstName}_" prefix if first segment is a single word
-    // (e.g. "Joey_Comprehensive_Profile" -> "Comprehensive Profile")
     const parts = n.split('_');
     if (parts.length > 1) { parts.shift(); n = parts.join('_'); }
     return n.replace(/_/g, ' ');
@@ -703,13 +886,9 @@
         : [];
       if (real.length === 0) { listEl.innerHTML = emptyHtml; return; }
 
-      // For each file, fetch a signed URL valid for 1 hour
       const items = await Promise.all(real.map(async (f) => {
         // IMPORTANT: encode each path segment separately so the / between
-        // user_id and filename stays a real slash, not %2F. Otherwise the
-        // signed token is generated for the wrong path and Supabase returns
-        // "Invalid signature" when the browser tries to download.
-        const path = session.user_id + '/' + f.name;
+        // user_id and filename stays a real slash, not %2F.
         const pathInUrl = encodeURIComponent(session.user_id) + '/' + encodeURIComponent(f.name);
         let url = null;
         try {
@@ -765,7 +944,6 @@
 
     let profile = await fetchProfile(session);
 
-    // If beta_access isn't true yet, try to redeem any pending invite code first
     if (!profile || !profile.beta_access) {
       const redeemed = await tryRedeemPendingCode(session);
       if (redeemed) {
@@ -773,13 +951,19 @@
       }
     }
 
-    // Final access check
     if (!profile || !profile.beta_access) {
       showNoAccessView();
       return;
     }
 
-    // Render dashboard
+    // Phase 3.5: policy acknowledgment gate
+    const acks = await fetchAcknowledgments(session);
+    const missing = missingAcknowledgments(acks);
+    if (missing.length > 0) {
+      renderAcknowledgmentView(missing);
+      return;
+    }
+
     const displayName  = profile.name  || session.name  || '';
     const displayEmail = profile.email || session.email || '';
 
@@ -788,7 +972,6 @@
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').classList.add('ready');
 
-    // Phase 4.5: fetch this user's reports from Supabase Storage
     loadReports(session);
   }
 
