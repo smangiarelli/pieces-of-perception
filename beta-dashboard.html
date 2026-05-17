@@ -705,11 +705,16 @@
 
       // For each file, fetch a signed URL valid for 1 hour
       const items = await Promise.all(real.map(async (f) => {
+        // IMPORTANT: encode each path segment separately so the / between
+        // user_id and filename stays a real slash, not %2F. Otherwise the
+        // signed token is generated for the wrong path and Supabase returns
+        // "Invalid signature" when the browser tries to download.
         const path = session.user_id + '/' + f.name;
+        const pathInUrl = encodeURIComponent(session.user_id) + '/' + encodeURIComponent(f.name);
         let url = null;
         try {
           const signRes = await fetch(
-            `${SUPABASE_URL}/storage/v1/object/sign/reports/${encodeURIComponent(path)}`,
+            `${SUPABASE_URL}/storage/v1/object/sign/reports/${pathInUrl}`,
             {
               method: 'POST',
               headers: {
