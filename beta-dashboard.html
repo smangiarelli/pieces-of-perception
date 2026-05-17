@@ -329,6 +329,74 @@
     }
     footer a { color: var(--text-light); text-decoration: none; margin: 0 10px; }
     footer a:hover { color: var(--accent); }
+
+    /* ── MY REPORTS ── (Phase 4.5) */
+    .my-reports {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 32px 32px 28px;
+      margin-bottom: 32px;
+    }
+    .my-reports h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 24px; font-weight: 800;
+      color: var(--deep); margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+    .my-reports .lede {
+      font-size: 14px; color: var(--text-light);
+      margin-bottom: 20px;
+    }
+    .reports-empty {
+      text-align: center;
+      padding: 20px 12px;
+      color: var(--text-light);
+      font-size: 14.5px;
+      line-height: 1.6;
+      background: var(--bg);
+      border-radius: 12px;
+    }
+    .report-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      transition: border-color .2s, background .2s;
+      background: white;
+    }
+    .report-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .report-item:last-child { margin-bottom: 0; }
+    .report-item-info { flex: 1; min-width: 0; }
+    .report-item-name {
+      font-size: 15px; font-weight: 600;
+      color: var(--deep);
+      letter-spacing: -0.1px;
+    }
+    .report-item-meta {
+      font-size: 12.5px; color: var(--text-light);
+      margin-top: 2px;
+    }
+    .report-download {
+      padding: 9px 18px;
+      background: var(--accent);
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background .15s, transform .12s;
+    }
+    .report-download:hover { background: var(--accent-dark); transform: translateY(-1px); }
   </style>
 </head>
 <body>
@@ -370,6 +438,17 @@
     <h1 class="serif">Welcome, <span id="welcome-name">friend</span>!</h1>
     <p>Thank you for being one of the first families to try Pieces of Perception. This is your home base for building personalized guides for your child. Pick a report below to start the questionnaire — your feedback shapes what every family who comes after you receives.</p>
     <a href="#" class="btn btn-primary btn-large" onclick="startReport(event)">Start Your Report &rarr;</a>
+  </div>
+
+  <!-- Your Reports section (Phase 4.5) -->
+  <div class="my-reports">
+    <h2>Your Reports</h2>
+    <p class="lede">PDFs we've built for your family. Each download link expires in an hour — re-open this page to get a fresh one.</p>
+    <div id="reports-list">
+      <div class="reports-empty">
+        Loading your reports&hellip;
+      </div>
+    </div>
   </div>
 
   <div class="status-banner">
@@ -578,6 +657,103 @@
     }
   }
 
+  // ── Phase 4.5: list + signed-URL download for the user's reports ──
+  function humanizeReportName(filename) {
+    // Strip extension
+    let n = filename.replace(/\.pdf$/i, '');
+    // Strip "{ChildFirstName}_" prefix if first segment is a single word
+    // (e.g. "Joey_Comprehensive_Profile" -> "Comprehensive Profile")
+    const parts = n.split('_');
+    if (parts.length > 1) { parts.shift(); n = parts.join('_'); }
+    return n.replace(/_/g, ' ');
+  }
+
+  function escapeText(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  async function loadReports(session) {
+    const listEl = document.getElementById('reports-list');
+    if (!listEl) return;
+    const emptyHtml =
+      '<div class="reports-empty">' +
+      'Your generated reports will appear here once they\'re ready. ' +
+      'I\'ll email you the moment they are.' +
+      '</div>';
+    try {
+      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/list/reports`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prefix: session.user_id + '/',
+          limit: 100,
+          sortBy: { column: 'name', order: 'asc' }
+        })
+      });
+      if (!res.ok) { listEl.innerHTML = emptyHtml; return; }
+      const files = await res.json();
+      const real = Array.isArray(files)
+        ? files.filter(f => f && f.name && !f.name.startsWith('.'))
+        : [];
+      if (real.length === 0) { listEl.innerHTML = emptyHtml; return; }
+
+      // For each file, fetch a signed URL valid for 1 hour
+      const items = await Promise.all(real.map(async (f) => {
+        const path = session.user_id + '/' + f.name;
+        let url = null;
+        try {
+          const signRes = await fetch(
+            `${SUPABASE_URL}/storage/v1/object/sign/reports/${encodeURIComponent(path)}`,
+            {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${session.access_token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ expiresIn: 3600 })
+            }
+          );
+          if (signRes.ok) {
+            const sd = await signRes.json();
+            const signedPath = sd.signedURL || sd.signedUrl || sd.signed_url;
+            if (signedPath) url = SUPABASE_URL + '/storage/v1' + signedPath;
+          }
+        } catch (e) { /* leave url null */ }
+        const sizeBytes = f.metadata && f.metadata.size;
+        const sizeKB = sizeBytes ? Math.max(1, Math.round(sizeBytes / 1024)) : null;
+        return { name: f.name, url, sizeKB };
+      }));
+
+      let html = '';
+      for (const it of items) {
+        const display = humanizeReportName(it.name);
+        const meta = (it.sizeKB ? `${it.sizeKB} KB · PDF` : 'PDF');
+        html +=
+          '<div class="report-item">' +
+            '<div class="report-item-info">' +
+              '<div class="report-item-name">' + escapeText(display) + '</div>' +
+              '<div class="report-item-meta">' + escapeText(meta) + '</div>' +
+            '</div>' +
+            (it.url
+              ? '<a href="' + it.url + '" class="report-download" download="' + escapeText(it.name) + '">Download</a>'
+              : '<span style="color:var(--text-light);font-size:13px;">Unavailable</span>') +
+          '</div>';
+      }
+      listEl.innerHTML = html;
+    } catch (e) {
+      listEl.innerHTML =
+        '<div class="reports-empty">Could not load your reports right now. ' +
+        'Try refreshing the page in a moment.</div>';
+    }
+  }
+
   async function init() {
     const session = getSession();
     if (!session) { redirectToAuth(); return; }
@@ -606,6 +782,9 @@
     document.getElementById('nav-user-email').textContent = displayEmail || '—';
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').classList.add('ready');
+
+    // Phase 4.5: fetch this user's reports from Supabase Storage
+    loadReports(session);
   }
 
   async function signOut() {
