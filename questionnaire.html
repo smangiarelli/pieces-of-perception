@@ -719,6 +719,17 @@
           label: 'What does it look like emotionally — what do you sense is going on internally for them?',
           help: "Even if it's a guess. 'I think he's afraid.' 'It feels like shame.' 'I think she's overstimulated and embarrassed at the same time.'",
           placeholder: '' },
+        { key: 'focused_issue_struggling_direction', type: 'checkbox', required: true,
+          label: 'When this issue is active, your child tends to (check all that apply):',
+          help: 'The direction of struggling shapes what responses will land.',
+          options: [
+            'Shut down, go quiet, withdraw',
+            'Get sad, anxious, or worried',
+            'Get angry, defiant, or aggressive',
+            'Become very physical (running, crashing, hitting)',
+            'Stim or self-soothe repetitively',
+            'Cling or seek constant adult presence'
+          ] },
       ]
     },
     {
@@ -844,6 +855,17 @@
           label: 'How long does recovery typically take after a hard moment?',
           help: 'Minutes? Hour? Half a day? Be specific.',
           placeholder: '' },
+        { key: 'struggling_direction', type: 'checkbox', required: true,
+          label: 'When your child is struggling, do they tend to (check all that apply):',
+          help: 'The DIRECTION of their struggling shapes what kind of supports will land — internalizing (quiet, withdrawn) and externalizing (loud, physical) need different responses.',
+          options: [
+            'Shut down, go quiet, withdraw',
+            'Get sad, anxious, or worried',
+            'Get angry, defiant, or aggressive',
+            'Become very physical (running, crashing, hitting)',
+            'Stim or self-soothe repetitively',
+            'Cling or seek constant adult presence'
+          ] },
       ]
     },
     {
@@ -867,6 +889,24 @@
           label: 'What sensory inputs REGULATE them? (deep pressure, movement, music, etc.)',
           help: "Be specific — exact tools or types. 'Weighted blanket,' 'trampoline 10 minutes,' 'audiobook with single narrator,' etc.",
           placeholder: '' },
+        { key: 'sensory_seeking', type: 'radio', required: true, triggersRerender: true,
+          label: 'Does your child SEEK certain sensory experiences in ways that feel unusual or intense?',
+          help: 'Examples: crashes into furniture, chews non-food items, needs constant movement, spins, sniffs everything, needs background sound/music to focus.',
+          options: ['Yes — seeks intensely', 'Sometimes seeks', 'Rarely seeks', 'Not applicable'] },
+        { key: 'sensory_seeking_details', type: 'textarea', required: false,
+          label: 'Which sensory inputs do they seek?',
+          help: 'Specific examples — deep pressure, oral input (chewing), spinning, loud music, bright lights, etc.',
+          placeholder: '',
+          showIf: function(s) { return s.data.sensory_seeking === 'Yes — seeks intensely' || s.data.sensory_seeking === 'Sometimes seeks'; } },
+        { key: 'sensory_under_registration', type: 'radio', required: true, triggersRerender: true,
+          label: 'Does your child sometimes UNDER-register sensory input?',
+          help: "Examples: not noticing they're hungry, tired, hurt, hot, cold, or need the bathroom until it's urgent.",
+          options: ['Yes — often misses internal cues', 'Sometimes', 'Rarely', 'Not applicable'] },
+        { key: 'sensory_under_registration_details', type: 'textarea', required: false,
+          label: 'Which signals does your child miss?',
+          help: 'Optional but useful — helps caregivers and clinicians tune interoceptive support.',
+          placeholder: '',
+          showIf: function(s) { return s.data.sensory_under_registration === 'Yes — often misses internal cues' || s.data.sensory_under_registration === 'Sometimes'; } },
       ]
     },
     {
@@ -961,6 +1001,58 @@
           label: "If you checked 'specific person,' who?",
           placeholder: 'e.g., Aunt Jen; Coach Rivera',
           showIf: function(s) { return Array.isArray(s.data.emotional_regulation_tools) && s.data.emotional_regulation_tools.indexOf('A specific person (not parent — name below)') > -1; } },
+      ]
+    },
+    {
+      id: 'comp_b9_daily_living',
+      eyebrow: 'Daily living skills',
+      title: 'Real-world functioning — where are they ABLE, and where do they need support?',
+      sub: 'One of the most useful sections for IEP teams, therapists, and service providers. Kids are often advanced in some areas and behind in others — that mismatch is the point.',
+      fields: [
+        { key: 'adaptive_self_care', type: 'radio', required: true,
+          label: 'Self-care: dressing, toileting / hygiene, feeding themselves',
+          options: [
+            'Independent for their age',
+            'Some support needed',
+            'Significant support needed',
+            'Not yet — fully dependent'
+          ] },
+        { key: 'adaptive_home_routines', type: 'radio', required: true,
+          label: 'Home routines: morning, bedtime, multi-step household tasks',
+          options: [
+            'Independent for their age',
+            'Some support needed',
+            'Significant support needed',
+            'Not yet — fully dependent'
+          ] },
+        { key: 'adaptive_community', type: 'radio', required: true,
+          label: 'Community: stores, restaurants, appointments, asking a stranger for help',
+          options: [
+            'Independent for their age',
+            'Some support needed',
+            'Significant support needed',
+            'Not yet — fully dependent'
+          ] },
+        { key: 'adaptive_safety', type: 'radio', required: true, triggersRerender: true,
+          label: 'Safety awareness: street safety, recognizing danger, asking for help in an emergency',
+          options: [
+            'Independent for their age',
+            'Some support needed',
+            'Significant support needed',
+            'Not yet — fully dependent'
+          ] },
+        { key: 'adaptive_safety_concerns', type: 'textarea', required: false,
+          label: 'Any specific safety concerns?',
+          help: "Examples: elopement / wandering, lack of stranger awareness, doesn't recognize pain or temperature, can't be left alone briefly.",
+          placeholder: '',
+          showIf: function(s) {
+            const v = s.data.adaptive_safety;
+            return v === 'Some support needed' || v === 'Significant support needed' || v === 'Not yet — fully dependent';
+          } },
+        { key: 'daily_living_wish', type: 'textarea', required: false,
+          label: 'Is there one daily-life skill you wish was easier?',
+          help: 'Optional. Helps us tune the report to your most-pressing real-world need.',
+          placeholder: '' },
       ]
     },
     {
