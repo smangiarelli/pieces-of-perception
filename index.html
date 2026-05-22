@@ -363,6 +363,101 @@
     .step-card h3 { font-size: 17px; font-weight: 700; color: var(--deep); margin-bottom: 10px; }
     .step-card p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
 
+    /* ── REPORT PAGE GALLERY ── */
+    .report-gallery {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+      margin: 0 auto 26px;
+    }
+    .report-page-card {
+      background: white; border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      overflow: hidden; cursor: zoom-in;
+      transition: transform .25s, box-shadow .25s;
+      display: flex; flex-direction: column;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .report-page-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-3px); }
+    .report-page-card:active { transform: translateY(-1px); }
+    .report-page-card img {
+      width: 100%; height: auto; display: block;
+      aspect-ratio: 8.5 / 11;
+      object-fit: cover; object-position: top center;
+      border-bottom: 1px solid var(--border);
+      background: #FAFAFD;
+    }
+    .report-page-caption {
+      padding: 14px 16px 16px;
+      text-align: left;
+    }
+    .report-page-caption .num {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      color: var(--accent); letter-spacing: 1.2px; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .report-page-caption h4 {
+      font-size: 14px; font-weight: 700; color: var(--deep);
+      margin-bottom: 5px; letter-spacing: -0.1px;
+    }
+    .report-page-caption p {
+      font-size: 12px; color: var(--text-light); line-height: 1.55; margin: 0;
+    }
+    .report-gallery-note {
+      max-width: 720px; margin: 0 auto; text-align: center;
+      font-size: 13px; color: var(--text-light); line-height: 1.6;
+      padding: 14px 22px; background: var(--accent-bg); border-radius: 12px;
+    }
+    .report-gallery-note strong { color: var(--deep); }
+    /* Tablet: 2-column grid */
+    @media (max-width: 900px) {
+      .report-gallery { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+      .report-page-caption h4 { font-size: 15px; }
+      .report-page-caption p { font-size: 13px; }
+    }
+    /* Phone: horizontal swipe gallery */
+    @media (max-width: 600px) {
+      .report-gallery {
+        grid-template-columns: none;
+        display: flex; overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        gap: 14px;
+        padding: 4px 24px 18px;
+        margin: 0 -24px 24px;
+        scroll-padding-left: 24px;
+      }
+      .report-page-card { flex: 0 0 78%; scroll-snap-align: start; }
+      .report-gallery-note { font-size: 12.5px; padding: 12px 16px; }
+    }
+    @media (max-width: 380px) {
+      .report-page-card { flex: 0 0 84%; }
+    }
+    /* Lightbox */
+    .report-lightbox {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(22,22,42,0.94);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px; cursor: zoom-out;
+      padding-top: max(24px, env(safe-area-inset-top));
+    }
+    .report-lightbox.open { display: flex; }
+    .report-lightbox img {
+      max-width: 96%; max-height: 92vh;
+      border-radius: 10px; box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+      width: auto; height: auto;
+    }
+    .report-lightbox-close {
+      position: absolute;
+      top: max(16px, env(safe-area-inset-top));
+      right: max(16px, env(safe-area-inset-right));
+      background: rgba(255,255,255,0.18); color: white;
+      border: none; border-radius: 999px;
+      width: 44px; height: 44px; font-size: 26px; line-height: 1;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .report-lightbox-close:hover, .report-lightbox-close:active { background: rgba(255,255,255,0.30); }
+
     /* ── FEATURES ── */
     .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .feature {
@@ -741,8 +836,107 @@
   </div>
 </section>
 
+<!-- ─── SAMPLE REPORT PAGE GALLERY ─── -->
+<section id="sample-report" style="background:var(--bg)">
+  <div class="section-inner" style="text-align:center">
+    <div class="section-label">A Look Inside</div>
+    <h2 class="section-title">See an Actual Sample Report</h2>
+    <p class="section-sub">A peek at four pages from a real Comprehensive Profile, anonymized for privacy. Tap any page to enlarge.</p>
+
+    <div class="report-gallery">
+      <figure class="report-page-card" data-full="/marketing/sample-report/01_cover.png">
+        <img src="/marketing/sample-report/01_cover_thumb.jpg"
+             srcset="/marketing/sample-report/01_cover_thumb.jpg 1x, /marketing/sample-report/01_cover_thumb@2x.jpg 2x"
+             sizes="(max-width: 600px) 78vw, (max-width: 900px) 46vw, 23vw"
+             alt="Sample report cover page — 'A complete picture of Riley M.'"
+             loading="lazy" decoding="async" width="600" height="776">
+        <figcaption class="report-page-caption">
+          <span class="num">Page 1</span>
+          <h4>Personalized Cover</h4>
+          <p>Your child's name and profile date — never a generic header.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="report-page-card" data-full="/marketing/sample-report/02_executive_summary.png">
+        <img src="/marketing/sample-report/02_executive_summary_thumb.jpg"
+             srcset="/marketing/sample-report/02_executive_summary_thumb.jpg 1x, /marketing/sample-report/02_executive_summary_thumb@2x.jpg 2x"
+             sizes="(max-width: 600px) 78vw, (max-width: 900px) 46vw, 23vw"
+             alt="Sample executive summary page with three anchor truths"
+             loading="lazy" decoding="async" width="600" height="776">
+        <figcaption class="report-page-caption">
+          <span class="num">Page 4</span>
+          <h4>The Whole Picture</h4>
+          <p>An executive summary that names what's really happening — in plain language.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="report-page-card" data-full="/marketing/sample-report/03_strengths_spotlight.png">
+        <img src="/marketing/sample-report/03_strengths_spotlight_thumb.jpg"
+             srcset="/marketing/sample-report/03_strengths_spotlight_thumb.jpg 1x, /marketing/sample-report/03_strengths_spotlight_thumb@2x.jpg 2x"
+             sizes="(max-width: 600px) 78vw, (max-width: 900px) 46vw, 23vw"
+             alt="Sample strengths spotlight page — what your child does beautifully"
+             loading="lazy" decoding="async" width="600" height="776">
+        <figcaption class="report-page-caption">
+          <span class="num">Page 12</span>
+          <h4>Strengths Spotlight</h4>
+          <p>Strengths come first. Everything else in the report is built on top of them.</p>
+        </figcaption>
+      </figure>
+
+      <figure class="report-page-card" data-full="/marketing/sample-report/04_what_helps.png">
+        <img src="/marketing/sample-report/04_what_helps_thumb.jpg"
+             srcset="/marketing/sample-report/04_what_helps_thumb.jpg 1x, /marketing/sample-report/04_what_helps_thumb@2x.jpg 2x"
+             sizes="(max-width: 600px) 78vw, (max-width: 900px) 46vw, 23vw"
+             alt="Sample one-page reference guide — what helps, what to retire, what to say"
+             loading="lazy" decoding="async" width="600" height="776">
+        <figcaption class="report-page-caption">
+          <span class="num">Page 26</span>
+          <h4>One-Page Reference Card</h4>
+          <p>The fridge-card every caregiver gets — strengths, words to retire, exact phrases to use.</p>
+        </figcaption>
+      </figure>
+    </div>
+
+    <p class="report-gallery-note">
+      <strong>Sample only.</strong> Names, ages, and details have been changed. Your report is generated entirely from your answers — never reused, never templated.
+    </p>
+  </div>
+</section>
+
+<!-- Lightbox overlay (single, reused by all gallery cards) -->
+<div class="report-lightbox" id="reportLightbox" role="dialog" aria-modal="true" aria-label="Sample report page enlarged">
+  <button class="report-lightbox-close" id="reportLightboxClose" aria-label="Close">&times;</button>
+  <img id="reportLightboxImg" src="" alt="">
+</div>
+
+<script>
+  (function() {
+    const lb = document.getElementById('reportLightbox');
+    const lbImg = document.getElementById('reportLightboxImg');
+    const lbClose = document.getElementById('reportLightboxClose');
+    document.querySelectorAll('.report-page-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const full = card.getAttribute('data-full');
+        const altImg = card.querySelector('img');
+        lbImg.src = full;
+        lbImg.alt = altImg ? altImg.alt : 'Sample report page';
+        lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    function close() {
+      lb.classList.remove('open');
+      document.body.style.overflow = '';
+      lbImg.src = '';
+    }
+    lb.addEventListener('click', e => { if (e.target === lb || e.target === lbImg) close(); });
+    lbClose.addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('open')) close(); });
+  })();
+</script>
+
 <!-- ─── WHAT'S INCLUDED ─── -->
-<section style="background:var(--bg)">
+<section style="background:white">
   <div class="section-inner" style="text-align:center">
     <div class="section-label">What You Receive</div>
     <h2 class="section-title">Inside Your Report</h2>
