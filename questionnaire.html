@@ -536,6 +536,7 @@
   // answers shape: { flow: 'action'|'comprehensive', step: number, data: {...}, addon_iep: bool }
   let state = {
     flow: null,        // 'action' | 'comprehensive' — null until chosen
+    intro_shown: false, // pre-questionnaire encouragement screen — show once after flow choice
     step: 0,           // 0 = flow-choice; 1..N = question steps; N+1 = review; N+2 = addon
     data: {},
     addon_iep: false
@@ -719,6 +720,17 @@
           label: 'What does it look like emotionally — what do you sense is going on internally for them?',
           help: "Even if it's a guess. 'I think he's afraid.' 'It feels like shame.' 'I think she's overstimulated and embarrassed at the same time.'",
           placeholder: '' },
+        { key: 'focused_issue_struggling_direction', type: 'checkbox', required: true,
+          label: 'When this issue is active, your child tends to (check all that apply):',
+          help: 'The direction of struggling shapes what responses will land.',
+          options: [
+            'Shut down, go quiet, withdraw',
+            'Get sad, anxious, or worried',
+            'Get angry, defiant, or aggressive',
+            'Become very physical (running, crashing, hitting)',
+            'Stim or self-soothe repetitively',
+            'Cling or seek constant adult presence'
+          ] },
       ]
     },
     {
@@ -844,6 +856,17 @@
           label: 'How long does recovery typically take after a hard moment?',
           help: 'Minutes? Hour? Half a day? Be specific.',
           placeholder: '' },
+        { key: 'struggling_direction', type: 'checkbox', required: true,
+          label: 'When your child is struggling, do they tend to (check all that apply):',
+          help: 'The DIRECTION of their struggling shapes what kind of supports will land — internalizing (quiet, withdrawn) and externalizing (loud, physical) need different responses.',
+          options: [
+            'Shut down, go quiet, withdraw',
+            'Get sad, anxious, or worried',
+            'Get angry, defiant, or aggressive',
+            'Become very physical (running, crashing, hitting)',
+            'Stim or self-soothe repetitively',
+            'Cling or seek constant adult presence'
+          ] },
       ]
     },
     {
@@ -867,6 +890,24 @@
           label: 'What sensory inputs REGULATE them? (deep pressure, movement, music, etc.)',
           help: "Be specific — exact tools or types. 'Weighted blanket,' 'trampoline 10 minutes,' 'audiobook with single narrator,' etc.",
           placeholder: '' },
+        { key: 'sensory_seeking', type: 'radio', required: true, triggersRerender: true,
+          label: 'Does your child SEEK certain sensory experiences in ways that feel unusual or intense?',
+          help: 'Examples: crashes into furniture, chews non-food items, needs constant movement, spins, sniffs everything, needs background sound/music to focus.',
+          options: ['Yes — seeks intensely', 'Sometimes seeks', 'Rarely seeks', 'Not applicable'] },
+        { key: 'sensory_seeking_details', type: 'textarea', required: false,
+          label: 'Which sensory inputs do they seek?',
+          help: 'Specific examples — deep pressure, oral input (chewing), spinning, loud music, bright lights, etc.',
+          placeholder: '',
+          showIf: function(s) { return s.data.sensory_seeking === 'Yes — seeks intensely' || s.data.sensory_seeking === 'Sometimes seeks'; } },
+        { key: 'sensory_under_registration', type: 'radio', required: true, triggersRerender: true,
+          label: 'Does your child sometimes UNDER-register sensory input?',
+          help: "Examples: not noticing they're hungry, tired, hurt, hot, cold, or need the bathroom until it's urgent.",
+          options: ['Yes — often misses internal cues', 'Sometimes', 'Rarely', 'Not applicable'] },
+        { key: 'sensory_under_registration_details', type: 'textarea', required: false,
+          label: 'Which signals does your child miss?',
+          help: 'Optional but useful — helps caregivers and clinicians tune interoceptive support.',
+          placeholder: '',
+          showIf: function(s) { return s.data.sensory_under_registration === 'Yes — often misses internal cues' || s.data.sensory_under_registration === 'Sometimes'; } },
       ]
     },
     {
@@ -964,6 +1005,58 @@
       ]
     },
     {
+      id: 'comp_b9_daily_living',
+      eyebrow: 'Daily living skills',
+      title: 'Real-world functioning — where are they ABLE, and where do they need support?',
+      sub: 'One of the most useful sections for IEP teams, therapists, and service providers. Kids are often advanced in some areas and behind in others — that mismatch is the point.',
+      fields: [
+        { key: 'adaptive_self_care', type: 'radio', required: true,
+          label: 'Self-care: dressing, toileting / hygiene, feeding themselves',
+          options: [
+            'Independent for their age',
+            'Some support needed',
+            'Significant support needed',
+            'Not yet — fully dependent'
+          ] },
+        { key: 'adaptive_home_routines', type: 'radio', required: true,
+          label: 'Home routines: morning, bedtime, multi-step household tasks',
+          options: [
+            'Independent for their age',
+            'Some support needed',
+            'Significant support needed',
+            'Not yet — fully dependent'
+          ] },
+        { key: 'adaptive_community', type: 'radio', required: true,
+          label: 'Community: stores, restaurants, appointments, asking a stranger for help',
+          options: [
+            'Independent for their age',
+            'Some support needed',
+            'Significant support needed',
+            'Not yet — fully dependent'
+          ] },
+        { key: 'adaptive_safety', type: 'radio', required: true, triggersRerender: true,
+          label: 'Safety awareness: street safety, recognizing danger, asking for help in an emergency',
+          options: [
+            'Independent for their age',
+            'Some support needed',
+            'Significant support needed',
+            'Not yet — fully dependent'
+          ] },
+        { key: 'adaptive_safety_concerns', type: 'textarea', required: false,
+          label: 'Any specific safety concerns?',
+          help: "Examples: elopement / wandering, lack of stranger awareness, doesn't recognize pain or temperature, can't be left alone briefly.",
+          placeholder: '',
+          showIf: function(s) {
+            const v = s.data.adaptive_safety;
+            return v === 'Some support needed' || v === 'Significant support needed' || v === 'Not yet — fully dependent';
+          } },
+        { key: 'daily_living_wish', type: 'textarea', required: false,
+          label: 'Is there one daily-life skill you wish was easier?',
+          help: 'Optional. Helps us tune the report to your most-pressing real-world need.',
+          placeholder: '' },
+      ]
+    },
+    {
       id: 'comp_b10_good_hard_day',
       eyebrow: 'The shape of a day',
       title: 'A good day vs. a hard day.',
@@ -1017,7 +1110,7 @@
           ] },
         { key: 'household_primary_people', type: 'textarea', required: true,
           label: 'Who lives in the primary household?',
-          help: 'List each person: name (or relationship), role, age range. e.g., "Maria (Mom), 42; Emma, sister, 14; the dog Buddy."',
+          help: 'List each person: name (or relationship), role, age range. e.g., "Maria (Parent 1), 42; Emma, sister, 14; the dog Buddy."',
           placeholder: '' },
         { key: 'household_second_people', type: 'textarea', required: false,
           label: "If there's a second household: who lives there?",
@@ -1059,7 +1152,7 @@
           options: ['Daily','A few days per week','Weekly','Every other week','Other — describe below','Not applicable'] },
         { key: 'household_other_cadence_desc', type: 'textarea', required: false,
           label: 'If "Other" — describe the rhythm.',
-          help: "e.g., \"Mom's Mon–Fri school, Dad's Sat–Sun, rotates every other holiday.\"",
+          help: "e.g., \"Parent 1's Mon–Fri school, Parent 2's Sat–Sun, rotates every other holiday.\"",
           placeholder: '',
           showIf: function(s) { return s.data.household_transition_cadence === 'Other — describe below'; } },
         { key: 'household_transition_difficulty', type: 'radio', required: false, triggersRerender: true,
@@ -1184,7 +1277,7 @@
         { key: 'babysitter_emergency_contacts', type: 'textarea', required: false,
           label: 'Emergency contacts + key allergies/medications + bedtime steps a sitter should follow',
           help: 'One item per line. Same shape as the contacts card in the Comprehensive Plan.',
-          placeholder: 'MOM: Maria, 401-555-0100\nDAD: David, 401-555-0101\nPEDIATRICIAN: Dr. Patel, 401-555-0200\nALLERGIES: peanuts (Epi-Pen in front entry)\nBEDTIME: 8:30 — bath, audiobook, lights off by 9.',
+          placeholder: 'PARENT 1: Maria, 401-555-0100\nPARENT 2: David, 401-555-0101\nPEDIATRICIAN: Dr. Patel, 401-555-0200\nALLERGIES: peanuts (Epi-Pen in front entry)\nBEDTIME: 8:30 — bath, audiobook, lights off by 9.',
           showIf: function(s) { return s.data.addon_babysitter && s.data.addon_babysitter.indexOf('Yes') === 0; } },
       ]
     },
@@ -1330,10 +1423,10 @@
       showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; },
       fields: [
         { key: 'sitter_mom_name_number', type: 'text', required: true,
-          label: 'MOM · Name + Number', placeholder: 'Maria, 401-555-0100',
+          label: 'PARENT 1 · Name + Number', placeholder: 'Maria, 401-555-0100',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_dad_partner_name_number', type: 'text', required: true,
-          label: 'DAD / PARTNER · Name + Number', placeholder: '',
+          label: 'PARENT 2 · Name + Number', placeholder: '',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_close_neighbor_name_number', type: 'text', required: false,
           label: 'CLOSE NEIGHBOR · Name + Number',
@@ -1358,6 +1451,7 @@
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_insurance_info', type: 'text', required: true,
           label: 'INSURANCE INFO · Carrier + ID',
+          help: "This goes only on the Babysitter Guide as an emergency-contact reference (so a sitter has it if your child needs urgent care). Pieces of Perception does not use, share, or process this for any other purpose.",
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_local_er', type: 'text', required: true,
           label: 'LOCAL ER · Name + Address',
@@ -1606,6 +1700,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (!state.flow) { renderFlowChoice(card); return; }
+    if (!state.intro_shown) { renderIntro(card); return; }
 
     const qSteps = getQuestionSteps();
 
@@ -1653,8 +1748,71 @@
   function chooseFlow(flow) {
     state.flow = flow;
     state.step = 0;
+    state.intro_shown = false; // re-show intro if flow is re-chosen
     saveDraft();
     render();
+  }
+
+  // ───────────────────────────────────────────────────────────────
+  // INTRO SCREEN — encouragement before the questions begin.
+  // Shown ONCE per session after flow choice. Resets if the parent
+  // changes flows. Built on the same step-card layout as questions.
+  // ───────────────────────────────────────────────────────────────
+  function renderIntro(card) {
+    card.appendChild(el('div', { className: 'step-eyebrow' }, 'BEFORE YOU BEGIN'));
+    card.appendChild(el('h2', { className: 'step-title serif' }, 'The more you share, the more this report sees your child.'));
+
+    const sub = el('p', { className: 'step-sub' });
+    sub.innerHTML = "We've designed every question with one goal: to build a report that <em>looks like your child</em>, not a generic template. The richness of the report depends entirely on the detail you give us here.";
+    card.appendChild(sub);
+
+    // A two-callout encouragement block
+    const wrap = el('div', { style: 'margin-top:20px;display:flex;flex-direction:column;gap:16px;' });
+
+    // What this means in practice
+    const meanings = el('div', {
+      style: 'background:rgba(108,99,255,0.06);border-left:3px solid #6C63FF;padding:16px 18px;border-radius:8px;'
+    });
+    meanings.appendChild(el('div', {
+      style: 'font-size:11.5px;font-weight:700;letter-spacing:1.2px;color:#6C63FF;margin-bottom:8px;'
+    }, 'WHAT TO AIM FOR'));
+    const list = el('ul', { style: 'margin:0;padding-left:20px;color:#2C2A4A;line-height:1.6;font-size:14.5px;' });
+    [
+      'Describe what daily life actually looks like — the morning routine, the meltdowns, the wins, the food they reach for, what helps and what doesn\'t.',
+      'When a question feels open-ended, lean into it. A two-sentence answer becomes a paragraph in the report; a paragraph becomes a chapter.',
+      'There are no wrong answers. If a question doesn\'t apply to your family, skip it — empty is honest. But if it does apply, give us everything.'
+    ].forEach(t => {
+      const li = el('li', { style: 'margin-bottom:8px;' });
+      li.innerHTML = t;
+      list.appendChild(li);
+    });
+    meanings.appendChild(list);
+    wrap.appendChild(meanings);
+
+    // Time + saving reassurance
+    const reassure = el('div', {
+      style: 'background:rgba(82,183,136,0.06);border-left:3px solid #52B788;padding:14px 18px;border-radius:8px;color:#2C2A4A;font-size:14px;line-height:1.55;'
+    });
+    reassure.innerHTML = '<strong>Take your time.</strong> Your answers save automatically as you go. You can step away, come back tomorrow, and pick up where you left off — your draft is waiting on this device.';
+    wrap.appendChild(reassure);
+
+    // Mix of question types reassurance
+    const mix = el('div', {
+      style: 'background:rgba(232,132,90,0.06);border-left:3px solid #E8845A;padding:14px 18px;border-radius:8px;color:#2C2A4A;font-size:14px;line-height:1.55;'
+    });
+    mix.innerHTML = '<strong>Mix of formats.</strong> Many questions are click-to-answer with an optional "anything else?" text box. You don\'t have to type from scratch every time. Use the text boxes when you have something specific to add.';
+    wrap.appendChild(mix);
+
+    card.appendChild(wrap);
+
+    // CTA button
+    const ctaWrap = el('div', { style: 'margin-top:28px;display:flex;justify-content:flex-end;gap:12px;align-items:center;' });
+    const startBtn = el('button', {
+      className: 'btn btn-primary',
+      onclick: () => { state.intro_shown = true; saveDraft(); render(); }
+    }, "I'm ready — let's begin →");
+    ctaWrap.appendChild(startBtn);
+    card.appendChild(ctaWrap);
   }
 
   function renderStep(card, step) {

@@ -374,6 +374,20 @@
 </footer>
 
 <script>
+  // ── RECOVERY-LINK DEFENSE ──────────────────────────────────────
+  // If Supabase lands a password-recovery URL on THIS page instead of
+  // /reset-password.html (which can happen when the Allowed Redirect URLs
+  // list isn't configured yet), forward the user with the hash intact.
+  (function forwardRecoveryHash() {
+    try {
+      const hash = window.location.hash || '';
+      if (hash.includes('type=recovery') || hash.includes('access_token=')) {
+        const target = '/reset-password.html' + hash;
+        window.location.replace(target);
+      }
+    } catch (_) { /* ignore */ }
+  })();
+
   const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6YmVyamdtd2RhaGlsanpwcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjAwMDQsImV4cCI6MjA5MjM5NjAwNH0.S-dDookJKoiBDq4BxMVH21_FOSaHXgt9qDrQ6u8bOJI';
   const PENDING_CODE_KEY = 'pop_pending_invite_code';
