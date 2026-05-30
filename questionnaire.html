@@ -441,6 +441,50 @@
     }
     footer a { color: var(--text-light); text-decoration: none; margin: 0 10px; }
     footer a:hover { color: var(--accent); }
+  
+    /* ── Acknowledgments (mirrors beta-dashboard.html) ── */
+    .ack-item {
+      display: flex; align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+      border: 1.5px solid var(--border, #E6E8F0);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color 120ms ease, background 120ms ease;
+    }
+    .ack-item:hover { border-color: var(--accent, #6C63FF); background: rgba(108,99,255,0.06); }
+    .ack-item:has(input:checked) {
+      border-color: var(--accent, #6C63FF);
+      background: rgba(108,99,255,0.06);
+    }
+    .ack-item input[type="checkbox"] {
+      margin-top: 3px;
+      width: 18px; height: 18px;
+      accent-color: var(--accent, #6C63FF);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .ack-item-text {
+      flex: 1;
+      font-size: 15px;
+      color: var(--text, #2C2C3E);
+      line-height: 1.55;
+    }
+    .ack-link {
+      color: var(--accent, #6C63FF);
+      text-decoration: underline;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .ack-link:hover { color: var(--accent-dark, #5349e0); }
+    .ack-footnote {
+      font-size: 12.5px;
+      color: var(--text-light, #6B6B80);
+      text-align: center;
+      margin-top: 18px;
+    }
+
   </style>
 </head>
 <body>
@@ -536,6 +580,7 @@
   // answers shape: { flow: 'action'|'comprehensive', step: number, data: {...}, addon_iep: bool }
   let state = {
     flow: null,        // 'action' | 'comprehensive' — null until chosen
+    acks_confirmed: false, // Phase 3.5: policy acknowledgments required before each questionnaire
     intro_shown: false, // pre-questionnaire encouragement screen — show once after flow choice
     step: 0,           // 0 = flow-choice; 1..N = question steps; N+1 = review; N+2 = addon
     data: {},
@@ -1699,6 +1744,7 @@
     setTimeout(renderCartBadge, 0);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
+    if (!state.acks_confirmed) { renderAcknowledgments(card); return; }
     if (!state.flow) { renderFlowChoice(card); return; }
     if (!state.intro_shown) { renderIntro(card); return; }
 
@@ -1813,6 +1859,105 @@
     }, "I'm ready — let's begin →");
     ctaWrap.appendChild(startBtn);
     card.appendChild(ctaWrap);
+  }
+
+  // ───────────────────────────────────────────────────────────────
+  // POLICY ACKNOWLEDGMENTS (Phase 3.5)
+  // Lifted from beta-dashboard.html so the acks gate the questionnaire
+  // every time it's started — not just the first dashboard visit.
+  // ───────────────────────────────────────────────────────────────
+  const REQUIRED_POLICIES = [
+    { type: 'privacy',    version: 'v1.0', label: 'Privacy Policy',   url: '/privacy.html'    },
+    { type: 'terms',      version: 'v1.0', label: 'Terms of Service', url: '/terms.html'      },
+    { type: 'disclaimer', version: 'v1.0', label: 'Disclaimer',       url: '/disclaimer.html' },
+    { type: 'refund',     version: 'v1.0', label: 'Refund Policy',    url: '/refund.html'     }
+  ];
+
+  function renderAcknowledgments(card) {
+    card.appendChild(el('div', { className: 'step-eyebrow' }, 'BEFORE YOU BEGIN'));
+    card.appendChild(el('h2', { className: 'step-title serif' }, 'Privacy, security, and what you\'re agreeing to'));
+
+    const sub = el('p', { className: 'step-sub' });
+    sub.innerHTML = "Please review and acknowledge each of the policies below. Each link opens the full text in a new tab — read it, then check the box. Your acknowledgment is recorded with a timestamp.";
+    card.appendChild(sub);
+
+    const errBox = el('div', { className: 'alert-error', id: 'ack-err' });
+    card.appendChild(errBox);
+
+    const list = el('div', { style: 'margin-top:16px;' });
+    REQUIRED_POLICIES.forEach((p, i) => {
+      const item = el('label', { className: 'ack-item' });
+      const cb = el('input', {
+        type: 'checkbox',
+        'data-policy-type': p.type,
+        'data-policy-version': p.version,
+        onchange: () => {
+          const all = Array.from(document.querySelectorAll('#ack-list-q input[type="checkbox"]'));
+          document.getElementById('ack-continue-q').disabled = !all.every(b => b.checked);
+        }
+      });
+      item.appendChild(cb);
+      const txt = el('span', { className: 'ack-item-text' });
+      txt.innerHTML = 'I have reviewed the <strong>' + p.label + '</strong> ' +
+        '<a href="' + p.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>';
+      item.appendChild(txt);
+      list.appendChild(item);
+    });
+    list.id = 'ack-list-q';
+    card.appendChild(list);
+
+    card.appendChild(el('p', {
+      className: 'ack-footnote'
+    }, "By acknowledging each policy, you confirm you've reviewed it. You can revisit any policy any time at piecesofperception.com."));
+
+    const actions = el('div', { style: 'margin-top:24px;display:flex;justify-content:flex-end;gap:12px;' });
+    const continueBtn = el('button', {
+      id: 'ack-continue-q',
+      className: 'btn btn-primary',
+      disabled: true,
+      onclick: () => submitAcksThenContinue()
+    }, 'Continue →');
+    actions.appendChild(continueBtn);
+    card.appendChild(actions);
+  }
+
+  async function submitAcksThenContinue() {
+    const btn = document.getElementById('ack-continue-q');
+    const errEl = document.getElementById('ack-err');
+    errEl.style.display = 'none';
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+
+    // Build acknowledgment rows
+    const boxes = document.querySelectorAll('#ack-list-q input[type="checkbox"]');
+    const session = getSession ? getSession() : null;
+    if (session && session.user_id) {
+      const rows = Array.from(boxes).map(b => ({
+        user_id:        session.user_id,
+        policy_type:    b.dataset.policyType,
+        policy_version: b.dataset.policyVersion
+      }));
+      try {
+        await fetch(SUPABASE_URL + '/rest/v1/policy_acknowledgments', {
+          method: 'POST',
+          headers: {
+            'apikey':        SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + session.access_token,
+            'Content-Type':  'application/json',
+            'Prefer':        'resolution=ignore-duplicates'
+          },
+          body: JSON.stringify(rows)
+        });
+        // We don't hard-fail on duplicate-key errors; the user already ack'd
+        // this version on the dashboard, which is fine.
+      } catch (e) {
+        // Soft-fail — they can still proceed; their ack is on the dashboard
+        console.warn('Ack save error (non-blocking):', e);
+      }
+    }
+
+    state.acks_confirmed = true;
+    saveDraft();
+    render();
   }
 
   function renderStep(card, step) {
