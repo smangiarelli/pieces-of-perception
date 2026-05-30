@@ -745,10 +745,18 @@
           label: 'When did this start?',
           help: 'Date or rough timeframe. Was there a clear precipitating event? Or did it creep in?',
           placeholder: 'e.g., About 6 weeks ago, after the back-to-school transition' },
-        { key: 'focused_issue_frequency', type: 'textarea', required: true,
+        { key: 'focused_issue_frequency', type: 'multi_with_text', required: true,
           label: 'How often is it happening?',
           help: 'Daily? Multiple times a day? Weekly? In specific settings only?',
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Multiple times daily",
+          "Daily",
+          "A few times per week",
+          "Weekly",
+          "A few times per month",
+          "Only in specific situations",
+          "Recently new / hard to predict"
+        ], extraPlaceholder: "Any pattern to when it happens?"},
       ]
     },
     {
@@ -757,14 +765,35 @@
       title: "What does the issue look like, inside and out?",
       sub: 'The more concrete, the better the report.',
       fields: [
-        { key: 'focused_issue_physical_appearance', type: 'textarea', required: true,
+        { key: 'focused_issue_physical_appearance', type: 'multi_with_text', required: true,
           label: 'What does it look like physically — what do you actually SEE happening?',
           help: 'Be concrete. Body language, facial expression, vocalizations, things they say, things they do.',
-          placeholder: '' },
-        { key: 'focused_issue_emotional_appearance', type: 'textarea', required: true,
+          placeholder: '' , options: [
+          "Crying",
+          "Yelling or screaming",
+          "Running / pacing",
+          "Hitting / pushing",
+          "Biting (self or others)",
+          "Going silent / shutting down",
+          "Hiding or curling up",
+          "Throwing objects",
+          "Repetitive motion (rocking, flapping)",
+          "Stomach pain or other physical symptoms"
+        ], extraPlaceholder: "Other physical signs during the focused issue?"},
+        { key: 'focused_issue_emotional_appearance', type: 'multi_with_text', required: true,
           label: 'What does it look like emotionally — what do you sense is going on internally for them?',
           help: "Even if it's a guess. 'I think he's afraid.' 'It feels like shame.' 'I think she's overstimulated and embarrassed at the same time.'",
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Anxiety / fear",
+          "Frustration / anger",
+          "Sadness / hopelessness",
+          "Overwhelm",
+          "Shame / guilt",
+          "Feeling unsafe",
+          "Feeling misunderstood",
+          "Confusion",
+          "Numbness / disconnection"
+        ], extraPlaceholder: "Other emotional patterns during the focused issue?"},
         { key: 'focused_issue_struggling_direction', type: 'checkbox', required: true,
           label: 'When this issue is active, your child tends to (check all that apply):',
           help: 'The direction of struggling shapes what responses will land.',
@@ -788,22 +817,49 @@
           label: "What's the trigger — or your best theory of the trigger?",
           help: "A specific person? A word? A place? A type of transition? A sensory input? Something that happened earlier? Even 'I don't know — that's part of why I'm here' is a useful answer.",
           placeholder: '' },
-        { key: 'focused_issue_when_not_happening', type: 'textarea', required: true,
+        { key: 'focused_issue_when_not_happening', type: 'multi_with_text', required: true,
           label: 'When does this NOT happen?',
           help: 'When is your child OK? What contexts seem protective?',
-          placeholder: '' },
+          placeholder: '' , options: [
+          "When at home with trusted adult",
+          "When engaged in special interest",
+          "When physical needs are met (food, sleep, rest)",
+          "When schedule is predictable",
+          "When in a familiar environment",
+          "When sensory input is regulated",
+          "When given time to transition",
+          "When alone in quiet space"
+        ], extraPlaceholder: "Other contexts where the issue does not happen?"},
         { key: 'recent_environmental_changes', type: 'textarea', required: false,
           label: 'Has anything in the environment recently changed?',
           help: 'New school year, new sibling, new medication, new schedule, family stressor, recent illness, recent travel, new device, anything.',
           placeholder: '' },
-        { key: 'trauma_or_ptsd_component', type: 'textarea', required: false,
+        { key: 'trauma_or_ptsd_component', type: 'multi_with_text', required: false,
           label: 'Is there a trauma or PTSD component you suspect or know about?',
           help: "If yes, describe what's known. If no, just say 'no.' If you suspect something but don't know — name the suspicion.",
-          placeholder: '' },
-        { key: 'regulation_profile_in_general', type: 'textarea', required: true,
+          placeholder: '' , options: [
+          "No known trauma",
+          "Medical trauma (procedures, hospitalizations)",
+          "Loss or grief (family member, pet, friend)",
+          "Bullying or social trauma",
+          "School-related trauma",
+          "Family changes (divorce, move, separation)",
+          "Witnessed difficult events",
+          "Unsure or do not want to specify"
+        ], extraPlaceholder: "Anything else about trauma context we should know?"},
+        { key: 'regulation_profile_in_general', type: 'multi_with_text', required: true,
           label: "What is your child's regulation profile in general?",
           help: "What ALREADY helps them regulate, even when this issue isn't active? Hugs? Pressure? Music? Movement? Quiet space? Specific people?",
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Generally regulates well with support",
+          "Easily dysregulated; needs frequent co-regulation",
+          "Internalizes (withdraws, gets quiet)",
+          "Externalizes (acts out, gets loud)",
+          "Varies a lot day to day",
+          "Better in the morning, harder in the evening",
+          "Worse during transitions",
+          "Best regulated with predictability"
+        ], extraPlaceholder: "Other patterns in how your child regulates overall?"},
       ]
     },
     {
@@ -875,10 +931,20 @@
           help: 'Brand/model if you remember; how often they use it; anything quirky about how it shows up in their day.',
           placeholder: '',
           showIf: function(s) { return s.data.communication_style === 'AAC device (specify below)'; } },
-        { key: 'communication_when_overwhelmed', type: 'textarea', required: true,
+        { key: 'communication_when_overwhelmed', type: 'multi_with_text', required: true,
           label: "How do they communicate when they're stretched or overwhelmed?",
           help: 'Does they go quiet? Repeat phrases? Shut down? Use their device differently? Hit walls? Be specific.',
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Goes silent / stops talking",
+          "Becomes hyperverbal or scripting",
+          "Says things out of frustration",
+          "Repeats the same phrase",
+          "Uses AAC device or visual cards",
+          "Cries or has meltdown",
+          "Physical response (running, hiding, lashing out)",
+          "Asks reassurance questions repeatedly",
+          "Withdraws to safe person"
+        ], extraPlaceholder: "Other ways your child communicates when overwhelmed?"},
       ]
     },
     {
@@ -890,17 +956,40 @@
         { key: 'meltdown_frequency', type: 'radio', required: true,
           label: 'How often do meltdowns or shutdowns happen?',
           options: ['Rarely','Weekly','Daily','Multiple times per day'] },
-        { key: 'dysregulation_physical_signs', type: 'textarea', required: true,
+        { key: 'dysregulation_physical_signs', type: 'multi_with_text', required: true,
           label: 'What does it look like — physically — when they are starting to dysregulate?',
           help: 'Hands over ears? Pacing? Going quiet? Verbal stim-loops? Specific phrases they repeat?',
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Biting hands or arms",
+          "Hitting head or body",
+          "Pulling hair",
+          "Scratching skin",
+          "Crying without obvious cause",
+          "Going very quiet / withdrawing",
+          "Hyperverbal / pressured speech",
+          "Sudden running or pacing",
+          "Throwing or breaking objects",
+          "Becoming aggressive toward others",
+          "Stomach pain or nausea",
+          "Headaches",
+          "Sleep disturbance",
+          "Loss of appetite",
+          "Repetitive movements (rocking, flapping)"
+        ], extraPlaceholder: "Other physical signs we should know about?"},
         { key: 'full_meltdown_appearance', type: 'textarea', required: true,
           label: 'What does a full meltdown / shutdown look like for them?',
           placeholder: '' },
-        { key: 'recovery_time_after_hard_moment', type: 'textarea', required: true,
+        { key: 'recovery_time_after_hard_moment', type: 'multi_with_text', required: true,
           label: 'How long does recovery typically take after a hard moment?',
           help: 'Minutes? Hour? Half a day? Be specific.',
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Less than 15 minutes",
+          "15 to 30 minutes",
+          "30 minutes to 1 hour",
+          "1 to 2 hours",
+          "2 to 4 hours",
+          "4+ hours or rest of the day"
+        ], extraPlaceholder: "Any patterns in what speeds or slows recovery?"},
         { key: 'struggling_direction', type: 'checkbox', required: true,
           label: 'When your child is struggling, do they tend to (check all that apply):',
           help: 'The DIRECTION of their struggling shapes what kind of supports will land — internalizing (quiet, withdrawn) and externalizing (loud, physical) need different responses.',
@@ -931,10 +1020,21 @@
           label: 'For each sensory area you checked, give one or two concrete examples of triggers.',
           help: "e.g., 'Sound: vacuum, blender, more than 2 voices talking at once. Light: fluorescent overhead at the store.'",
           placeholder: '' },
-        { key: 'sensory_regulation_inputs', type: 'textarea', required: true,
+        { key: 'sensory_regulation_inputs', type: 'multi_with_text', required: true,
           label: 'What sensory inputs REGULATE them? (deep pressure, movement, music, etc.)',
           help: "Be specific — exact tools or types. 'Weighted blanket,' 'trampoline 10 minutes,' 'audiobook with single narrator,' etc.",
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Deep pressure (weighted items, tight hugs)",
+          "Movement (swinging, spinning, jumping)",
+          "Proprioception (heavy work, pushing/pulling)",
+          "Vibration (massagers, electric toothbrush)",
+          "Calming music or white noise",
+          "Dim lighting / sunglasses indoors",
+          "Quiet space with reduced input",
+          "Chewing (gum, crunchy snacks, chewy toys)",
+          "Texture seeking (fidgets, soft fabrics)",
+          "Visual focus items (lava lamps, kaleidoscope)"
+        ], extraPlaceholder: "Other sensory inputs that help regulate?"},
         { key: 'sensory_seeking', type: 'radio', required: true, triggersRerender: true,
           label: 'Does your child SEEK certain sensory experiences in ways that feel unusual or intense?',
           help: 'Examples: crashes into furniture, chews non-food items, needs constant movement, spins, sniffs everything, needs background sound/music to focus.',
@@ -1014,17 +1114,38 @@
         { key: 'sleep_patterns', type: 'radio', required: true,
           label: 'Sleep patterns',
           options: ['Good','Some difficulty','Significant difficulty'] },
-        { key: 'sleep_details', type: 'textarea', required: false,
+        { key: 'sleep_details', type: 'multi_with_text', required: false,
           label: 'Anything specific about sleep we should know?',
           help: 'Bedtime routine, what helps them fall asleep, night wakings, etc.',
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Difficulty falling asleep",
+          "Wakes multiple times per night",
+          "Wakes very early",
+          "Nightmares or night terrors",
+          "Needs specific routine to settle",
+          "Co-sleeps or needs adult presence",
+          "Uses melatonin or other sleep aid",
+          "Sleep duration varies widely",
+          "Sleeps fine — no concerns"
+        ], extraPlaceholder: "Anything else about sleep we should know?"},
         { key: 'eating_profile', type: 'radio', required: true,
           label: 'Eating / food',
           options: ['No issues','Some selective eating','Significant feeding challenges'] },
-        { key: 'eating_details', type: 'textarea', required: false,
+        { key: 'eating_details', type: 'multi_with_text', required: false,
           label: 'Anything specific about eating?',
           help: 'Texture preferences, safe foods, foods to skip, blood-sugar quirks, mealtime structure.',
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Very limited food preferences",
+          "Sensitive to specific textures",
+          "Strong food rituals or routines",
+          "Overeats certain foods",
+          "Resists trying new foods",
+          "Specific brand or packaging requirements",
+          "Eating slowed by anxiety",
+          "Eats too quickly when stressed",
+          "Specific dietary restrictions (allergies, intolerance)",
+          "No notable eating issues"
+        ], extraPlaceholder: "Anything else about eating we should know?"},
       ]
     },
     {
@@ -1123,10 +1244,26 @@
       title: 'Predictable triggers.',
       sub: 'List the things you can brace for.',
       fields: [
-        { key: 'predictable_dysregulation_triggers', type: 'textarea', required: true,
+        { key: 'predictable_dysregulation_triggers', type: 'multi_with_text', required: true,
           label: 'List the situations / words / events that you can predict will dysregulate them.',
           help: "e.g., 'Fluorescent lights at the doctor.' 'Surprise touch.' 'The word stop.' 'Plans changing without warning.' Anything you brace for.",
-          placeholder: '' },
+          placeholder: '' , options: [
+          "Loud or sudden noises",
+          "Bright or flickering lights",
+          "Crowded spaces",
+          "Unexpected schedule changes",
+          "Transitions between activities",
+          "Being told no or stop",
+          "Hunger or thirst",
+          "Tiredness or being woken early",
+          "Specific people or situations",
+          "Feeling rushed",
+          "Sensory overload (smell, texture, temperature)",
+          "Social pressure / expectations",
+          "School-related events",
+          "Medical appointments",
+          "Separation from a trusted adult"
+        ], extraPlaceholder: "Other triggers specific to your child?"},
         { key: 'trauma_words_to_avoid', type: 'textarea', required: false,
           label: 'Are there words or phrases they react strongly to that we should make sure NEVER appear in any caregiver guide?',
           help: 'Some kids have specific trauma-words from past experiences. Optional but important.',
@@ -2025,7 +2162,62 @@
       });
       wrap.appendChild(sel);
     }
-    else if (f.type === 'radio') {
+    else if (f.type === 'multi_with_text') {
+      // Click-first multi-select + optional "anything else?" follow-up.
+      // Stored as a single semicolon-separated string so the backend schema
+      // (textarea-equivalent) doesn't need to change.
+      const PARENT_KEY = f.key;
+      const stored = state.data[PARENT_KEY] || '';
+      let preselected = new Set();
+      let extra = '';
+      if (stored) {
+        const parts = stored.split('; ').map(s => s.trim()).filter(Boolean);
+        const optSet = new Set(f.options);
+        for (const part of parts) {
+          if (optSet.has(part)) preselected.add(part);
+          else extra = extra ? (extra + '; ' + part) : part;
+        }
+      }
+
+      function rebuildStored() {
+        const checks = Array.from(wrap.querySelectorAll('input[type="checkbox"][data-mc-opt]:checked'))
+          .map(b => b.getAttribute('data-mc-opt'));
+        const extraVal = (wrap.querySelector('textarea[data-mc-extra]') || {value: ''}).value.trim();
+        const allParts = checks.slice();
+        if (extraVal) allParts.push(extraVal);
+        state.data[PARENT_KEY] = allParts.join('; ');
+        saveDraft();
+      }
+
+      const grid = el('div', { className: 'options-grid cols-1' });
+      f.options.forEach(opt => {
+        const item = el('label', { className: 'option-item' });
+        const cb = el('input', { type: 'checkbox' });
+        cb.setAttribute('data-mc-opt', opt);
+        if (preselected.has(opt)) cb.checked = true;
+        cb.addEventListener('change', rebuildStored);
+        item.appendChild(cb);
+        item.appendChild(el('span', { className: 'option-label' }, opt));
+        grid.appendChild(item);
+      });
+      wrap.appendChild(grid);
+
+      const extraWrap = el('div', { style: 'margin-top:14px;' });
+      extraWrap.appendChild(el('label', {
+        style: 'display:block;font-size:13px;color:var(--text-light);font-weight:500;margin-bottom:6px;'
+      }, f.extraLabel || 'Anything else not on the list above? (optional)'));
+      const ta = el('textarea', {
+        className: 'textarea',
+        placeholder: f.extraPlaceholder || 'Add any details specific to your child...',
+        rows: 3
+      });
+      ta.setAttribute('data-mc-extra', '1');
+      ta.value = extra;
+      ta.addEventListener('input', rebuildStored);
+      extraWrap.appendChild(ta);
+      wrap.appendChild(extraWrap);
+    }
+        else if (f.type === 'radio') {
       const grid = el('div', { className: 'options-grid' + (f.options.length <= 4 ? '' : ' cols-1') });
       f.options.forEach(opt => {
         const isSel = cur === opt;
