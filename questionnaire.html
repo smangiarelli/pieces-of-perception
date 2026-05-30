@@ -2093,6 +2093,11 @@
     }
 
     state.acks_confirmed = true;
+    // CRITICAL: force-reset intro so it shows EVERY time a parent restarts
+    // the questionnaire (not just the first time). Without this reset, a
+    // returning parent whose old draft had intro_shown=true would skip
+    // the intro silently.
+    state.intro_shown = false;
     saveDraft();
     render();
   }
