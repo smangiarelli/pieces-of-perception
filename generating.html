@@ -304,28 +304,31 @@
       <div class="orbit-center">✦</div>
     </div>
 
-    <div class="badge">GENERATING YOUR REPORT</div>
-    <h1 class="serif" id="title">Building <span id="child-name">your child</span>'s personalized plan...</h1>
-    <p class="lede">This usually takes a minute or two. We're cross-referencing what you shared with our model of evidence-based supports.</p>
+    <div class="badge">Submission received</div>
+    <h1 class="serif" id="title">Building <span id="child-name">your child</span>'s reports</h1>
+    <p class="lede">Your reports are now being prepared. Here's what to expect, and when.</p>
 
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     <div class="stage" id="stage-msg">Preparing your answers...</div>
 
     <div class="stage-list" id="stage-list">
       <div class="stage-item" data-stage="0"><div class="stage-bullet">1</div><span>Reading what you shared</span></div>
-      <div class="stage-item" data-stage="1"><div class="stage-bullet">2</div><span>Mapping strengths and challenges</span></div>
-      <div class="stage-item" data-stage="2"><div class="stage-bullet">3</div><span>Matching regulation strategies</span></div>
-      <div class="stage-item" data-stage="3"><div class="stage-bullet">4</div><span>Drafting school-facing language</span></div>
-      <div class="stage-item" data-stage="4"><div class="stage-bullet">5</div><span>Polishing your final report</span></div>
+      <div class="stage-item" data-stage="1"><div class="stage-bullet">2</div><span>Mapping strengths, sensory profile, and triggers</span></div>
+      <div class="stage-item" data-stage="2"><div class="stage-bullet">3</div><span>Drafting your Focused Action Report (arrives first)</span></div>
+      <div class="stage-item" data-stage="3"><div class="stage-bullet">4</div><span>Building your Comprehensive Profile and caretaker guides</span></div>
+      <div class="stage-item" data-stage="4"><div class="stage-bullet">5</div><span>Final review by our team before delivery</span></div>
     </div>
 
     <div class="reassurance">
-      Your answers are <strong>private to your account</strong>. We never sell them, and no one outside Pieces of Perception ever sees them in raw form.
+      <strong>Two deliveries, by email:</strong><br/>
+      <span style="display:block;margin-top:6px;">Your <strong>Focused Action Report</strong> (the priority plan for the issue you flagged) arrives first — typically within 48 hours.</span>
+      <span style="display:block;margin-top:6px;">Your <strong>Comprehensive Profile</strong> and the caretaker guides you selected follow within 3-5 days.</span>
+      <span style="display:block;margin-top:10px;font-size:13px;color:var(--text-light);">Your answers stay private to your account. We never sell them, and no one outside Pieces of Perception sees them in raw form.</span>
     </div>
 
     <div class="complete-actions" id="complete-actions">
       <a href="/beta-dashboard.html" class="btn btn-primary">Back to Dashboard</a>
-      <p style="font-size:13px;color:var(--text-light);margin-top:6px;">We'll email you the moment your report is ready.</p>
+      <p style="font-size:13px;color:var(--text-light);margin-top:6px;">You can close this tab. We'll email you the moment each report is ready.</p>
     </div>
   </div>
 </main>
@@ -352,11 +355,11 @@
 
   // Stage messaging
   const stages = [
-    { msg: 'Reading what you shared...',                  pct: 12 },
-    { msg: 'Mapping strengths and challenges...',          pct: 32 },
-    { msg: 'Matching regulation strategies...',            pct: 54 },
-    { msg: 'Drafting school-facing language...',           pct: 76 },
-    { msg: 'Polishing your final report...',               pct: 95 },
+    { msg: 'Reading what you shared...',                                  pct: 12 },
+    { msg: 'Mapping strengths, sensory profile, and triggers...',          pct: 32 },
+    { msg: 'Drafting your Focused Action Report...',                       pct: 54 },
+    { msg: 'Building your Comprehensive Profile and caretaker guides...',  pct: 76 },
+    { msg: 'Final review by our team before delivery...',                  pct: 95 },
   ];
 
   const stageMsgEl = document.getElementById('stage-msg');
@@ -368,7 +371,7 @@
     idx += 1;
     if (idx >= stages.length) {
       // Hold on the final "we'll email you" message
-      stageMsgEl.textContent = 'Your report is being finalized — we\'ll email you when it\'s ready.';
+      stageMsgEl.textContent = 'Reports queued — your Focused Action Report typically arrives within 48 hours, and your full set follows within 3-5 days.';
       progressEl.style.width = '100%';
       items.forEach((el) => { el.classList.remove('active'); el.classList.add('done'); });
       document.getElementById('complete-actions').classList.add('visible');
