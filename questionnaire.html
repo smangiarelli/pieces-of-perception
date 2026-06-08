@@ -830,10 +830,21 @@
           "When given time to transition",
           "When alone in quiet space"
         ], extraPlaceholder: "Other contexts where the issue does not happen?"},
-        { key: 'recent_environmental_changes', type: 'textarea', required: false,
+        { key: 'recent_environmental_changes', type: 'multi_with_text', required: false,
           label: 'Has anything in the environment recently changed?',
           help: 'New school year, new sibling, new medication, new schedule, family stressor, recent illness, recent travel, new device, anything.',
-          placeholder: '' },
+          placeholder: '', options: [
+          "New school or school year",
+          "New sibling or family member",
+          "New medication or a med change",
+          "Schedule or routine change",
+          "Family stressor (job loss, illness, conflict)",
+          "Recent illness",
+          "Recent travel or a move",
+          "New device or screen habits",
+          "A loss or death (family member or pet)",
+          "Nothing notable has changed"
+        ], extraPlaceholder: "Any other recent change worth noting?" },
         { key: 'trauma_or_ptsd_component', type: 'multi_with_text', required: false,
           label: 'Is there a trauma or PTSD component you suspect or know about?',
           help: "If yes, describe what's known. If no, just say 'no.' If you suspect something but don't know — name the suspicion.",
@@ -896,14 +907,31 @@
           label: 'If this report works perfectly, what does Day 28 look like?',
           help: "Paint the picture. 'Three smooth bedtimes a week. He sleeps in his own bed. He asks for a hug instead of a meltdown.'",
           placeholder: '' },
-        { key: 'family_bandwidth_for_implementation', type: 'textarea', required: true,
+        { key: 'family_bandwidth_for_implementation', type: 'multi_with_text', required: true,
           label: "What is the FAMILY's bandwidth for implementation right now?",
           help: "Are you in a good window to adopt new routines, or surviving? Be honest. 'We have 15 minutes a day at most' is a real answer that shapes the report.",
-          placeholder: '' },
-        { key: 'implementer_of_plan', type: 'textarea', required: true,
+          placeholder: '', options: [
+          "In a good window — ready for new routines",
+          "Stable but stretched thin",
+          "In survival mode right now",
+          "About 15 minutes a day at most",
+          "More on weekends than weekdays",
+          "Bandwidth varies a lot day to day",
+          "Have support from a partner or family",
+          "Doing this mostly on my own"
+        ], extraPlaceholder: "Anything else about your bandwidth right now?" },
+        { key: 'implementer_of_plan', type: 'multi_with_text', required: true,
           label: 'Who in the family is in charge of implementing this?',
           help: 'One parent? Both? Co-parents in different households? A grandparent? Will the implementer have support?',
-          placeholder: '' },
+          placeholder: '', options: [
+          "One parent (primary)",
+          "Both parents together",
+          "Co-parents across two households",
+          "A grandparent",
+          "Another caregiver or nanny",
+          "The implementer will have support",
+          "The implementer is mostly on their own"
+        ], extraPlaceholder: "Anything else about who's implementing?" },
         { key: 'unwilling_to_do', type: 'textarea', required: false,
           label: 'What would you NOT be willing to do, even if it might help?',
           help: "Boundaries matter. 'We won't medicate.' 'We won't go back to the previous therapist.' 'We can't change daycare.'",
@@ -976,9 +1004,21 @@
           "Loss of appetite",
           "Repetitive movements (rocking, flapping)"
         ], extraPlaceholder: "Other physical signs we should know about?"},
-        { key: 'full_meltdown_appearance', type: 'textarea', required: true,
+        { key: 'full_meltdown_appearance', type: 'multi_with_text', required: true,
           label: 'What does a full meltdown / shutdown look like for them?',
-          placeholder: '' },
+          placeholder: '', options: [
+          "Crying or sobbing",
+          "Yelling or screaming",
+          "Running, pacing, or bolting",
+          "Hitting, kicking, or pushing",
+          "Biting (self or others)",
+          "Going silent / fully shutting down",
+          "Hiding or curling up",
+          "Throwing or breaking things",
+          "Repetitive motion (rocking, flapping)",
+          "Dropping to the floor",
+          "Unresponsive to voice or touch"
+        ], extraPlaceholder: "Describe what a full meltdown / shutdown looks like for them." },
         { key: 'recovery_time_after_hard_moment', type: 'multi_with_text', required: true,
           label: 'How long does recovery typically take after a hard moment?',
           help: 'Minutes? Hour? Half a day? Be specific.',
@@ -1039,10 +1079,20 @@
           label: 'Does your child SEEK certain sensory experiences in ways that feel unusual or intense?',
           help: 'Examples: crashes into furniture, chews non-food items, needs constant movement, spins, sniffs everything, needs background sound/music to focus.',
           options: ['Yes — seeks intensely', 'Sometimes seeks', 'Rarely seeks', 'Not applicable'] },
-        { key: 'sensory_seeking_details', type: 'textarea', required: false,
+        { key: 'sensory_seeking_details', type: 'multi_with_text', required: false,
           label: 'Which sensory inputs do they seek?',
           help: 'Specific examples — deep pressure, oral input (chewing), spinning, loud music, bright lights, etc.',
-          placeholder: '',
+          placeholder: '', options: [
+          "Deep pressure (squeezes, tight spaces, weighted items)",
+          "Oral input (chewing, mouthing objects)",
+          "Movement (spinning, swinging, jumping)",
+          "Crashing into furniture or people",
+          "Constant motion / can't sit still",
+          "Loud music or sound",
+          "Bright lights or visual stimulation",
+          "Smelling things",
+          "Touching textures"
+        ], extraPlaceholder: "Other inputs they seek?",
           showIf: function(s) { return s.data.sensory_seeking === 'Yes — seeks intensely' || s.data.sensory_seeking === 'Sometimes seeks'; } },
         { key: 'sensory_under_registration', type: 'radio', required: true, triggersRerender: true,
           label: 'Does your child sometimes UNDER-register sensory input?',
@@ -1208,10 +1258,20 @@
             'Significant support needed',
             'Not yet — fully dependent'
           ] },
-        { key: 'adaptive_safety_concerns', type: 'textarea', required: false,
+        { key: 'adaptive_safety_concerns', type: 'multi_with_text', required: false,
           label: 'Any specific safety concerns?',
           help: "Examples: elopement / wandering, lack of stranger awareness, doesn't recognize pain or temperature, can't be left alone briefly.",
-          placeholder: '',
+          placeholder: '', options: [
+          "Elopement / wandering / bolting",
+          "Lack of stranger awareness",
+          "Doesn't recognize pain or injury",
+          "Doesn't recognize hot or cold",
+          "Can't be left alone briefly",
+          "Climbing or unsafe heights",
+          "Puts non-food items in mouth",
+          "Traffic / road safety",
+          "Water safety"
+        ], extraPlaceholder: "Any other safety concerns?",
           showIf: function(s) {
             const v = s.data.adaptive_safety;
             return v === 'Some support needed' || v === 'Significant support needed' || v === 'Not yet — fully dependent';
@@ -1424,9 +1484,18 @@
           help: 'Format example: "Riley, 5 — likes dance, dogs, painting — finds hard: loud noises, being rushed — on hard days: gets very quiet and clings to me."',
           placeholder: '',
           showIf: function(s) { return s.data.has_siblings === 'Yes'; } },
-        { key: 'siblings_affected_on_hard_days', type: 'textarea', required: false,
+        { key: 'siblings_affected_on_hard_days', type: 'multi_with_text', required: false,
           label: "How are siblings affected on your child's hard days?",
-          placeholder: '',
+          placeholder: '', options: [
+          "Gets quiet or withdraws",
+          "Clings or seeks reassurance",
+          "Acts out or gets disruptive",
+          "Becomes anxious or worried",
+          "Takes on a caretaker role",
+          "Gets frustrated or resentful",
+          "Leaves the room or hides",
+          "Seems used to it / unfazed"
+        ], extraPlaceholder: "Anything else about how siblings are affected?",
           showIf: function(s) { return s.data.has_siblings === 'Yes'; } },
         { key: 'sibling_safe_adults', type: 'textarea', required: false,
           label: "Who is each sibling's \"safe adult\" outside of you?",
@@ -1556,10 +1625,21 @@
             'Yes — generate the Service Provider Guide (added to cart)',
             'No — skip'
           ] },
-        { key: 'provider_current_providers', type: 'textarea', required: false,
+        { key: 'provider_current_providers', type: 'multi_with_text', required: false,
           label: 'Which providers does your child currently see, or which kind are you actively pursuing?',
           help: "List specialty + frequency. e.g., 'OT, weekly, sees Dr. Lee at MercyCare.' 'SLP, on waitlist.'",
-          placeholder: '',
+          placeholder: '', options: [
+          "Occupational therapy (OT)",
+          "Speech therapy (SLP)",
+          "Physical therapy (PT)",
+          "ABA therapy",
+          "Psychologist",
+          "Psychiatrist",
+          "Counselor / talk therapist",
+          "Developmental pediatrician",
+          "On a waitlist for services",
+          "None currently"
+        ], extraPlaceholder: "Add specialty + frequency (e.g., 'OT, weekly, sees Dr. Lee').",
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
         { key: 'provider_clinical_goals', type: 'textarea', required: false,
           label: 'What clinical goals does your child already have in any current therapy?',
@@ -1978,10 +2058,21 @@
         { key: 'addon_service_provider', type: 'radio', required: true, triggersRerender: true,
           label: 'Generate a Service Provider / Therapy Guide?',
           options: ['Yes — generate the Service Provider Guide (added to cart)','No — skip'] },
-        { key: 'provider_current_providers', type: 'textarea', required: false,
+        { key: 'provider_current_providers', type: 'multi_with_text', required: false,
           label: 'Which providers does your child currently see, or which kind are you actively pursuing?',
           help: "List specialty + frequency. e.g., 'OT, weekly, sees Dr. Lee at MercyCare.' 'SLP, on waitlist.'",
-          placeholder: '',
+          placeholder: '', options: [
+          "Occupational therapy (OT)",
+          "Speech therapy (SLP)",
+          "Physical therapy (PT)",
+          "ABA therapy",
+          "Psychologist",
+          "Psychiatrist",
+          "Counselor / talk therapist",
+          "Developmental pediatrician",
+          "On a waitlist for services",
+          "None currently"
+        ], extraPlaceholder: "Add specialty + frequency (e.g., 'OT, weekly, sees Dr. Lee').",
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
         { key: 'provider_clinical_goals', type: 'textarea', required: false,
           label: 'What clinical goals does your child already have in any current therapy?',
@@ -3083,4 +3174,18 @@
         const banner = document.createElement('div');
         banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#FFB100;color:#000;font-family:sans-serif;font-size:12.5px;font-weight:700;text-align:center;padding:6px 10px;z-index:9999;letter-spacing:0.4px;';
         banner.textContent = 'PREVIEW MODE — Phase 2A staging copy. Submission disabled. Not in production.';
-        document.body.
+        document.body.appendChild(banner);
+        document.body.style.paddingTop = '32px';
+      }
+    } catch (_) {}
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').classList.add('ready');
+    render();
+  }
+
+  init();
+</script>
+
+</body>
+</html>
