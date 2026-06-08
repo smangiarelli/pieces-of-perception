@@ -398,6 +398,33 @@
     }
     .report-download:hover { background: var(--accent-dark); transform: translateY(-1px); }
 
+    /* ── PHASE 3: two-wave delivery cards ── */
+    .wave-card {
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px 20px; margin-bottom: 16px; background: white;
+    }
+    .wave-card:last-child { margin-bottom: 0; }
+    .wave-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 4px;
+    }
+    .wave-title {
+      font-size: 16px; font-weight: 700; color: var(--deep);
+      letter-spacing: -0.2px;
+    }
+    .wave-badge {
+      font-size: 12px; font-weight: 700; padding: 4px 12px;
+      border-radius: 20px; white-space: nowrap;
+    }
+    .wave-badge.delivered { background: rgba(82,183,136,0.16); color: #2f7a57; }
+    .wave-badge.pending { background: rgba(108,99,255,0.10); color: var(--accent-dark); }
+    .wave-sub { font-size: 13px; color: var(--text-light); margin-bottom: 12px; }
+    .wave-note {
+      font-size: 14px; color: var(--text); line-height: 1.55;
+      background: var(--accent-bg); border-radius: 10px; padding: 12px 14px;
+    }
+    .wave-body { margin-top: 6px; }
+
     /* ── ACKNOWLEDGMENT VIEW ── (Phase 3.5) */
     #ack-view { display: none; }
     #ack-view.show { display: block; }
@@ -915,12 +942,13 @@
         return { name: f.name, url, sizeKB };
       }));
 
-      let html = '';
-      for (const it of items) {
+      // Phase 3: split reports into two delivery waves.
+      // Wave 1 = the Focused Action Report + its care guides (filename has "Focused").
+      // Wave 2 = the Comprehensive Profile, IEP Companion + supplementary guides.
+      const rowHtml = (it) => {
         const display = humanizeReportName(it.name);
         const meta = (it.sizeKB ? `${it.sizeKB} KB · PDF` : 'PDF');
-        html +=
-          '<div class="report-item">' +
+        return '<div class="report-item">' +
             '<div class="report-item-info">' +
               '<div class="report-item-name">' + escapeText(display) + '</div>' +
               '<div class="report-item-meta">' + escapeText(meta) + '</div>' +
@@ -929,8 +957,62 @@
               ? '<a href="' + it.url + '" class="report-download" download="' + escapeText(it.name) + '">Download</a>'
               : '<span style="color:var(--text-light);font-size:13px;">Unavailable</span>') +
           '</div>';
-      }
-      listEl.innerHTML = html;
+      };
+      const wave1 = items.filter(it => /focused/i.test(it.name));
+      const wave2 = items.filter(it => !/focused/i.test(it.name));
+
+      // A wave is "delivered" when its timestamp column is set (reports_ready_at
+      // for wave 1, comprehensive_ready_at for wave 2). The uploader uploads ALL
+      // PDFs at once, so we must gate on the timestamp, NOT file presence —
+      // otherwise wave 2 would reveal itself the moment wave 1 is uploaded.
+      // If the row can't be read (e.g. permissions), fall back to file presence
+      // so reports are never hidden by a transient error.
+      let ts1 = null, ts2 = null, tsFetchOk = false;
+      try {
+        const qr = await fetch(
+          `${SUPABASE_URL}/rest/v1/questionnaire_responses?user_id=eq.` +
+          encodeURIComponent(session.user_id) +
+          `&select=reports_ready_at,comprehensive_ready_at&order=created_at.desc&limit=1`,
+          { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}` } });
+        if (qr.ok) {
+          tsFetchOk = true;
+          const rows = await qr.json();
+          if (rows && rows[0]) { ts1 = rows[0].reports_ready_at; ts2 = rows[0].comprehensive_ready_at; }
+        }
+      } catch (e) { /* fall back to file presence below */ }
+
+      const fmtDate = (ts) => {
+        try { return new Date(ts).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); }
+        catch (e) { return ''; }
+      };
+
+      const waveCard = (num, title, files, ts, pendingNote) => {
+        // Gate on timestamp when we could read it; otherwise on file presence.
+        const delivered = tsFetchOk ? !!ts : files.length > 0;
+        const badge = delivered
+          ? '<span class="wave-badge delivered">\u2713 Delivered</span>'
+          : '<span class="wave-badge pending">\u23F3 In review</span>';
+        let sub = '';
+        if (delivered && ts) sub = '<div class="wave-sub">Delivered ' + escapeText(fmtDate(ts)) + '</div>';
+        else if (!delivered) sub = '<div class="wave-sub">Expected within 1\u20132 weeks of Wave 1</div>';
+        let body;
+        if (delivered && files.length > 0) {
+          body = '<div class="wave-body">' + files.map(rowHtml).join('') + '</div>';
+        } else if (delivered) {
+          body = '<div class="wave-note">Your reports are being finalized and will appear here shortly.</div>';
+        } else {
+          body = '<div class="wave-note">' + escapeText(pendingNote) + '</div>';
+        }
+        return '<div class="wave-card">' +
+          '<div class="wave-head"><div class="wave-title">Wave ' + num + ' \u00B7 ' + escapeText(title) + '</div>' + badge + '</div>' +
+          sub + body + '</div>';
+      };
+
+      listEl.innerHTML =
+        waveCard(1, 'Focused Reports', wave1, ts1,
+          'Your Focused Action Report and its care guides land here first \u2014 typically within a few days of submitting. We\u2019ll email you the moment they\u2019re ready.') +
+        waveCard(2, 'Comprehensive Set', wave2, ts2,
+          'This deeper report set takes longer because we\u2019re carefully reviewing every section. We\u2019ll email you the moment it\u2019s ready.');
     } catch (e) {
       listEl.innerHTML =
         '<div class="reports-empty">Could not load your reports right now. ' +
