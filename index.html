@@ -1295,7 +1295,7 @@
 
 <script>
   const _SB_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
-  const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6YmVyamdtd2RhaGlsanpwcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4MjAwMDQsImV4cCI6MjA5MjM5NjAwNH0.S-dDookJKoiBDq4BxMVH21_FOSaHXgt9qDrQ6u8bOJI';
+  const _SB_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
 
   async function joinWaitlist() {
     const input = document.getElementById('waitlist-email');
@@ -1315,7 +1315,6 @@
         method: 'POST',
         headers: {
           'apikey': _SB_KEY,
-          'Authorization': `Bearer ${_SB_KEY}`,
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },

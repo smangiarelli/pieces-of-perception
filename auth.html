@@ -4,10 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#6C63FF">
-  <title>Beta Portal | Pieces of Perception</title>
-  <meta name="description" content="Beta access portal for Pieces of Perception. Invite-only.">
-  <meta name="robots" content="noindex, nofollow">
-  <link rel="canonical" href="https://piecesofperception.com/beta-portal.html">
+  <title>Sign In | Pieces of Perception</title>
+  <meta name="description" content="Sign in or create your Pieces of Perception account to build a personalized action report for your neurodiverse child.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://piecesofperception.com/auth.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pieces of Perception">
+  <meta property="og:title" content="Sign In | Pieces of Perception">
+  <meta property="og:description" content="Sign in or create your Pieces of Perception account.">
+  <meta property="og:url" content="https://piecesofperception.com/auth.html">
+  <meta property="og:image" content="https://piecesofperception.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://piecesofperception.com/og-image.png">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -16,14 +25,6 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Privacy-friendly analytics by Plausible -->
-  <script async src="https://plausible.io/js/pa-RHzpSmPEbIjbaOmxsM1AW.js"></script>
-  <script>
-    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-    plausible.init()
-  </script>
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -108,18 +109,6 @@
       position: relative;
       z-index: 1;
     }
-    .beta-badge {
-      display: inline-block;
-      background: var(--lavender-light);
-      color: var(--lavender);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 6px;
-      margin-bottom: 14px;
-    }
     .auth-header { text-align: center; margin-bottom: 28px; }
     .auth-header h1 {
       font-family: 'Playfair Display', Georgia, serif;
@@ -182,11 +171,6 @@
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--accent-bg);
-    }
-    .form-group input.invite-code {
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      font-weight: 600;
     }
     .form-hint {
       font-size: 12px;
@@ -301,7 +285,6 @@
   <div class="auth-card">
 
     <div class="auth-header">
-      <span class="beta-badge">Private Beta</span>
       <h1 class="serif" id="auth-title">Welcome back</h1>
       <p id="auth-subtitle">Sign in to access your reports and dashboard.</p>
     </div>
@@ -322,20 +305,12 @@
       <div class="form-group">
         <label for="signin-password">Password</label>
         <input type="password" id="signin-password" autocomplete="current-password" placeholder="Your password" required>
-        <p class="form-hint" style="text-align:right;margin-top:8px;">
-          <a href="/reset-password.html" style="color:var(--accent,#6C63FF);text-decoration:none;font-weight:600;">Forgot your password?</a>
-        </p>
       </div>
       <button class="btn btn-primary" id="btn-signin" type="submit">Sign In</button>
     </form>
 
     <!-- SIGN UP -->
     <form class="form-section" id="form-signup" onsubmit="handleSignUp(event)" novalidate>
-      <div class="form-group">
-        <label for="signup-invite">Invite code</label>
-        <input type="text" id="signup-invite" class="invite-code" autocomplete="off" placeholder="Your beta invite code" required>
-        <p class="form-hint">Sarah emailed this to you. Case doesn't matter.</p>
-      </div>
       <div class="form-group">
         <label for="signup-name">Your name</label>
         <input type="text" id="signup-name" autocomplete="given-name" placeholder="First name" required>
@@ -374,23 +349,8 @@
 </footer>
 
 <script>
-  // ── RECOVERY-LINK DEFENSE ──────────────────────────────────────
-  // If Supabase lands a password-recovery URL on THIS page instead of
-  // /reset-password.html (which can happen when the Allowed Redirect URLs
-  // list isn't configured yet), forward the user with the hash intact.
-  (function forwardRecoveryHash() {
-    try {
-      const hash = window.location.hash || '';
-      if (hash.includes('type=recovery') || hash.includes('access_token=')) {
-        const target = '/reset-password.html' + hash;
-        window.location.replace(target);
-      }
-    } catch (_) { /* ignore */ }
-  })();
-
   const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
-  const PENDING_CODE_KEY = 'pop_pending_invite_code';
 
   // ── Tab switching ──
   function switchTab(which) {
@@ -402,7 +362,7 @@
     document.getElementById('auth-title').textContent    = isSignIn ? 'Welcome back' : 'Create your account';
     document.getElementById('auth-subtitle').textContent = isSignIn
       ? 'Sign in to access your reports and dashboard.'
-      : 'Beta is invite-only. Enter your code below to begin.';
+      : 'Build personalized guides for your family — start here.';
     hideMsg();
   }
 
@@ -438,13 +398,6 @@
     return raw;
   }
 
-  function friendlyClaimError(code) {
-    if (code === 'invalid_code')      return 'That invite code wasn\'t recognized. Double-check it and try again.';
-    if (code === 'already_used')      return 'That invite code has already been redeemed by someone else.';
-    if (code === 'must_be_signed_in') return 'Please sign in first, then redeem your code.';
-    return 'We couldn\'t verify your invite code. Please contact hello@piecesofperception.com.';
-  }
-
   // ── Save session helpers ──
   function saveSession(authData, displayName) {
     try {
@@ -458,25 +411,6 @@
       };
       localStorage.setItem('pop_session', JSON.stringify(payload));
     } catch (e) { /* ignore storage errors */ }
-  }
-
-  // ── Claim an invite code via the SECURITY DEFINER RPC ──
-  async function claimInviteCode(accessToken, inviteCode) {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/claim_beta_invite`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ invite_code: inviteCode })
-      });
-      if (!res.ok) return { ok: false, error: 'rpc_failed' };
-      return await res.json();
-    } catch (e) {
-      return { ok: false, error: 'network' };
-    }
   }
 
   // ── SIGN IN handler ──
@@ -506,23 +440,8 @@
         return;
       }
       saveSession(data);
-
-      // If a pending invite code was stored at signup (email-confirmation flow),
-      // redeem it now.
-      let pendingCode = null;
-      try { pendingCode = localStorage.getItem(PENDING_CODE_KEY); } catch (_) {}
-      if (pendingCode) {
-        const claim = await claimInviteCode(data.access_token, pendingCode);
-        try { localStorage.removeItem(PENDING_CODE_KEY); } catch (_) {}
-        if (!claim.ok) {
-          showMsg(friendlyClaimError(claim.error), 'error');
-          setLoading('btn-signin', false, 'Sign In');
-          return;
-        }
-      }
-
       showMsg('Signed in! Taking you to your dashboard...', 'success');
-      setTimeout(() => { window.location.href = '/beta-dashboard.html'; }, 600);
+      setTimeout(() => { window.location.href = '/dashboard.html'; }, 600);
     } catch (err) {
       showMsg('Network error. Please check your connection and try again.', 'error');
       setLoading('btn-signin', false, 'Sign In');
@@ -533,24 +452,18 @@
   async function handleSignUp(e) {
     e.preventDefault();
     hideMsg();
-    const inviteCode = document.getElementById('signup-invite').value.trim().toUpperCase();
-    const name       = document.getElementById('signup-name').value.trim();
-    const email      = document.getElementById('signup-email').value.trim();
-    const password   = document.getElementById('signup-password').value;
-    if (!inviteCode || !name || !email || !password) {
-      showMsg('Please fill in every field, including your invite code.', 'error');
+    const name     = document.getElementById('signup-name').value.trim();
+    const email    = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    if (!name || !email || !password) {
+      showMsg('Please fill in every field.', 'error');
       return;
     }
     if (password.length < 8) {
       showMsg('Password must be at least 8 characters.', 'error');
       return;
     }
-
     setLoading('btn-signup', true, 'Create Account');
-
-    // Stash the code immediately so it survives the email-confirmation flow
-    try { localStorage.setItem(PENDING_CODE_KEY, inviteCode); } catch (_) {}
-
     try {
       // 1) Sign up with Supabase Auth
       const signupRes = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
@@ -562,7 +475,7 @@
         body: JSON.stringify({
           email,
           password,
-          data: { name, invite_code: inviteCode }
+          data: { name }
         })
       });
       const signupData = await signupRes.json();
@@ -572,12 +485,14 @@
         return;
       }
 
-      const userId = (signupData.user && signupData.user.id) || (signupData.id);
+      // Supabase returns either a session (auto-confirm enabled)
+      // or a user-only object (email confirmation required).
+      const userId = (signupData.user && signupData.user.id)
+                  || (signupData.id);
       const accessToken = signupData.access_token;
 
-      // 2) If we have a session right away, claim the invite immediately
+      // 2) If we have a session, write a profiles row right away
       if (accessToken && userId) {
-        // Best-effort profile insert (won't override beta_access — claim_beta_invite will set that)
         try {
           await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
             method: 'POST',
@@ -594,27 +509,19 @@
             })
           });
         } catch (profileErr) {
+          // Non-fatal — user can still proceed; profile can be created on first dashboard visit
           console.warn('Profile insert failed:', profileErr);
         }
 
-        // Claim the invite code
-        const claim = await claimInviteCode(accessToken, inviteCode);
-        if (!claim.ok) {
-          showMsg(friendlyClaimError(claim.error), 'error');
-          setLoading('btn-signup', false, 'Create Account');
-          // Don't clear the pending code — let them retry on signin
-          return;
-        }
-
-        // Success — clear pending code, save session, redirect
-        try { localStorage.removeItem(PENDING_CODE_KEY); } catch (_) {}
+        // Save session and redirect
         saveSession(signupData, name);
-        showMsg('Account created and beta access confirmed. Taking you to your dashboard...', 'success');
-        setTimeout(() => { window.location.href = '/beta-dashboard.html'; }, 800);
+        showMsg('Account created! Taking you to your dashboard...', 'success');
+        setTimeout(() => { window.location.href = '/dashboard.html'; }, 700);
       } else {
-        // Email confirmation required — code stays in localStorage, redeemed on first signin
-        showMsg('Check your email for a confirmation link, then come back and sign in. Your invite code is saved.', 'info');
+        // Email confirmation required — no session yet
+        showMsg('Check your email for a confirmation link, then come back and sign in.', 'info');
         setLoading('btn-signup', false, 'Create Account');
+        // Pre-fill the sign-in form for convenience
         document.getElementById('signin-email').value = email;
       }
     } catch (err) {

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6C63FF">
+  <title>Dashboard | Pieces of Perception</title>
+  <meta name="description" content="Your Pieces of Perception dashboard — start a new action report or continue where you left off.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://piecesofperception.com/dashboard.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Pieces of Perception">
+  <meta property="og:title" content="Dashboard | Pieces of Perception">
+  <meta property="og:description" content="Your private dashboard for building and managing personalized action reports.">
+  <meta property="og:url" content="https://piecesofperception.com/dashboard.html">
+  <meta property="og:image" content="https://piecesofperception.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://piecesofperception.com/og-image.png">
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #6C63FF;
+      --accent-dark:  #5349e0;
+      --accent-bg:    rgba(108,99,255,0.07);
+      --warm:         #E8845A;
+      --warm-light:   rgba(232,132,90,0.10);
+      --sage:         #52B788;
+      --sage-light:   rgba(82,183,136,0.10);
+      --sky:          #3FA8CC;
+      --sky-light:    rgba(63,168,204,0.10);
+      --lavender:     #8E7FC4;
+      --lavender-light: rgba(142,127,196,0.12);
+      --rose:         #D95B72;
+      --deep:         #16162A;
+      --text:         #2C2C3E;
+      --text-light:   #6B6B80;
+      --border:       #E6E8F0;
+      --border-soft:  rgba(108,99,255,0.12);
+      --bg:           #F7F8FC;
+      --white:        #ffffff;
+      --card-shadow:  0 2px 8px rgba(22,22,42,0.06), 0 8px 32px rgba(22,22,42,0.08);
+      --card-shadow-hover: 0 4px 16px rgba(22,22,42,0.10), 0 16px 48px rgba(22,22,42,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand .brand-name { font-size: 17px; font-weight: 700; color: var(--deep); letter-spacing: -0.3px; }
+    .nav-right { display: flex; align-items: center; gap: 18px; }
+    .nav-user {
+      font-size: 13.5px; color: var(--text-light); font-weight: 500;
+    }
+    .nav-user strong { color: var(--deep); font-weight: 600; }
+    .btn-signout {
+      padding: 8px 16px;
+      font-size: 13.5px; font-weight: 600;
+      background: white;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all .2s;
+    }
+    .btn-signout:hover {
+      border-color: var(--rose);
+      color: var(--rose);
+    }
+    @media (max-width: 600px) {
+      .nav { padding: 0 18px; }
+      .nav-user { display: none; }
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 28px; border-radius: 12px; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all .22s; border: none;
+      font-family: 'DM Sans', sans-serif; letter-spacing: -0.1px;
+    }
+    .btn-primary {
+      background: var(--accent); color: white;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.25);
+    }
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108,99,255,0.35);
+    }
+    .btn-large { padding: 15px 36px; font-size: 16px; border-radius: 14px; }
+    .btn-warm { background: var(--warm); color: white; box-shadow: 0 2px 8px rgba(232,132,90,0.25); }
+    .btn-warm:hover { background: #d4744a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,132,90,0.35); }
+    .btn-outline { background: white; color: var(--accent); border: 1.5px solid rgba(108,99,255,0.3); }
+    .btn-outline:hover { border-color: var(--accent); background: var(--accent-bg); }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      padding: 60px 48px 80px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) { main { padding: 40px 18px 60px; } }
+
+    /* ── WELCOME ── */
+    .welcome {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 40px 36px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(108,99,255,0.10), transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .welcome .badge {
+      display: inline-block; padding: 5px 14px;
+      background: var(--accent-bg); color: var(--accent);
+      border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.4px;
+      margin-bottom: 14px; border: 1px solid var(--border-soft);
+    }
+    .welcome h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 38px); font-weight: 800;
+      color: var(--deep); line-height: 1.2; margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    .welcome p {
+      font-size: 16px; color: var(--text-light);
+      max-width: 620px; line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    /* ── SECTION ── */
+    .section-head { text-align: center; margin-bottom: 32px; }
+    .section-head .label {
+      display: inline-block; padding: 5px 14px;
+      background: var(--accent-bg); color: var(--accent);
+      border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.4px;
+      margin-bottom: 12px; border: 1px solid var(--border-soft);
+    }
+    .section-head h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(24px, 3.6vw, 32px); font-weight: 800;
+      color: var(--deep); line-height: 1.2; margin-bottom: 10px;
+    }
+    .section-head p {
+      font-size: 15.5px; color: var(--text-light);
+      max-width: 580px; margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── REPORT CARDS ── */
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 12px;
+    }
+    @media (max-width: 760px) {
+      .reports-grid { grid-template-columns: 1fr; }
+    }
+    .report-card {
+      background: white;
+      border-radius: 22px;
+      border: 1.5px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 32px 30px;
+      transition: all .25s;
+      display: flex; flex-direction: column;
+    }
+    .report-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-3px);
+    }
+    .report-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(145deg, rgba(108,99,255,0.04), white);
+      position: relative;
+    }
+    .report-card.featured::after {
+      content: 'Most Comprehensive';
+      position: absolute;
+      top: 18px; right: 18px;
+      background: var(--accent); color: white;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .report-icon { font-size: 36px; margin-bottom: 14px; }
+    .report-card h3 {
+      font-size: 20px; font-weight: 700;
+      color: var(--deep); margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+    .report-tagline {
+      font-size: 13.5px; color: var(--text-light);
+      margin-bottom: 18px; font-weight: 500;
+    }
+    .report-price {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 32px; font-weight: 800;
+      color: var(--deep);
+      margin-bottom: 18px;
+      letter-spacing: -1px;
+    }
+    .report-price .currency { font-size: 20px; vertical-align: super; margin-right: 2px; }
+    .report-features { list-style: none; margin-bottom: 24px; }
+    .report-features li {
+      font-size: 14px; color: var(--text);
+      padding: 7px 0;
+      padding-left: 24px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .report-features li::before {
+      content: '✓';
+      position: absolute; left: 0; top: 6px;
+      color: var(--sage); font-weight: 700;
+    }
+    .report-card .btn { width: 100%; margin-top: auto; }
+
+    /* ── STATUS BANNER ── */
+    .status-banner {
+      background: var(--accent-bg);
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 13.5px;
+      color: var(--accent);
+      margin-bottom: 28px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* ── LOADING ── */
+    #loading {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 60vh;
+      color: var(--text-light); font-size: 15px;
+    }
+    #content { display: none; }
+    #content.ready { display: block; }
+
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin-right: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 28px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-light);
+      border-top: 1px solid var(--border);
+      background: white;
+    }
+    footer a { color: var(--text-light); text-decoration: none; margin: 0 10px; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/dashboard.html">
+    <svg width="36" height="30" viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-label="Pieces of Perception logo"><defs><clipPath id="pop-d"><rect x="2" y="1" width="36" height="30" rx="2.5"/></clipPath></defs><g clip-path="url(#pop-d)"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/></g><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg>
+    <span class="brand-name">Pieces of Perception</span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-user">Signed in as <strong id="nav-user-email">—</strong></span>
+    <button class="btn-signout" id="btn-signout" onclick="signOut()">Sign Out</button>
+  </div>
+</nav>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <span>Loading your dashboard...</span>
+</div>
+
+<main id="content">
+
+  <div class="welcome">
+    <div class="badge">YOUR DASHBOARD</div>
+    <h1 class="serif">Welcome, <span id="welcome-name">friend</span>!</h1>
+    <p>This is your home base for building personalized guides for your child. Start a new report below — or come back to pick up where you left off. Every answer you share helps shape a guide that truly reflects your family.</p>
+    <a href="#" class="btn btn-primary btn-large" onclick="startReport(event)">Start Your Report &rarr;</a>
+  </div>
+
+  <div class="status-banner">
+    <span>✨</span>
+    <span>The questionnaire is live — pick a report below to get started.</span>
+  </div>
+
+  <div class="section-head">
+    <div class="label">CHOOSE YOUR REPORT</div>
+    <h2 class="serif">Two ways to start.</h2>
+    <p>Both reports are built from the same warm, careful questionnaire — pick the depth that fits where your family is right now.</p>
+  </div>
+
+  <div class="reports-grid">
+
+    <!-- Action Report -->
+    <div class="report-card">
+      <div class="report-icon">🎯</div>
+      <h3>Action Report</h3>
+      <div class="report-tagline">Quick, focused, ready to share.</div>
+      <div class="report-price"><span class="currency">$</span>149</div>
+      <ul class="report-features">
+        <li>A clear snapshot of your child's profile</li>
+        <li>Top regulation strategies that fit them</li>
+        <li>Communication tips for school & family</li>
+        <li>Sensory needs and what to watch for</li>
+        <li>Delivered as a polished PDF you can share</li>
+      </ul>
+      <a href="#" class="btn btn-warm" onclick="startReport(event, 'action')">Choose Action Report</a>
+    </div>
+
+    <!-- Comprehensive Plan -->
+    <div class="report-card featured">
+      <div class="report-icon">📘</div>
+      <h3>Comprehensive Plan</h3>
+      <div class="report-tagline">Deeper detail. Built to grow with your child.</div>
+      <div class="report-price"><span class="currency">$</span>299</div>
+      <ul class="report-features">
+        <li>Everything in the Action Report</li>
+        <li>Full sensory and regulation profile</li>
+        <li>Trigger-by-trigger response playbook</li>
+        <li>Communication scripts for hard moments</li>
+        <li>12-week implementation guidance</li>
+        <li>Designed for IEP teams and clinicians</li>
+      </ul>
+      <a href="#" class="btn btn-primary" onclick="startReport(event, 'comprehensive')">Choose Comprehensive Plan</a>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <a href="/index.html">Home</a>
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <a href="/disclaimer.html">Disclaimer</a>
+  <span style="margin-left:10px">&copy; 2026 Pieces of Perception LLC</span>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
+
+  function getSession() {
+    try {
+      const raw = localStorage.getItem('pop_session');
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s.access_token || !s.user_id) return null;
+      if (s.expires_at && s.expires_at < Date.now()) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+
+  function clearSession() {
+    try { localStorage.removeItem('pop_session'); } catch (_) {}
+  }
+
+  function redirectToAuth() {
+    window.location.href = '/auth.html';
+  }
+
+  async function fetchProfile(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/profiles?user_id=eq.${session.user_id}&select=name,email`,
+        {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Accept': 'application/json'
+          }
+        }
+      );
+      if (!res.ok) return null;
+      const rows = await res.json();
+      return Array.isArray(rows) && rows.length ? rows[0] : null;
+    } catch (e) { return null; }
+  }
+
+  async function tryCreateProfile(session, name) {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/profiles`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          user_id: session.user_id,
+          name: name || '',
+          email: session.email || ''
+        })
+      });
+    } catch (_) { /* ignore — profile may already exist */ }
+  }
+
+  async function init() {
+    const session = getSession();
+    if (!session) { redirectToAuth(); return; }
+
+    // Best-effort profile fetch — falls back to session-stored name
+    let displayName = session.name || '';
+    let displayEmail = session.email || '';
+
+    const profile = await fetchProfile(session);
+    if (profile) {
+      if (profile.name)  displayName  = profile.name;
+      if (profile.email) displayEmail = profile.email;
+    } else if (session.name) {
+      // No profile row yet — try to create one (RLS will allow only own user)
+      tryCreateProfile(session, session.name);
+    }
+
+    document.getElementById('welcome-name').textContent = displayName ? displayName.split(' ')[0] : 'friend';
+    document.getElementById('nav-user-email').textContent = displayEmail || '—';
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').classList.add('ready');
+  }
+
+  async function signOut() {
+    const session = getSession();
+    // Best-effort token revocation
+    if (session) {
+      try {
+        await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        });
+      } catch (_) {}
+    }
+    clearSession();
+    window.location.href = '/index.html';
+  }
+
+  function startReport(e, kind) {
+    if (e) e.preventDefault();
+    // Hand off to the questionnaire engine.
+    // - 'action' / 'comprehensive': pre-select that flow
+    // - undefined: let the user choose on the first step
+    const url = kind === 'action' || kind === 'comprehensive'
+      ? `/questionnaire.html?flow=${kind}`
+      : '/questionnaire.html';
+    window.location.href = url;
+  }
+
+  init();
+</script>
+
+</body>
+</html>
