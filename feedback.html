@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6C63FF">
+  <title>Beta Feedback | Pieces of Perception</title>
+  <meta name="description" content="Beta family feedback survey for Pieces of Perception.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://piecesofperception.com/feedback.html">
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Privacy-friendly analytics by Plausible -->
+  <script async src="https://plausible.io/js/pa-RHzpSmPEbIjbaOmxsM1AW.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #6C63FF;
+      --accent-dark:  #5349e0;
+      --accent-mid:   #8B84FF;
+      --accent-bg:    rgba(108,99,255,0.07);
+      --warm:         #E8845A;
+      --warm-light:   rgba(232,132,90,0.10);
+      --sage:         #52B788;
+      --sage-light:   rgba(82,183,136,0.10);
+      --lavender:     #8E7FC4;
+      --lavender-light: rgba(142,127,196,0.12);
+      --rose:         #D95B72;
+      --deep:         #16162A;
+      --text:         #2C2C3E;
+      --text-light:   #6B6B80;
+      --border:       #E6E8F0;
+      --border-soft:  rgba(108,99,255,0.12);
+      --bg:           #F7F8FC;
+      --white:        #ffffff;
+      --card-shadow:  0 2px 8px rgba(22,22,42,0.06), 0 8px 32px rgba(22,22,42,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand .brand-name { font-size: 17px; font-weight: 700; color: var(--deep); letter-spacing: -0.3px; }
+    .nav-back { font-size: 14px; color: var(--text-light); text-decoration: none; font-weight: 500; transition: color .2s; }
+    .nav-back:hover { color: var(--accent); }
+    @media (max-width: 600px) { .nav { padding: 0 20px; } }
+
+    .wrap {
+      flex: 1;
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .hero { text-align: center; margin-bottom: 36px; }
+    .beta-badge {
+      display: inline-block;
+      background: var(--lavender-light);
+      color: var(--lavender);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+    }
+    .hero h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(26px, 4.5vw, 36px); color: var(--deep); line-height: 1.2; margin-bottom: 12px; }
+    .hero p { color: var(--text-light); font-size: 15.5px; max-width: 560px; margin: 0 auto; }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 32px 30px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 600px) { .card { padding: 24px 18px; } }
+
+    .eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 6px;
+    }
+    .card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 21px; color: var(--deep); margin-bottom: 4px; }
+    .card .card-sub { font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+
+    .q { margin-bottom: 26px; }
+    .q:last-child { margin-bottom: 4px; }
+    .q-label { font-size: 15px; font-weight: 600; color: var(--deep); margin-bottom: 4px; }
+    .q-hint { font-size: 13px; color: var(--text-light); margin-bottom: 10px; }
+    .optional { font-weight: 400; color: var(--text-light); font-size: 12.5px; }
+
+    /* Likert */
+    .likert { display: flex; gap: 8px; }
+    .likert button {
+      flex: 1; height: 46px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: white; color: var(--text);
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+    }
+    .likert button:hover { border-color: var(--accent-mid); background: var(--accent-bg); }
+    .likert button.sel { background: var(--accent); border-color: var(--accent); color: white; }
+    .likert-ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-light); margin-top: 6px; }
+
+    /* NPS */
+    .nps { display: grid; grid-template-columns: repeat(11, 1fr); gap: 5px; }
+    .nps button {
+      height: 40px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      background: white; color: var(--text);
+      font-family: inherit; font-size: 13.5px; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+    }
+    .nps button:hover { border-color: var(--accent-mid); background: var(--accent-bg); }
+    .nps button.sel { background: var(--accent); border-color: var(--accent); color: white; }
+    @media (max-width: 480px) { .nps { grid-template-columns: repeat(6, 1fr); } }
+
+    /* Choice chips (radio + checkbox) */
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choices.grid2 { display: grid; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 560px) { .choices.grid2 { grid-template-columns: 1fr; } }
+    .choice {
+      display: flex; align-items: flex-start; gap: 10px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: white; padding: 11px 14px;
+      font-size: 14.5px; color: var(--text);
+      cursor: pointer; transition: all .15s; text-align: left;
+      font-family: inherit; width: 100%;
+    }
+    .choice:hover { border-color: var(--accent-mid); background: var(--accent-bg); }
+    .choice.sel { border-color: var(--accent); background: var(--accent-bg); }
+    .choice .tick {
+      flex: none; width: 19px; height: 19px; margin-top: 2px;
+      border: 1.5px solid var(--border); border-radius: 5px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 12px; color: white; transition: all .15s; background: white;
+    }
+    .choice.radio .tick { border-radius: 50%; }
+    .choice.sel .tick { background: var(--accent); border-color: var(--accent); }
+
+    select, textarea, input[type="text"] {
+      width: 100%;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 11px 14px;
+      font-family: inherit; font-size: 14.5px; color: var(--text);
+      background: white; outline: none; transition: border-color .15s;
+    }
+    select:focus, textarea:focus, input:focus { border-color: var(--accent); }
+    textarea { min-height: 86px; resize: vertical; }
+
+    .price-row { display: flex; align-items: center; gap: 10px; }
+    .price-input { position: relative; width: 150px; flex: none; }
+    .price-input span {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      color: var(--text-light); font-size: 14.5px; pointer-events: none;
+    }
+    .price-input input {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 11px 12px 11px 28px;
+      font-family: inherit; font-size: 14.5px; outline: none;
+    }
+    .price-input input:focus { border-color: var(--accent); }
+
+    .pricing-note {
+      background: var(--sage-light);
+      border: 1px solid rgba(82,183,136,0.25);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 13.5px; color: var(--text);
+      margin-bottom: 22px;
+    }
+
+    .submit-btn {
+      display: block; width: 100%;
+      background: var(--accent); color: white;
+      border: none; border-radius: 12px;
+      padding: 16px; font-family: inherit;
+      font-size: 16px; font-weight: 700; letter-spacing: 0.2px;
+      cursor: pointer; transition: background .2s;
+    }
+    .submit-btn:hover { background: var(--accent-dark); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .submit-msg { display: none; margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 14px; }
+
+    .state-view { display: none; text-align: center; padding: 70px 24px; }
+    .state-view.show { display: block; }
+    .state-view .big { font-size: 44px; margin-bottom: 14px; }
+    .state-view h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; color: var(--deep); margin-bottom: 10px; }
+    .state-view p { color: var(--text-light); font-size: 15px; max-width: 480px; margin: 0 auto 22px; }
+    .state-view a.btn {
+      display: inline-block; background: var(--accent); color: white;
+      text-decoration: none; font-weight: 600; font-size: 14.5px;
+      padding: 12px 26px; border-radius: 10px;
+    }
+
+    #survey-view { display: none; }
+    #survey-view.show { display: block; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 22px 48px; text-align: center;
+      font-size: 13px; color: var(--text-light);
+      background: white;
+    }
+    footer a { color: var(--text-light); text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/index.html">
+    <span class="brand-name">Pieces of Perception</span>
+  </a>
+  <a class="nav-back" href="/beta-dashboard.html">&larr; Back to Dashboard</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- LOADING -->
+  <div id="loading" class="state-view show">
+    <div class="big">&#9203;</div>
+    <h2>Loading&hellip;</h2>
+  </div>
+
+  <!-- ALREADY SUBMITTED -->
+  <div id="done-view" class="state-view">
+    <div class="big">&#128156;</div>
+    <h2>You&rsquo;ve already shared your feedback</h2>
+    <p>Thank you — your responses are safely recorded and are directly shaping what Pieces of Perception becomes. If you&rsquo;d like to add anything, just reply to any of our emails.</p>
+    <a class="btn" href="/beta-dashboard.html">Back to Dashboard</a>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="success-view" class="state-view">
+    <div class="big">&#127881;</div>
+    <h2>Thank you, truly.</h2>
+    <p>Your feedback as a founding beta family carries more weight than you know. Every answer you gave will shape the reports, the pricing, and the experience for every family who comes after you.</p>
+    <a class="btn" href="/beta-dashboard.html">Back to Dashboard</a>
+  </div>
+
+  <!-- SURVEY -->
+  <div id="survey-view">
+    <div class="hero">
+      <span class="beta-badge">Beta Family Feedback</span>
+      <h1>How did we do?</h1>
+      <p>This takes about 5&ndash;7 minutes. Every question is optional — answer what you can, skip what you can&rsquo;t. Your honest answers (especially the critical ones) are the most valuable thing you can give us.</p>
+    </div>
+
+    <!-- S1 · YOUR REPORTS -->
+    <div class="card">
+      <div class="eyebrow">Section 1 of 6</div>
+      <h2>Your Reports</h2>
+      <p class="card-sub">First, a quick picture of what you&rsquo;ve had a chance to look at.</p>
+
+      <div class="q">
+        <div class="q-label">Which documents have you read or skimmed so far?</div>
+        <div class="q-hint">Select all that apply.</div>
+        <div class="choices grid2" id="reports-read"></div>
+      </div>
+    </div>
+
+    <!-- S2 · QUALITY -->
+    <div class="card">
+      <div class="eyebrow">Section 2 of 6</div>
+      <h2>Quality</h2>
+      <p class="card-sub">How well did the writing hold up?</p>
+
+      <div class="q">
+        <div class="q-label">&ldquo;The reports sound like <em>my</em> child — not a generic child.&rdquo;</div>
+        <div class="likert" data-key="q_accuracy"></div>
+        <div class="likert-ends"><span>Strongly disagree</span><span>Strongly agree</span></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Quality of the writing itself (clarity, tone, professionalism)</div>
+        <div class="likert" data-key="q_writing"></div>
+        <div class="likert-ends"><span>Poor</span><span>Excellent</span></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Look, layout, and organization of the documents</div>
+        <div class="likert" data-key="q_layout"></div>
+        <div class="likert-ends"><span>Poor</span><span>Excellent</span></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Overall, the length of the reports felt&hellip;</div>
+        <div class="choices" id="q-length" data-radio="1">
+          <button type="button" class="choice radio" data-val="too_short"><span class="tick">&#10003;</span>Too short — I wanted more depth</button>
+          <button type="button" class="choice radio" data-val="about_right"><span class="tick">&#10003;</span>About right</button>
+          <button type="button" class="choice radio" data-val="too_long"><span class="tick">&#10003;</span>Too long — hard to get through</button>
+          <button type="button" class="choice radio" data-val="mixed"><span class="tick">&#10003;</span>Mixed — some too long, some too short</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Did anything feel inaccurate, generic, or just not like your child? <span class="optional">(optional)</span></div>
+        <div class="q-hint">Please be specific if you can — which document, which section.</div>
+        <textarea id="q-inaccurate" placeholder="e.g., The Teacher Guide described sensory needs we don't really have&hellip;"></textarea>
+      </div>
+    </div>
+
+    <!-- S3 · USEFULNESS -->
+    <div class="card">
+      <div class="eyebrow">Section 3 of 6</div>
+      <h2>Usefulness</h2>
+      <p class="card-sub">Did the reports actually help in real life?</p>
+
+      <div class="q">
+        <div class="q-label">How useful has the report set been for your family so far?</div>
+        <div class="likert" data-key="u_overall"></div>
+        <div class="likert-ends"><span>Not useful</span><span>Extremely useful</span></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Which single document was the <strong>most</strong> valuable to you?</div>
+        <select id="u-most"><option value="">Choose one&hellip;</option></select>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Which was the <strong>least</strong> valuable?</div>
+        <select id="u-least"><option value="">Choose one&hellip;</option></select>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Have you shared any of the documents with anyone yet?</div>
+        <div class="q-hint">Select all that apply.</div>
+        <div class="choices grid2" id="u-shared">
+          <button type="button" class="choice" data-val="teacher_school"><span class="tick">&#10003;</span>Teacher or school staff</button>
+          <button type="button" class="choice" data-val="iep_team"><span class="tick">&#10003;</span>IEP team / special-ed coordinator</button>
+          <button type="button" class="choice" data-val="provider"><span class="tick">&#10003;</span>Therapist or service provider</button>
+          <button type="button" class="choice" data-val="babysitter"><span class="tick">&#10003;</span>Babysitter or caretaker</button>
+          <button type="button" class="choice" data-val="extended_family"><span class="tick">&#10003;</span>Extended family or close friends</button>
+          <button type="button" class="choice" data-val="sibling"><span class="tick">&#10003;</span>My child&rsquo;s sibling(s)</button>
+          <button type="button" class="choice" data-val="not_yet"><span class="tick">&#10003;</span>Not yet — but I plan to</button>
+          <button type="button" class="choice" data-val="no_plans"><span class="tick">&#10003;</span>No, and I don&rsquo;t plan to</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Has anything changed because of the reports? <span class="optional">(optional)</span></div>
+        <div class="q-hint">A conversation that went differently, a teacher who adjusted something, a family member who finally understood&hellip;</div>
+        <textarea id="u-changes" placeholder="Tell us what happened&hellip;"></textarea>
+      </div>
+    </div>
+
+    <!-- S4 · RELEVANCE -->
+    <div class="card">
+      <div class="eyebrow">Section 4 of 6</div>
+      <h2>Relevance</h2>
+      <p class="card-sub">Did we cover what actually matters to your family?</p>
+
+      <div class="q">
+        <div class="q-label">&ldquo;The reports focused on the things that matter most for my child right now.&rdquo;</div>
+        <div class="likert" data-key="r_personalized"></div>
+        <div class="likert-ends"><span>Strongly disagree</span><span>Strongly agree</span></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Was anything missing that you expected or hoped to see? <span class="optional">(optional)</span></div>
+        <textarea id="r-missing" placeholder="e.g., More on feeding, more on transitions between homes, a guide for coaches&hellip;"></textarea>
+      </div>
+    </div>
+
+    <!-- S5 · PRICING -->
+    <div class="card">
+      <div class="eyebrow">Section 5 of 6</div>
+      <h2>Pricing</h2>
+      <p class="card-sub">You received the full set free as a beta family — that never changes. These questions only help us price it fairly for future families.</p>
+
+      <div class="pricing-note">
+        For the next four questions, imagine the <strong>complete document set you received</strong> (the Focused reports plus the full Comprehensive set, including the IEP Prep Companion) offered as a one-time purchase to a family like yours.
+      </div>
+
+      <div class="q">
+        <div class="q-label">At what price would it be <strong>so cheap</strong> you&rsquo;d question the quality?</div>
+        <div class="price-row"><div class="price-input"><span>$</span><input type="text" inputmode="decimal" id="p-too-cheap" placeholder="0"></div></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">At what price would it feel like a <strong>great value</strong>?</div>
+        <div class="price-row"><div class="price-input"><span>$</span><input type="text" inputmode="decimal" id="p-bargain" placeholder="0"></div></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">At what price would it start to feel <strong>expensive</strong> — but you&rsquo;d still seriously consider it?</div>
+        <div class="price-row"><div class="price-input"><span>$</span><input type="text" inputmode="decimal" id="p-expensive" placeholder="0"></div></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">At what price would it be <strong>too expensive</strong> to consider at all?</div>
+        <div class="price-row"><div class="price-input"><span>$</span><input type="text" inputmode="decimal" id="p-too-expensive" placeholder="0"></div></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Which way of paying would suit your family best?</div>
+        <div class="choices" id="p-model" data-radio="1">
+          <button type="button" class="choice radio" data-val="one_time"><span class="tick">&#10003;</span>One-time purchase — pay once, keep the documents</button>
+          <button type="button" class="choice radio" data-val="one_time_plus_updates"><span class="tick">&#10003;</span>One-time purchase + optional paid yearly update (refreshed as your child grows)</button>
+          <button type="button" class="choice radio" data-val="subscription"><span class="tick">&#10003;</span>Monthly or yearly subscription with ongoing updates</button>
+          <button type="button" class="choice radio" data-val="not_sure"><span class="tick">&#10003;</span>Not sure</button>
+        </div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">If we offered a <strong>yearly refresh</strong> — updated reports as your child grows and circumstances change — what would feel like a fair price per year?</div>
+        <div class="price-row"><div class="price-input"><span>$</span><input type="text" inputmode="decimal" id="p-refresh" placeholder="0"></div><span style="font-size:13.5px;color:var(--text-light)">per year</span></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Which documents would be worth paying for <strong>on their own</strong>?</div>
+        <div class="q-hint">Select all that apply — this helps us decide what to offer individually.</div>
+        <div class="choices grid2" id="p-alacarte"></div>
+      </div>
+    </div>
+
+    <!-- S6 · WRAP-UP -->
+    <div class="card">
+      <div class="eyebrow">Section 6 of 6</div>
+      <h2>Last Few Things</h2>
+      <p class="card-sub">Almost done — thank you for sticking with us.</p>
+
+      <div class="q">
+        <div class="q-label">How likely are you to recommend Pieces of Perception to another family like yours?</div>
+        <div class="nps" id="nps"></div>
+        <div class="likert-ends"><span>Not at all likely</span><span>Extremely likely</span></div>
+      </div>
+
+      <div class="q">
+        <div class="q-label">Anything else you want us to know? <span class="optional">(optional)</span></div>
+        <div class="q-hint">The good, the bad, the &ldquo;please never change this,&rdquo; the &ldquo;please fix this immediately.&rdquo;</div>
+        <textarea id="open-feedback" placeholder="The floor is yours&hellip;"></textarea>
+      </div>
+
+      <div class="q">
+        <div class="q-label">May we quote your feedback publicly (website, materials)?</div>
+        <div class="choices" id="testimonial" data-radio="1">
+          <button type="button" class="choice radio" data-val="yes_named"><span class="tick">&#10003;</span>Yes — you may use my first name</button>
+          <button type="button" class="choice radio" data-val="yes_anonymous"><span class="tick">&#10003;</span>Yes — but only anonymously</button>
+          <button type="button" class="choice radio" data-val="no"><span class="tick">&#10003;</span>No, please keep it private</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" type="button">Submit My Feedback</button>
+    <div class="submit-msg" id="submit-msg"></div>
+  </div>
+</div>
+
+<footer>
+  <a href="/index.html">Home</a>
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <a href="/disclaimer.html">Disclaimer</a>
+  <span style="margin-left:10px">&copy; 2026 Pieces of Perception LLC</span>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
+
+  const REPORTS = [
+    { id: 'focused_action',    label: 'Focused Action Report' },
+    { id: 'comprehensive',     label: 'Comprehensive Profile' },
+    { id: 'iep_companion',     label: 'IEP Prep Companion' },
+    { id: 'babysitter',        label: 'Babysitter / Caretaker Care Guide' },
+    { id: 'teacher',           label: 'Teacher & School Staff Guide' },
+    { id: 'provider',          label: 'Service Provider / Therapy Guide' },
+    { id: 'extended_family',   label: 'Extended Family & Close Friends Guide' },
+    { id: 'sibling',           label: 'Sibling Guide' }
+  ];
+
+  const state = {
+    reports_read: [], q_accuracy: null, q_writing: null, q_layout: null,
+    q_length: null, u_overall: null, u_shared_with: [],
+    r_personalized: null, p_model: null, nps: null,
+    testimonial_permission: null, p_alacarte: []
+  };
+
+  // ── Build report checkbox grids + selects ──
+  function buildReportChoices() {
+    const readGrid = document.getElementById('reports-read');
+    const alaGrid  = document.getElementById('p-alacarte');
+    const most = document.getElementById('u-most');
+    const least = document.getElementById('u-least');
+    REPORTS.forEach(r => {
+      [['reports_read', readGrid], ['p_alacarte', alaGrid]].forEach(([key, grid]) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'choice'; b.dataset.val = r.id;
+        b.innerHTML = '<span class="tick">&#10003;</span>' + r.label;
+        b.addEventListener('click', () => {
+          b.classList.toggle('sel');
+          const arr = state[key];
+          const i = arr.indexOf(r.id);
+          if (i >= 0) arr.splice(i, 1); else arr.push(r.id);
+        });
+        grid.appendChild(b);
+      });
+      [most, least].forEach(sel => {
+        const o = document.createElement('option');
+        o.value = r.id; o.textContent = r.label;
+        sel.appendChild(o);
+      });
+    });
+    const none = document.createElement('option');
+    none.value = 'none'; none.textContent = 'None of them, honestly';
+    least.appendChild(none);
+  }
+
+  // ── Likert builders ──
+  function buildLikerts() {
+    document.querySelectorAll('.likert').forEach(row => {
+      const key = row.dataset.key;
+      for (let i = 1; i <= 5; i++) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = i;
+        b.addEventListener('click', () => {
+          row.querySelectorAll('button').forEach(x => x.classList.remove('sel'));
+          b.classList.add('sel');
+          state[key] = i;
+        });
+        row.appendChild(b);
+      }
+    });
+  }
+
+  function buildNps() {
+    const row = document.getElementById('nps');
+    for (let i = 0; i <= 10; i++) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = i;
+      b.addEventListener('click', () => {
+        row.querySelectorAll('button').forEach(x => x.classList.remove('sel'));
+        b.classList.add('sel');
+        state.nps = i;
+      });
+      row.appendChild(b);
+    }
+  }
+
+  // ── Radio + multi groups ──
+  function wireRadios() {
+    [['q-length','q_length'], ['p-model','p_model'], ['testimonial','testimonial_permission']].forEach(([id, key]) => {
+      const grid = document.getElementById(id);
+      grid.querySelectorAll('.choice').forEach(b => {
+        b.addEventListener('click', () => {
+          grid.querySelectorAll('.choice').forEach(x => x.classList.remove('sel'));
+          b.classList.add('sel');
+          state[key] = b.dataset.val;
+        });
+      });
+    });
+    const shared = document.getElementById('u-shared');
+    shared.querySelectorAll('.choice').forEach(b => {
+      b.addEventListener('click', () => {
+        b.classList.toggle('sel');
+        const v = b.dataset.val;
+        const i = state.u_shared_with.indexOf(v);
+        if (i >= 0) state.u_shared_with.splice(i, 1); else state.u_shared_with.push(v);
+      });
+    });
+  }
+
+  // ── Session (same pattern as beta-dashboard) ──
+  function getSession() {
+    try {
+      const raw = localStorage.getItem('pop_session');
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s.access_token || !s.user_id) return null;
+      if (s.expires_at && s.expires_at < Date.now()) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+
+  async function fetchInviteCode(session) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}` }
+      });
+      if (!res.ok) return null;
+      const u = await res.json();
+      return (u && u.user_metadata && u.user_metadata.invite_code) || null;
+    } catch (e) { return null; }
+  }
+
+  async function alreadySubmitted(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/beta_feedback?user_id=eq.${encodeURIComponent(session.user_id)}&select=id`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}` } }
+      );
+      if (!res.ok) return false; // fail open — DB unique constraint is the hard gate
+      const rows = await res.json();
+      return Array.isArray(rows) && rows.length > 0;
+    } catch (e) { return false; }
+  }
+
+  function num(id) {
+    const raw = (document.getElementById(id).value || '').replace(/[$,\s]/g, '');
+    if (raw === '') return null;
+    const n = parseFloat(raw);
+    return isNaN(n) ? null : n;
+  }
+  function txt(id) {
+    const v = (document.getElementById(id).value || '').trim();
+    return v === '' ? null : v;
+  }
+
+  async function submit() {
+    const btn = document.getElementById('submit-btn');
+    const msg = document.getElementById('submit-msg');
+    const session = getSession();
+    if (!session) { window.location.href = '/beta-portal.html'; return; }
+
+    const payload = {
+      user_id: session.user_id,
+      invite_code: window._popInviteCode || null,
+      reports_read: state.reports_read,
+      q_accuracy: state.q_accuracy,
+      q_writing: state.q_writing,
+      q_layout: state.q_layout,
+      q_length: state.q_length,
+      q_inaccurate: txt('q-inaccurate'),
+      u_overall: state.u_overall,
+      u_most_valuable: document.getElementById('u-most').value || null,
+      u_least_valuable: document.getElementById('u-least').value || null,
+      u_shared_with: state.u_shared_with,
+      u_changes: txt('u-changes'),
+      r_personalized: state.r_personalized,
+      r_missing: txt('r-missing'),
+      p_too_cheap: num('p-too-cheap'),
+      p_bargain: num('p-bargain'),
+      p_expensive: num('p-expensive'),
+      p_too_expensive: num('p-too-expensive'),
+      p_model: state.p_model,
+      p_annual_refresh: num('p-refresh'),
+      p_alacarte: state.p_alacarte,
+      nps: state.nps,
+      open_feedback: txt('open-feedback'),
+      testimonial_permission: state.testimonial_permission,
+      answers: { ...state,
+        q_inaccurate: txt('q-inaccurate'), u_changes: txt('u-changes'),
+        r_missing: txt('r-missing'), open_feedback: txt('open-feedback'),
+        u_most_valuable: document.getElementById('u-most').value || null,
+        u_least_valuable: document.getElementById('u-least').value || null,
+        p_too_cheap: num('p-too-cheap'), p_bargain: num('p-bargain'),
+        p_expensive: num('p-expensive'), p_too_expensive: num('p-too-expensive'),
+        p_annual_refresh: num('p-refresh')
+      }
+    };
+
+    btn.disabled = true; btn.textContent = 'Submitting…';
+    msg.style.display = 'none';
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/beta_feedback`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.status === 409) {
+        document.getElementById('survey-view').classList.remove('show');
+        document.getElementById('done-view').classList.add('show');
+        window.scrollTo(0, 0);
+        return;
+      }
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error(`Save failed (${res.status}): ${t}`);
+      }
+
+      try { plausible('Beta Feedback Submitted'); } catch (_) {}
+      document.getElementById('survey-view').classList.remove('show');
+      document.getElementById('success-view').classList.add('show');
+      window.scrollTo(0, 0);
+    } catch (err) {
+      console.error(err);
+      btn.disabled = false; btn.textContent = 'Submit My Feedback';
+      msg.style.display = 'block';
+      msg.style.background = 'rgba(217,91,114,0.08)';
+      msg.style.color = 'var(--rose)';
+      msg.textContent = 'We couldn’t save your feedback just now. Please try again in a moment — nothing you typed has been lost.';
+    }
+  }
+
+  // ── Boot ──
+  (async function boot() {
+    buildReportChoices();
+    buildLikerts();
+    buildNps();
+    wireRadios();
+    document.getElementById('submit-btn').addEventListener('click', submit);
+
+    const session = getSession();
+    if (!session) { window.location.href = '/beta-portal.html'; return; }
+
+    const [code, done] = await Promise.all([fetchInviteCode(session), alreadySubmitted(session)]);
+    window._popInviteCode = code;
+
+    document.getElementById('loading').classList.remove('show');
+    if (done) {
+      document.getElementById('done-view').classList.add('show');
+    } else {
+      document.getElementById('survey-view').classList.add('show');
+    }
+  })();
+</script>
+
+</body>
+</html>
