@@ -990,6 +990,21 @@
   ];
 
   // ─────────────────────────────────────────────────────────────
+  // FOCUSED_ISSUE_STEPS — parity fix (Sarah review 2026-06-11, item k).
+  // The Comprehensive flow must ALSO collect the focused-issue answers:
+  // every family receives ALL reports (unified-pipeline requirement,
+  // 2026-05-25), including the Focused Action Report. Before this fix,
+  // comprehensive-flow families were never asked these questions, so the
+  // Focused report's Q&A appendix printed "Not specified" and the report
+  // body relied on synthesis gap-fill instead of the parent's own words.
+  // comm_style_focused is excluded — comp_b1_communication already
+  // covers communication in the comprehensive flow.
+  // ─────────────────────────────────────────────────────────────
+  const FOCUSED_ISSUE_STEPS = ACTION_STEPS.filter(function (s) {
+    return s.id !== 'comm_style_focused';
+  });
+
+  // ─────────────────────────────────────────────────────────────
   // COMPREHENSIVE_STEPS — full Joey Beta content
   // (Joey_Beta_Questionnaire_FILL_IN.docx, sections B-1 through B-12)
   // ─────────────────────────────────────────────────────────────
@@ -2433,8 +2448,11 @@
         .concat(ACTION_ADDON_STEPS)
         .concat(FINAL_STEPS);
     } else if (state.flow === 'comprehensive') {
+      // FOCUSED_ISSUE_STEPS inserted after the comprehensive child-profile
+      // sections (parity fix 2026-06-11 — see FOCUSED_ISSUE_STEPS comment).
       steps = SHARED_STEPS
         .concat(COMPREHENSIVE_STEPS)
+        .concat(FOCUSED_ISSUE_STEPS)
         .concat(HOUSEHOLD_STEPS)
         .concat(SIBLING_STEPS)
         .concat(COMPREHENSIVE_ADDON_STEPS)
