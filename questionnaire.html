@@ -3276,6 +3276,30 @@
 
     loadDraft();
 
+    // Unified agreement: skip the acknowledgment screen when this account has
+    // already accepted it (e.g. on the dashboard). The screen still appears
+    // for anyone who reaches the form without an acknowledgment on record,
+    // so the legal gate is never bypassed. Fails closed (screen shows) if
+    // the check errors.
+    if (!state.acks_confirmed) {
+      try {
+        const ar = await fetch(
+          `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.` +
+          encodeURIComponent(session.user_id) +
+          `&policy_type=eq.` + encodeURIComponent(BETA_AGREEMENT.type) +
+          `&policy_version=eq.` + encodeURIComponent(BETA_AGREEMENT.version) +
+          `&select=policy_type&limit=1`,
+          { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}`, 'Accept': 'application/json' } });
+        if (ar.ok) {
+          const rows = await ar.json();
+          if (Array.isArray(rows) && rows.length) {
+            state.acks_confirmed = true;
+            saveDraft();
+          }
+        }
+      } catch (e) { /* leave the screen in place */ }
+    }
+
     // Pre-fill flow from URL ?flow=action|comprehensive
     // Phase 2A preview: ?preview=foundation pins a banner to the top so
     // it's obvious you're not on the live form.
