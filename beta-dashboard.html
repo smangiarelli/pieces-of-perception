@@ -671,6 +671,14 @@
     <a href="/feedback.html" class="btn btn-primary" style="margin-top:6px;">Start the Feedback Survey &rarr;</a>
   </div>
 
+  <!-- Manage / delete your data -->
+  <div class="my-reports" style="margin-top:36px; text-align:center; border:1px solid #eadfd2; background:#fbf7f1;">
+    <h2>Your Data, Your Choice</h2>
+    <p class="lede" style="max-width:560px; margin-left:auto; margin-right:auto;">You can ask us to delete your account and everything you've shared about your family at any time, for any reason. We'll confirm by email and remove your identifying information within the timeframe described in your <a href="/beta-agreement.html" target="_blank" rel="noopener">Beta Family Participation Agreement</a>.</p>
+    <a id="delete-data-link" href="mailto:hello@piecesofperception.com?subject=Data%20deletion%20request&body=Hi%20Sarah%2C%0A%0AI%27d%20like%20to%20request%20deletion%20of%20my%20Pieces%20of%20Perception%20account%20and%20all%20data%20about%20my%20family.%0A%0AAccount%20email%3A%20%0A%0AThank%20you." class="btn btn-warm" style="margin-top:6px;">Request Data Deletion</a>
+    <p style="margin-top:14px; font-size:13px; color:#8a7d6d;">Prefer to write us directly? Email <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a>.</p>
+  </div>
+
 </main>
 
 <footer>
@@ -1118,6 +1126,15 @@
 
     document.getElementById('welcome-name').textContent = displayName ? displayName.split(' ')[0] : 'friend';
     document.getElementById('nav-user-email').textContent = displayEmail || '—';
+
+    // Pre-fill the data-deletion request with the signed-in account email so we can identify the request.
+    const delLink = document.getElementById('delete-data-link');
+    if (delLink && displayEmail) {
+      const body = 'Hi Sarah,\n\nI\'d like to request deletion of my Pieces of Perception account and all data about my family.\n\nAccount email: ' + displayEmail + '\n\nThank you.';
+      delLink.href = 'mailto:hello@piecesofperception.com?subject=' +
+        encodeURIComponent('Data deletion request') +
+        '&body=' + encodeURIComponent(body);
+    }
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').classList.add('ready');
 
