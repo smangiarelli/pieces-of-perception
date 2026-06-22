@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6C63FF">
+<title>Checkout | Pieces of Perception</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- =====================================================================
+     STRIPE SETUP  -  EDIT THIS BLOCK ONLY
+     ---------------------------------------------------------------------
+     For each product below, paste the Payment Link you create in Stripe
+     (Stripe Dashboard -> Payment Links -> the link's URL, like
+      https://buy.stripe.com/abc123 ).  Steps are in the setup guide.
+
+     Until you paste a real link, that product's button shows
+     "Coming soon" and is disabled -- nothing breaks.
+
+     "price" is only what's SHOWN on this page. The real charge comes
+     from Stripe. Keep them in sync.
+     ===================================================================== -->
+<script>
+const CONFIG = {
+  // The founding-family discount. The script you ran created this code.
+  founderCode: "FOUNDER",
+  founderPercent: 20,
+
+  // Main reports
+  products: [
+    {
+      id: "comprehensive",
+      badge: "BEST VALUE",
+      name: "Comprehensive Plan",
+      blurb: "Everything in the Action Report, plus the full 12-week framework, communication scripts for every audience, crisis playbook, and a year of updates.",
+      price: 149,
+      paymentLink: "https://buy.stripe.com/test_5kQdR96E2b066qW75U73G03"
+    },
+    {
+      id: "action",
+      badge: "",
+      name: "Action Report",
+      blurb: "Your child's complete profile, sensory map, strengths spotlight, regulation toolkit, quick-reference cheat sheet, and week-one checklist.",
+      price: 99,
+      paymentLink: "https://buy.stripe.com/test_4gMcN51jI4BI6qWbma73G02"
+    }
+  ],
+
+  // Optional add-ons
+  addons: [
+    { id: "careguides", name: "All 5 Care Guides (bundle)", blurb: "Babysitter, Extended Family, Sibling, Teacher, and Service Provider guides.", price: 49, paymentLink: "https://buy.stripe.com/test_6oU28r5zY9W22aGfCq73G01" },
+    { id: "iep",        name: "IEP Goal Recommendations",   blurb: "Specific, professionally worded goal language for your next IEP meeting.",   price: 29, paymentLink: "https://buy.stripe.com/test_bJeeVd6E27NU2aGfCq73G00" }
+  ]
+};
+</script>
+
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --accent:#6C63FF; --accent-dark:#5349e0; --accent-bg:rgba(108,99,255,0.07);
+    --warm:#E8845A; --warm-light:rgba(232,132,90,0.10);
+    --sage:#52B788; --sage-light:rgba(82,183,136,0.12);
+    --sky:#3FA8CC;
+    --deep:#16162A; --text:#2C2C3E; --text-light:#6B6B80;
+    --border:#E6E8F0; --border-soft:rgba(108,99,255,0.12);
+    --bg:#F7F8FC; --white:#ffffff;
+    --card-shadow:0 2px 8px rgba(22,22,42,0.06), 0 8px 32px rgba(22,22,42,0.08);
+    --card-shadow-hover:0 4px 16px rgba(22,22,42,0.10), 0 16px 48px rgba(22,22,42,0.12);
+  }
+  body { font-family:'DM Sans', system-ui, sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .serif { font-family:'Playfair Display', Georgia, serif; }
+  a { color:inherit; }
+
+  header.bar { background:var(--white); border-bottom:1px solid var(--border); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; }
+  header.bar .brand { font-family:'Playfair Display', serif; font-weight:800; font-size:20px; color:var(--deep); text-decoration:none; }
+  header.bar .secure { font-size:12.5px; color:var(--text-light); display:flex; align-items:center; gap:6px; }
+
+  .wrap { max-width:1000px; margin:0 auto; padding:40px 24px 80px; }
+  .page-head { text-align:center; margin-bottom:32px; }
+  .page-head .eyebrow { font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--accent); text-transform:uppercase; }
+  .page-head h1 { font-family:'Playfair Display', serif; font-size:34px; font-weight:800; color:var(--deep); margin:8px 0 10px; line-height:1.2; }
+  .page-head p { color:var(--text-light); max-width:560px; margin:0 auto; font-size:15px; }
+
+  /* Founder banner */
+  .founder { background:linear-gradient(135deg, rgba(108,99,255,0.08), rgba(232,132,90,0.08)); border:1px solid var(--border-soft); border-radius:18px; padding:22px 24px; margin:0 auto 34px; max-width:680px; }
+  .founder h2 { font-family:'Playfair Display', serif; font-size:18px; color:var(--deep); margin-bottom:4px; }
+  .founder p { font-size:13.5px; color:var(--text); margin-bottom:14px; }
+  .promo-row { display:flex; gap:10px; flex-wrap:wrap; align-items:stretch; }
+  .promo-row input { flex:1; min-width:180px; padding:13px 16px; border:1.5px solid var(--border); border-radius:11px; font-family:inherit; font-size:15px; letter-spacing:1px; text-transform:uppercase; background:var(--white); }
+  .promo-row input:focus { outline:none; border-color:var(--accent); }
+  .promo-row button { padding:13px 22px; border:none; border-radius:11px; background:var(--deep); color:white; font-family:inherit; font-weight:700; font-size:14px; cursor:pointer; }
+  .promo-row button:hover { background:#000; }
+  .promo-msg { font-size:13px; margin-top:10px; min-height:18px; font-weight:600; }
+  .promo-msg.ok { color:var(--sage); }
+  .promo-msg.err { color:var(--warm); }
+
+  .section-label { font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--text-light); text-transform:uppercase; margin:0 0 14px; }
+
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .card { background:var(--white); border:1px solid var(--border); border-radius:18px; padding:26px; box-shadow:var(--card-shadow); display:flex; flex-direction:column; position:relative; transition:box-shadow .2s, transform .2s; }
+  .card:hover { box-shadow:var(--card-shadow-hover); transform:translateY(-2px); }
+  .card.feature { border-color:var(--accent); }
+  .badge { position:absolute; top:-11px; left:26px; background:var(--accent); color:white; font-size:10.5px; font-weight:700; letter-spacing:1px; padding:5px 12px; border-radius:20px; }
+  .card h3 { font-family:'Playfair Display', serif; font-size:21px; color:var(--deep); margin-bottom:8px; }
+  .card .blurb { font-size:13.5px; color:var(--text-light); margin-bottom:18px; flex:1; }
+  .price-line { display:flex; align-items:baseline; gap:10px; margin-bottom:18px; }
+  .price-now { font-size:30px; font-weight:800; color:var(--deep); font-family:'Playfair Display', serif; }
+  .price-was { font-size:16px; color:var(--text-light); text-decoration:line-through; }
+  .price-save { font-size:12px; font-weight:700; color:var(--sage); background:var(--sage-light); padding:3px 9px; border-radius:20px; }
+  .price-note { font-size:11.5px; color:var(--text-light); margin-bottom:18px; }
+
+  .buy { display:block; text-align:center; padding:14px; border-radius:12px; background:var(--accent); color:white; font-family:inherit; font-weight:700; font-size:15px; text-decoration:none; cursor:pointer; border:none; width:100%; }
+  .buy:hover { background:var(--accent-dark); }
+  .buy.warm { background:var(--warm); }
+  .buy.warm:hover { filter:brightness(0.95); }
+  .buy.disabled { background:var(--border); color:var(--text-light); cursor:not-allowed; pointer-events:none; }
+
+  .addons { margin-top:36px; }
+  .addon { background:var(--white); border:1px solid var(--border); border-radius:14px; padding:18px 22px; display:flex; align-items:center; gap:18px; margin-bottom:12px; box-shadow:var(--card-shadow); }
+  .addon .info { flex:1; }
+  .addon .info h4 { font-size:15.5px; color:var(--deep); margin-bottom:3px; }
+  .addon .info p { font-size:12.5px; color:var(--text-light); }
+  .addon .right { display:flex; align-items:center; gap:16px; flex-shrink:0; }
+  .addon .ap { font-weight:800; color:var(--deep); font-size:18px; font-family:'Playfair Display', serif; }
+  .addon .buy { width:auto; padding:11px 20px; font-size:13.5px; }
+
+  .trust { margin-top:42px; text-align:center; color:var(--text-light); font-size:12.5px; line-height:1.9; }
+  .trust .row { display:flex; gap:22px; justify-content:center; flex-wrap:wrap; margin-bottom:14px; }
+  .trust .row span { display:flex; align-items:center; gap:7px; font-weight:600; color:var(--text); }
+  .disclaimer { max-width:720px; margin:18px auto 0; font-size:11.5px; color:var(--text-light); line-height:1.65; background:var(--accent-bg); border:1px solid var(--border-soft); border-radius:10px; padding:12px 18px; }
+
+  @media (max-width:720px) {
+    .grid { grid-template-columns:1fr; }
+    .addon { flex-direction:column; align-items:flex-start; }
+    .addon .right { width:100%; justify-content:space-between; }
+    .page-head h1 { font-size:27px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="brand" href="/">Pieces of Perception</a>
+  <div class="secure">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Secure checkout by Stripe
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="page-head">
+    <div class="eyebrow">Checkout</div>
+    <h1 class="serif">Choose your plan</h1>
+    <p>One-time purchase. No subscription. Your report is yours to keep and share forever.</p>
+  </div>
+
+  <!-- Founding-family code -->
+  <div class="founder">
+    <h2 class="serif">Have a founding-family code?</h2>
+    <p>Enter it below and we'll carry it through to the secure payment page. Founding-family pricing is limited.</p>
+    <div class="promo-row">
+      <input id="promoInput" type="text" placeholder="Enter code" autocomplete="off" spellcheck="false">
+      <button id="promoBtn" type="button">Apply</button>
+    </div>
+    <div id="promoMsg" class="promo-msg"></div>
+  </div>
+
+  <!-- Main reports -->
+  <div class="section-label">Reports</div>
+  <div class="grid" id="productGrid"></div>
+
+  <!-- Add-ons -->
+  <div class="addons">
+    <div class="section-label">Optional add-ons</div>
+    <div id="addonList"></div>
+  </div>
+
+  <!-- Trust -->
+  <div class="trust">
+    <div class="row">
+      <span>&#128274; Encrypted payment</span>
+      <span>&#9989; One-time, no subscription</span>
+      <span>&#128179; Powered by Stripe</span>
+    </div>
+    <div>Questions? Email <a href="mailto:hello@piecesofperception.com" style="color:var(--accent);font-weight:600">hello@piecesofperception.com</a></div>
+    <div class="disclaimer">
+      All report content &mdash; including frameworks, playbooks, scripts, and checklists &mdash; are informational resources and suggested strategies, not clinical prescriptions. They are intended to be reviewed and implemented in partnership with your child's licensed care team.
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  let founderApplied = false;
+
+  function withCode(link) {
+    if (!link) return "";
+    if (!founderApplied) return link;
+    var sep = link.indexOf("?") === -1 ? "?" : "&";
+    return link + sep + "prefilled_promo_code=" + encodeURIComponent(CONFIG.founderCode);
+  }
+
+  function money(n) { return "$" + Number(n).toFixed(0); }
+  function discounted(n) { return n * (1 - CONFIG.founderPercent / 100); }
+
+  function buyButtonHTML(p, cls) {
+    if (!p.paymentLink) {
+      return '<span class="buy disabled">Coming soon</span>';
+    }
+    return '<a class="buy ' + (cls || "") + '" href="' + withCode(p.paymentLink) + '">Continue to payment</a>';
+  }
+
+  function priceBlockHTML(p) {
+    if (founderApplied) {
+      return '<div class="price-line">' +
+               '<span class="price-now">' + money(discounted(p.price)) + '</span>' +
+               '<span class="price-was">' + money(p.price) + '</span>' +
+               '<span class="price-save">' + CONFIG.founderPercent + '% off</span>' +
+             '</div>';
+    }
+    return '<div class="price-line"><span class="price-now">' + money(p.price) + '</span></div>';
+  }
+
+  function renderProducts() {
+    var grid = document.getElementById("productGrid");
+    grid.innerHTML = CONFIG.products.map(function (p) {
+      var feature = p.badge ? " feature" : "";
+      var badge = p.badge ? '<div class="badge">' + p.badge + '</div>' : "";
+      var cls = p.badge ? "" : "warm";
+      return '<div class="card' + feature + '">' + badge +
+               '<h3 class="serif">' + p.name + '</h3>' +
+               '<div class="blurb">' + p.blurb + '</div>' +
+               priceBlockHTML(p) +
+               '<div class="price-note">One-time payment &middot; yours to keep forever</div>' +
+               buyButtonHTML(p, cls) +
+             '</div>';
+    }).join("");
+  }
+
+  function renderAddons() {
+    var list = document.getElementById("addonList");
+    list.innerHTML = CONFIG.addons.map(function (p) {
+      var priceHTML = founderApplied
+        ? '<span class="ap">' + money(discounted(p.price)) + '</span>'
+        : '<span class="ap">' + money(p.price) + '</span>';
+      return '<div class="addon">' +
+               '<div class="info"><h4>' + p.name + '</h4><p>' + p.blurb + '</p></div>' +
+               '<div class="right">' + priceHTML + buyButtonHTML(p, "") + '</div>' +
+             '</div>';
+    }).join("");
+  }
+
+  function renderAll() { renderProducts(); renderAddons(); }
+
+  function applyPromo() {
+    var input = document.getElementById("promoInput");
+    var msg = document.getElementById("promoMsg");
+    var code = (input.value || "").trim().toUpperCase();
+    if (!code) { msg.className = "promo-msg err"; msg.textContent = "Please enter a code."; return; }
+    if (code === CONFIG.founderCode.toUpperCase()) {
+      founderApplied = true;
+      msg.className = "promo-msg ok";
+      msg.textContent = "✓ " + CONFIG.founderPercent + "% founding-family discount applied. It will be confirmed on the secure payment page.";
+      renderAll();
+    } else {
+      founderApplied = false;
+      msg.className = "promo-msg err";
+      msg.textContent = "That code isn't valid. Check the spelling and try again.";
+      renderAll();
+    }
+  }
+
+  document.getElementById("promoBtn").addEventListener("click", applyPromo);
+  document.getElementById("promoInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") applyPromo();
+  });
+
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
