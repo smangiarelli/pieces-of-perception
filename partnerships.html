@@ -118,7 +118,7 @@
   <nav class="nav">
     <div class="wrap">
       <div class="brand"><span class="logo-dot"></span> Pieces of Perception</div>
-      <a class="cta" href="mailto:hello@piecesofperception.com?subject=Provider%20Partnership%20Inquiry">Talk to us</a>
+      <a class="cta" href="#contact">Talk to us</a>
     </div>
   </nav>
 
@@ -130,7 +130,7 @@
         reframed for clinical use, and carrying <strong>your logo</strong>, not ours. You bring the practice;
         we power the report.</p>
       <a class="btn btn-primary" href="partner-sample-report.pdf" target="_blank" rel="noopener">See a sample report →</a>
-      <a class="btn btn-ghost" href="mailto:hello@piecesofperception.com?subject=Provider%20Partnership%20Inquiry">Start a conversation</a>
+      <a class="btn btn-ghost" href="#contact">Start a conversation</a>
     </div>
   </header>
 
@@ -246,11 +246,56 @@
     </div>
   </section>
 
-  <div class="closing wrap">
-    <h2>Interested in carrying this?</h2>
-    <p>We're opening a small number of provider partnerships. Tell us about your practice and we'll set up a walkthrough.</p>
-    <a class="btn btn-primary" href="mailto:hello@piecesofperception.com?subject=Provider%20Partnership%20Inquiry">Email hello@piecesofperception.com</a>
-  </div>
+  <section id="contact">
+    <div class="wrap" style="max-width:640px;">
+      <div class="sec-label">Get in touch</div>
+      <h2 class="sec">Interested in carrying this?</h2>
+      <p class="sub">We're opening a small number of provider partnerships. Tell us about your practice and we'll set up a walkthrough &mdash; I reply personally.</p>
+      <form id="provider-form" onsubmit="return sendInquiry(event)" style="display:flex;flex-direction:column;gap:14px;text-align:left;">
+        <input id="pf-name" required placeholder="Your name" style="padding:14px 16px;border:1px solid #E6E8F0;border-radius:10px;font:inherit;">
+        <input id="pf-practice" required placeholder="Practice / organization" style="padding:14px 16px;border:1px solid #E6E8F0;border-radius:10px;font:inherit;">
+        <input id="pf-email" required type="email" placeholder="Email" style="padding:14px 16px;border:1px solid #E6E8F0;border-radius:10px;font:inherit;">
+        <select id="pf-service" style="padding:14px 16px;border:1px solid #E6E8F0;border-radius:10px;font:inherit;color:#2C2C3E;">
+          <option value="">Service type (optional)</option>
+          <option>ABA</option><option>Speech (SLP)</option><option>Occupational therapy (OT)</option>
+          <option>Physical therapy (PT)</option><option>Mental health</option><option>Education / school</option>
+          <option>Respite / PASS</option><option>Life-skills coaching</option><option>Other</option>
+        </select>
+        <textarea id="pf-message" rows="4" placeholder="Tell me a little about your practice and caseload" style="padding:14px 16px;border:1px solid #E6E8F0;border-radius:10px;font:inherit;resize:vertical;"></textarea>
+        <button class="btn btn-primary" type="submit" id="pf-btn" style="border:none;cursor:pointer;">Request a walkthrough</button>
+      </form>
+      <p id="pf-success" style="display:none;color:#52B788;font-weight:600;margin-top:14px;">Thank you &mdash; your inquiry is in. I'll reply personally within a day or two.</p>
+      <p style="margin-top:14px;font-size:14px;opacity:.75;">Prefer email? <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a></p>
+    </div>
+  </section>
+
+  <script>
+    const _SB_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
+    const _SB_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
+    async function sendInquiry(e) {
+      e.preventDefault();
+      const btn = document.getElementById('pf-btn');
+      btn.disabled = true; btn.textContent = 'Sending\u2026';
+      const body = {
+        name: document.getElementById('pf-name').value.trim(),
+        practice: document.getElementById('pf-practice').value.trim(),
+        email: document.getElementById('pf-email').value.trim(),
+        service_type: document.getElementById('pf-service').value || null,
+        message: document.getElementById('pf-message').value.trim() || null
+      };
+      try {
+        const res = await fetch(`${_SB_URL}/rest/v1/ProviderInquiries`, {
+          method: 'POST',
+          headers: { 'apikey': _SB_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) { console.error('Inquiry error:', res.status, await res.text()); }
+      } catch(err) { console.error('Inquiry fetch error:', err); }
+      document.getElementById('provider-form').style.display = 'none';
+      document.getElementById('pf-success').style.display = 'block';
+      return false;
+    }
+  </script>
 
   <footer>
     <div class="wrap">
