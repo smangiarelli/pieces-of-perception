@@ -246,6 +246,19 @@
       line-height: 1.75; text-align: center; font-weight: 400;
     }
 
+    /* ── LAUNCH BANNER ── */
+    .launch-banner {
+      display: block;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--lavender) 55%, var(--warm) 100%);
+      color: white; text-align: center; text-decoration: none;
+      padding: 11px 20px; font-size: 14.5px; font-weight: 600; letter-spacing: .1px;
+      line-height: 1.5;
+    }
+    .launch-banner strong { font-weight: 800; }
+    .launch-banner .lb-arrow { display: inline-block; transition: transform .2s ease; margin-left: 2px; }
+    .launch-banner:hover .lb-arrow { transform: translateX(4px); }
+    @media (max-width: 640px) { .launch-banner { font-size: 13px; padding: 10px 16px; } }
+
     /* ── HERO ── */
     .hero {
       min-height: 92vh;
@@ -696,6 +709,11 @@
 </head>
 <body>
 
+<!-- ─── LAUNCH BANNER ─── -->
+<a href="#waitlist" class="launch-banner">
+  🎉 <strong>We go live September&nbsp;1!</strong> &nbsp;Join the waitlist by August&nbsp;30 to lock in founding-member pricing <span class="lb-arrow">&rarr;</span>
+</a>
+
 <!-- ─── NAVIGATION ─── -->
 <nav class="nav">
   <a class="nav-brand" href="#">
@@ -720,7 +738,7 @@
     <a href="#waitlist" class="btn btn-primary btn-large">Reserve Your Spot &rarr;</a>
     <a href="#how-it-works" class="btn btn-outline btn-large">See How It Works</a>
   </div>
-  <p class="hero-note"><strong>Launching Soon.</strong> &nbsp;Join the Waitlist for Founding-Member Access and Pricing.</p>
+  <p class="hero-note"><strong>We go live September 1.</strong> &nbsp;Join the waitlist by August 30 to lock in Founding-Member pricing.</p>
   <div class="trust-row">
     <div class="trust-chip">🔒 Encrypted in Transit &amp; At Rest</div>
     <div class="trust-chip">👤 Built with COPPA Privacy Standards</div>
@@ -980,13 +998,13 @@
   <div class="section-inner" style="text-align:center">
     <div class="section-label">Pricing</div>
     <h2 class="section-title">Simple, One-Time Pricing</h2>
-    <p class="section-sub">No subscriptions. No surprise fees. Pay once and keep your report forever. Final pricing will be shared at launch — join the waitlist for early access and founding-family pricing.</p>
+    <p class="section-sub">No subscriptions. No surprise fees. Pay once and keep your report forever. Final pricing goes live September 1 — join the waitlist by August 30 to lock in founding-member pricing.</p>
     <p style="font-size:12.5px;color:var(--text-light);max-width:700px;margin:-32px auto 36px;line-height:1.65;background:rgba(108,99,255,0.04);border-radius:10px;padding:10px 18px;border:1px solid var(--border-soft)">All report content — including frameworks, playbooks, scripts, and checklists — are informational resources and suggested strategies, not clinical prescriptions. They are intended to be reviewed and implemented in partnership with your child's licensed care team.</p>
     <div class="pricing-grid">
       <div class="price-card">
         <div class="price-tier">ACTION REPORT</div>
         <div class="price-amount" style="font-size:28px">Coming Soon</div>
-        <div class="price-period">join waitlist for launch pricing</div>
+        <div class="price-period">launching Sept 1 — waitlist locks in founding pricing</div>
         <p class="price-desc">A clear, visual action report with your child's complete profile, regulation tools, and a week-one checklist. Perfect to bring to your next school meeting or doctor's appointment.</p>
         <div class="price-divider"></div>
         <ul class="price-features">
@@ -1005,7 +1023,7 @@
         <div class="popular-badge">BEST VALUE</div>
         <div class="price-tier">COMPREHENSIVE PLAN</div>
         <div class="price-amount" style="font-size:28px">Coming Soon</div>
-        <div class="price-period">join waitlist for launch pricing</div>
+        <div class="price-period">launching Sept 1 — waitlist locks in founding pricing</div>
         <p class="price-desc">Everything in the Action Report, plus a complete 12-week action framework with scripts, step-by-step timelines, and deep-dive tools for every person in your child's life.</p>
         <div class="price-divider"></div>
         <ul class="price-features">
@@ -1111,9 +1129,14 @@
         <h3>Service Provider / Therapy Guide</h3>
         <p>A neuro-affirming clinical-bridge document for OTs, speech-language pathologists, social-skills group facilitators, and other therapy providers. Tunes recommendations for 1-on-1 therapy <em>and</em> social-group settings, aligns clinical goals with home work, and gives your provider what no intake form ever asks.</p>
       </div>
+      <div class="care-card" style="border-left:3px solid var(--rose)">
+        <div class="care-price-tag" style="background:var(--rose-light);color:var(--rose)">Add-On</div>
+        <h3>Parenting in Partnership Guide</h3>
+        <p>A guide for the adults raising your child <em>together</em> — making the case for a unified front and giving co-parents and caregivers a shared playbook so every grown-up follows the same approach. Built for one household or two, it focuses on the consistency, transitions, and aligned responses that lower a neurodiverse child's daily stress — the same response from every adult, every time.</p>
+      </div>
     </div>
     <div class="bundle-row">
-      <div><span class="bundle-label">Bundle all 5 Care Guides</span><span class="bundle-save">— available at launch with bundle savings</span></div>
+      <div><span class="bundle-label">Bundle all 6 Care Guides</span><span class="bundle-save">— available September 1 with bundle savings</span></div>
       <a href="#waitlist" class="btn btn-primary">Join Waitlist for Early Access</a>
     </div>
   </div>
@@ -1133,7 +1156,7 @@
         </div>
         <div style="text-align:right">
           <div style="color:white;font-size:22px;font-weight:800;font-family:'Playfair Display',serif">Coming Soon</div>
-          <div style="color:rgba(255,255,255,0.6);font-size:13px">add-on at launch</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:13px">add-on — available Sept 1</div>
         </div>
       </div>
       <div class="iep-body">
@@ -1248,9 +1271,9 @@
 <!-- ─── WAITLIST ─── -->
 <section id="waitlist" class="waitlist-section">
   <div class="section-inner">
-    <div class="waitlist-count">🚀 &nbsp;Launching soon — spots are limited</div>
+    <div class="waitlist-count">🚀 &nbsp;We go live September 1 — founding-member pricing ends August 30</div>
     <h2 class="section-title">Be Part of Building Something That Matters.</h2>
-    <p class="section-sub">Join the waitlist for early access, founding-member pricing, and a direct voice in shaping what we build for families like yours.</p>
+    <p class="section-sub">Join the waitlist by August 30 to lock in founding-member pricing, early access, and a direct voice in shaping what we build for families like yours.</p>
     <div class="waitlist-form">
       <input type="email" id="waitlist-email" placeholder="your@email.com" autocomplete="email">
       <button onclick="joinWaitlist()">Save My Spot</button>
