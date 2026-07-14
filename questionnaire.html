@@ -667,16 +667,17 @@
     const flow = state.flow;
     if (!flow) return items;
     const base = flow === 'comprehensive'
-      ? { name: 'Comprehensive Plan', price: 299 }
-      : { name: 'Action Report',      price: 149 };
+      ? { name: 'Comprehensive Plan', price: 149 }
+      : { name: 'Action Report',      price: 99 };
     items.push(base);
     function isYes(v) { return typeof v === 'string' && v.indexOf('Yes') === 0; }
-    if (isYes(state.data.addon_babysitter))       items.push({ name: 'Babysitter Care Guide',       price: null });
-    if (isYes(state.data.addon_extended_family))  items.push({ name: 'Extended Family Guide',       price: null });
-    if (isYes(state.data.addon_sibling))          items.push({ name: 'Sibling Guide',               price: null });
-    if (isYes(state.data.addon_teacher))          items.push({ name: 'Teacher / School Guide',      price: null });
-    if (isYes(state.data.addon_service_provider)) items.push({ name: 'Service Provider Guide',      price: null });
-    if (state.addon_iep)                          items.push({ name: 'IEP Goal Recommendations',    price: 99 });
+    if (isYes(state.data.addon_babysitter))       items.push({ name: 'Babysitter Care Guide',       price: 15 });
+    if (isYes(state.data.addon_extended_family))  items.push({ name: 'Extended Family Guide',       price: 15 });
+    if (isYes(state.data.addon_sibling))          items.push({ name: 'Sibling Guide',               price: 15 });
+    if (isYes(state.data.addon_teacher))          items.push({ name: 'Teacher / School Guide',      price: 15 });
+    if (isYes(state.data.addon_service_provider)) items.push({ name: 'Service Provider Guide',      price: 15 });
+    if (isYes(state.data.addon_parenting_partnership)) items.push({ name: 'Parenting in Partnership Guide', price: 15 });
+    if (state.addon_iep)                          items.push({ name: 'IEP Goal Recommendations',    price: 49 });
     return items;
   }
   function renderCartBadge() {
@@ -699,6 +700,14 @@
       html += '<span style="color:#6B6982;font-size:12px;">' + (it.price != null ? ('$' + it.price) : 'add-on') + '</span>';
       html += '</div>';
     });
+    // Bundle logic: 4+ individual guides auto-price as the $49 all-6 bundle
+    const guideSum = items.filter(it => it.price === 15).reduce((s, it) => s + it.price, 0);
+    const otherSum = items.filter(it => it.price !== 15).reduce((s, it) => s + (it.price || 0), 0);
+    if (guideSum > 49) {
+      html += '<div style="padding:4px 0;color:#52B788;font-size:11.5px;font-weight:600;">&#10003; 4+ guides selected &mdash; all-6 bundle price ($49) applied</div>';
+    }
+    const total = otherSum + Math.min(guideSum, 49);
+    html += '<div style="display:flex;justify-content:space-between;border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-weight:700;color:#2C2A4A;"><span>Total</span><span>$' + total + '</span></div>';
     badge.innerHTML = html;
   }
 
@@ -1722,17 +1731,31 @@
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
       ]
     },
+    {
+      id: 'action_addon_parenting_partnership',
+      eyebrow: 'Add-on: Parenting in Partnership Guide',
+      title: 'Add a Parenting in Partnership Guide?',
+      sub: 'Optional — a guide for the adults raising your child TOGETHER: the case for a unified front and a shared playbook so every caregiver follows the same approach. Works whether you parent under one roof or across two homes. Built entirely from your household answers above. Yes = added to your cart.',
+      fields: [
+        { key: 'addon_parenting_partnership', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Parenting in Partnership Guide?',
+          options: [
+            'Yes — generate the Parenting in Partnership Guide (added to cart)',
+            'No — skip'
+          ] },
+      ]
+    },
       {
       id: "action_addon_iep",
       eyebrow: "Add-on: IEP Prep Companion",
       title: "Add IEP Goal Recommendations?",
-      sub: "Optional +$99 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
+      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
       fields: [
         { key: "iep_addon_choice", type: "radio", required: true, triggersRerender: true,
           disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/beta-agreement.html" target="_blank" rel="noopener">Beta Family Participation Agreement</a> for details.',
           label: "Add the IEP Prep Companion + Goal Recommendations to your order?",
           options: [
-            "Yes \u2014 generate the IEP Prep Companion (+$99, added to cart)",
+            "Yes \u2014 generate the IEP Prep Companion (+$49, added to cart)",
             "No \u2014 skip the IEP add-on"
           ] },
         { key: "iep_current_status", type: "radio", required: false,
@@ -2157,17 +2180,31 @@
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
       ]
     },
+    {
+      id: 'comp_addon_parenting_partnership',
+      eyebrow: 'Add-on: Parenting in Partnership Guide',
+      title: 'Add a Parenting in Partnership Guide?',
+      sub: 'Optional — a guide for the adults raising your child TOGETHER: the case for a unified front and a shared playbook so every caregiver follows the same approach. Works whether you parent under one roof or across two homes. Built entirely from your household answers above.',
+      fields: [
+        { key: 'addon_parenting_partnership', type: 'radio', required: true, triggersRerender: true,
+          label: 'Generate a Parenting in Partnership Guide?',
+          options: [
+            'Yes — generate the Parenting in Partnership Guide (added to cart)',
+            'No — skip'
+          ] },
+      ]
+    },
       {
       id: "comp_addon_iep",
       eyebrow: "Add-on: IEP Prep Companion",
       title: "Add IEP Goal Recommendations?",
-      sub: "Optional +$99 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
+      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
       fields: [
         { key: "iep_addon_choice", type: "radio", required: true, triggersRerender: true,
           disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/beta-agreement.html" target="_blank" rel="noopener">Beta Family Participation Agreement</a> for details.',
           label: "Add the IEP Prep Companion + Goal Recommendations to your order?",
           options: [
-            "Yes \u2014 generate the IEP Prep Companion (+$99, added to cart)",
+            "Yes \u2014 generate the IEP Prep Companion (+$49, added to cart)",
             "No \u2014 skip the IEP add-on"
           ] },
         { key: "iep_current_status", type: "radio", required: false,
@@ -2562,7 +2599,7 @@
     actionCard.appendChild(el('div', { className: 'flow-icon' }, '🎯'));
     actionCard.appendChild(el('h3', null, 'Action Report'));
     actionCard.appendChild(el('div', { className: 'flow-tagline' }, 'Quick, focused, ready to share.'));
-    actionCard.appendChild(el('div', { className: 'flow-price', html: '<span class="currency">$</span>149' }));
+    actionCard.appendChild(el('div', { className: 'flow-price', html: '<span class="currency">$</span>99' }));
     actionCard.appendChild(el('div', { className: 'flow-desc' }, 'About 10 short questions. Best when you have one specific challenge you\'re trying to solve right now.'));
     actionCard.appendChild(el('button', { className: 'btn btn-warm', onclick: (e) => { e.stopPropagation(); chooseFlow('action'); } }, 'Choose Action Report →'));
     grid.appendChild(actionCard);
@@ -2572,7 +2609,7 @@
     compCard.appendChild(el('div', { className: 'flow-icon' }, '📘'));
     compCard.appendChild(el('h3', null, 'Comprehensive Plan'));
     compCard.appendChild(el('div', { className: 'flow-tagline' }, 'Deep detail. Built to grow with your child.'));
-    compCard.appendChild(el('div', { className: 'flow-price', html: '<span class="currency">$</span>299' }));
+    compCard.appendChild(el('div', { className: 'flow-price', html: '<span class="currency">$</span>149' }));
     compCard.appendChild(el('div', { className: 'flow-desc' }, 'About 18 questions across daily life, school, sensory, social, and family. Best when you want a plan an IEP team or therapist can use.'));
     compCard.appendChild(el('button', { className: 'btn btn-primary', onclick: (e) => { e.stopPropagation(); chooseFlow('comprehensive'); } }, 'Choose Comprehensive Plan →'));
     grid.appendChild(compCard);
@@ -3085,7 +3122,7 @@
       if (submitBtn) submitBtn.textContent = submitLabel();
     });
     toggle.appendChild(cb);
-    toggle.appendChild(el('span', null, 'Yes — add IEP Goal Recommendations (+$99)'));
+    toggle.appendChild(el('span', null, 'Yes — add IEP Goal Recommendations (+$49)'));
     addon.appendChild(toggle);
 
     card.appendChild(addon);
@@ -3110,8 +3147,12 @@
   }
 
   function submitLabel() {
-    const base = state.flow === 'comprehensive' ? 299 : 149;
-    const total = base + (state.addon_iep ? 99 : 0);
+    const base = state.flow === 'comprehensive' ? 149 : 99;
+    const yes = v => typeof v === 'string' && v.indexOf('Yes') === 0;
+    const guideKeys = ['addon_babysitter','addon_extended_family','addon_sibling','addon_teacher','addon_service_provider','addon_parenting_partnership'];
+    const guideCount = guideKeys.filter(k => yes(state.data[k])).length;
+    // 4+ guides auto-price as the $49 all-6 bundle
+    const total = base + Math.min(guideCount * 15, 49) + (state.addon_iep ? 49 : 0);
     return `Submit & Generate Report ($${total})`;
   }
 

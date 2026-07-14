@@ -38,7 +38,7 @@ const CONFIG = {
       name: "Comprehensive Plan",
       blurb: "Everything in the Action Report, plus the full 12-week framework, communication scripts for every audience, crisis playbook, and a year of updates.",
       price: 149,
-      paymentLink: "https://buy.stripe.com/test_5kQdR96E2b066qW75U73G03"
+      paymentLink: "https://buy.stripe.com/dRmdR96Ou3Lbd7rfZp5AQ09"
     },
     {
       id: "action",
@@ -46,14 +46,24 @@ const CONFIG = {
       name: "Action Report",
       blurb: "Your child's complete profile, sensory map, strengths spotlight, regulation toolkit, quick-reference cheat sheet, and week-one checklist.",
       price: 99,
-      paymentLink: "https://buy.stripe.com/test_4gMcN51jI4BI6qWbma73G02"
+      paymentLink: "https://buy.stripe.com/3cI14nb4KchH6J36oP5AQ08"
     }
   ],
 
   // Optional add-ons
   addons: [
-    { id: "careguides", name: "All 5 Care Guides (bundle)", blurb: "Babysitter, Extended Family, Sibling, Teacher, and Service Provider guides.", price: 49, paymentLink: "https://buy.stripe.com/test_6oU28r5zY9W22aGfCq73G01" },
-    { id: "iep",        name: "IEP Goal Recommendations",   blurb: "Specific, professionally worded goal language for your next IEP meeting.",   price: 29, paymentLink: "https://buy.stripe.com/test_bJeeVd6E27NU2aGfCq73G00" }
+    { id: "careguides", name: "All 6 Care Guides (bundle)", blurb: "Babysitter, Extended Family, Sibling, Teacher/School, Service Provider, and Parenting in Partnership guides. A $90 value — save $41.", price: 49, paymentLink: "https://buy.stripe.com/eVq8wP2yegxXebvcNd5AQ01" },
+    { id: "iep",        name: "IEP Goal Recommendations",   blurb: "Specific, measurable, IDEA-aligned goal language for your next IEP meeting, plus recommended supports and questions to ask the team.",   price: 49, paymentLink: "https://buy.stripe.com/6oU4gz3Ci4Pf2sN00r5AQ00" }
+  ],
+
+  // Individual Care Guides
+  guides: [
+    { id: "babysitter", name: "Babysitter / Respite Care Guide", blurb: "Your child's needs, what helps, what to avoid, and what to do when things get hard.", price: 15, paymentLink: "https://buy.stripe.com/4gM00j6OuftTebveVl5AQ07" },
+    { id: "extfamily",  name: "Extended Family Guide", blurb: "For grandparents, aunts and uncles, and close family friends — warm and jargon-free.", price: 15, paymentLink: "https://buy.stripe.com/eVq00j0q61D38RbfZp5AQ06" },
+    { id: "sibling",    name: "Sibling Guide", blurb: "Age-tiered (4–7, 8–11, 12+) — helps siblings understand and feel part of the team.", price: 15, paymentLink: "https://buy.stripe.com/3cI8wPa0G2H78RbcNd5AQ05" },
+    { id: "teacher",    name: "Teacher / School Guide", blurb: "Classroom supports, communication approaches, and de-escalation steps for the school team.", price: 15, paymentLink: "https://buy.stripe.com/14A9ATc8OgxX3wRaF55AQ04" },
+    { id: "provider",   name: "Service Provider Guide", blurb: "For therapists, coaches, and providers — what works best in sessions with your child.", price: 15, paymentLink: "https://buy.stripe.com/6oU6oHb4KdlL8Rb3cD5AQ03" },
+    { id: "partnership", name: "Parenting in Partnership Guide", blurb: "A shared playbook for the adults raising your child together — one household or two.", price: 15, paymentLink: "https://buy.stripe.com/cNi28rfl0chH7N7aF55AQ02" }
   ]
 };
 </script>
@@ -180,6 +190,12 @@ const CONFIG = {
     <div id="addonList"></div>
   </div>
 
+  <!-- Individual Care Guides -->
+  <div class="addons">
+    <div class="section-label">Or add Care Guides individually — $15 each</div>
+    <div id="guideList"></div>
+  </div>
+
   <!-- Trust -->
   <div class="trust">
     <div class="row">
@@ -244,8 +260,13 @@ const CONFIG = {
   }
 
   function renderAddons() {
-    var list = document.getElementById("addonList");
-    list.innerHTML = CONFIG.addons.map(function (p) {
+    renderAddonListInto("addonList", CONFIG.addons);
+    renderAddonListInto("guideList", CONFIG.guides || []);
+  }
+
+  function renderAddonListInto(elementId, items) {
+    var list = document.getElementById(elementId);
+    list.innerHTML = items.map(function (p) {
       var priceHTML = founderApplied
         ? '<span class="ap">' + money(discounted(p.price)) + '</span>'
         : '<span class="ap">' + money(p.price) + '</span>';
