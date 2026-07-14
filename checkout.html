@@ -149,6 +149,13 @@ const CONFIG = {
     .addon .right { width:100%; justify-content:space-between; }
     .page-head h1 { font-size:27px; }
   }
+
+  /* Add-on gate */
+  .unlock { background:var(--white); border:1.5px solid var(--border-soft); border-radius:12px; padding:16px 18px; margin:0 0 14px; }
+  .unlock p { font-size:13.5px; color:var(--text-light); margin:0 0 10px; }
+  .unlock label { display:flex; align-items:flex-start; gap:10px; font-size:14.5px; font-weight:600; color:var(--deep); cursor:pointer; }
+  .unlock input { width:18px; height:18px; margin-top:2px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+  .buy.locked { background:var(--border); color:var(--text-light); cursor:not-allowed; pointer-events:none; }
 </style>
 </head>
 <body>
@@ -187,6 +194,10 @@ const CONFIG = {
   <!-- Add-ons -->
   <div class="addons">
     <div class="section-label">Optional add-ons</div>
+    <div class="unlock">
+      <p>Add-ons are personalized from your child's full profile, so they require a Comprehensive Plan or Action Report.</p>
+      <label><input type="checkbox" id="unlockAddons"> I have one already, or I'm purchasing one today</label>
+    </div>
     <div id="addonList"></div>
   </div>
 
@@ -214,6 +225,7 @@ const CONFIG = {
 <script>
 (function () {
   let founderApplied = false;
+  let addonsUnlocked = false;
 
   function withCode(link) {
     if (!link) return "";
@@ -270,9 +282,12 @@ const CONFIG = {
       var priceHTML = founderApplied
         ? '<span class="ap">' + money(discounted(p.price)) + '</span>'
         : '<span class="ap">' + money(p.price) + '</span>';
+      var button = addonsUnlocked
+        ? buyButtonHTML(p, "")
+        : '<span class="buy locked">Requires a plan</span>';
       return '<div class="addon">' +
                '<div class="info"><h4>' + p.name + '</h4><p>' + p.blurb + '</p></div>' +
-               '<div class="right">' + priceHTML + buyButtonHTML(p, "") + '</div>' +
+               '<div class="right">' + priceHTML + button + '</div>' +
              '</div>';
     }).join("");
   }
@@ -296,6 +311,11 @@ const CONFIG = {
       renderAll();
     }
   }
+
+  document.getElementById("unlockAddons").addEventListener("change", function (e) {
+    addonsUnlocked = e.target.checked;
+    renderAddons();
+  });
 
   document.getElementById("promoBtn").addEventListener("click", applyPromo);
   document.getElementById("promoInput").addEventListener("keydown", function (e) {
