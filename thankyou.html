@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6C63FF">
+<title>Thank You | Pieces of Perception</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --accent:#6C63FF; --accent-dark:#5349e0; --accent-bg:rgba(108,99,255,0.07);
+    --warm:#E8845A;
+    --sage:#52B788; --sage-light:rgba(82,183,136,0.12);
+    --deep:#16162A; --text:#2C2C3E; --text-light:#6B6B80;
+    --border:#E6E8F0;
+    --bg:#F7F8FC; --white:#ffffff;
+    --card-shadow:0 2px 8px rgba(22,22,42,0.06), 0 8px 32px rgba(22,22,42,0.08);
+  }
+  body { font-family:'DM Sans', system-ui, sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; min-height:100vh; display:flex; flex-direction:column; }
+  .serif { font-family:'Playfair Display', Georgia, serif; }
+
+  header { padding:20px 24px; }
+  header a { font-weight:700; font-size:1.05rem; color:var(--deep); text-decoration:none; }
+  header a span { color:var(--accent); }
+
+  main { flex:1; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .card { background:var(--white); border:1px solid var(--border); border-radius:18px; box-shadow:var(--card-shadow); max-width:560px; width:100%; padding:48px 40px; text-align:center; }
+  .check { width:64px; height:64px; border-radius:50%; background:var(--sage-light); display:flex; align-items:center; justify-content:center; margin:0 auto 20px; }
+  .check svg { width:32px; height:32px; }
+  h1 { font-size:1.9rem; color:var(--deep); margin-bottom:12px; }
+  .card > p { color:var(--text-light); font-size:1.02rem; margin-bottom:8px; }
+
+  .steps { text-align:left; background:var(--accent-bg); border-radius:12px; padding:22px 24px; margin:26px 0; }
+  .steps h2 { font-size:0.85rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent-dark); margin-bottom:12px; }
+  .steps ol { padding-left:20px; }
+  .steps li { margin-bottom:10px; font-size:0.98rem; }
+  .steps li:last-child { margin-bottom:0; }
+  .steps strong { color:var(--deep); }
+
+  .btn { display:inline-block; background:var(--accent); color:var(--white); text-decoration:none; font-weight:600; font-size:1.05rem; padding:14px 36px; border-radius:10px; transition:background .15s ease; }
+  .btn:hover { background:var(--accent-dark); }
+
+  .fine { font-size:0.88rem; color:var(--text-light); margin-top:22px; }
+  .fine a { color:var(--accent-dark); }
+
+  footer { text-align:center; padding:20px; font-size:0.85rem; color:var(--text-light); }
+  @media (max-width:520px) { .card { padding:36px 22px; } h1 { font-size:1.55rem; } }
+</style>
+</head>
+<body>
+<header><a href="/">Pieces of <span>Perception</span></a></header>
+<main>
+  <div class="card">
+    <div class="check">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 6L9 17l-5-5" stroke="#52B788" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1 class="serif">Thank you — payment received!</h1>
+    <p>Your access code is on its way to the email you used at checkout. It usually arrives within a minute or two.</p>
+
+    <div class="steps">
+      <h2>What happens next</h2>
+      <ol>
+        <li><strong>Check your email</strong> for a message from Pieces of Perception with your access code. (Peek in spam/promotions if you don't see it.)</li>
+        <li><strong>Create your account</strong> at the family portal using that code.</li>
+        <li><strong>Complete the questionnaire</strong> about your child — take your time, you can save and come back.</li>
+        <li><strong>Your reports arrive by email</strong>, personally reviewed before they're sent.</li>
+      </ol>
+    </div>
+
+    <a class="btn" href="/beta-portal.html">Go to the Family Portal</a>
+
+    <p class="fine">Already have an account from an earlier purchase? This one was added automatically — no new code needed. Any trouble at all, email <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a>.</p>
+  </div>
+</main>
+<footer>&copy; 2026 Pieces of Perception LLC</footer>
+</body>
+</html>
