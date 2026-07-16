@@ -2694,6 +2694,12 @@
   // ───────────────────────────────────────────────────────────────
   const BETA_AGREEMENT = { type: 'beta_agreement', version: 'v1.0', url: '/beta-agreement.html' };
 
+  // B2B provider-coded flow (2026-07-15): when this family claimed a
+  // provider-tagged invite code, a 6th consent-to-share checkbox is
+  // REQUIRED on the acknowledgment screen. PROVIDER_NAME stays null for
+  // every normal family — zero change to the standard flow.
+  let PROVIDER_NAME = null;
+
   // The single Beta Family Participation Agreement, broken into the key
   // points a parent confirms. This is ONE set of rules — the grouped
   // checkboxes below all live inside that one attorney-reviewed agreement.
@@ -2741,6 +2747,50 @@
     });
     card.appendChild(list);
 
+    // Provider-coded flow: ask Supabase whether this user came through a
+    // partner code; if so, append the required consent-to-share checkbox.
+    // Soft-fails silently — the normal family flow is never affected.
+    (async () => {
+      try {
+        const session = getSession ? getSession() : null;
+        if (!session || !session.access_token) return;
+        const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_my_provider', {
+          method: 'POST',
+          headers: {
+            'apikey':        SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + session.access_token,
+            'Content-Type':  'application/json'
+          },
+          body: '{}'
+        });
+        if (!resp.ok) return;
+        const provRows = await resp.json();
+        const provName = Array.isArray(provRows) && provRows.length ? provRows[0].provider_name : null;
+        if (!provName) return;
+        PROVIDER_NAME = provName;
+        const item = el('label', { className: 'ack-item' });
+        const cb = el('input', {
+          type: 'checkbox',
+          onchange: () => {
+            const all = Array.from(document.querySelectorAll('#ack-list-q input[type="checkbox"]'));
+            document.getElementById('ack-continue-q').disabled = !all.every(b => b.checked);
+          }
+        });
+        item.appendChild(cb);
+        item.appendChild(el('span', { className: 'ack-item-text', html:
+          '<strong>Sharing with your provider.</strong> I understand that I was invited by <strong>' + provName + '</strong>, ' +
+          'and I consent to Pieces of Perception sharing my questionnaire answers and the reports generated from them with ' +
+          '<strong>' + provName + '</strong> for use in their services to my family. I understand the reports will carry ' +
+          provName + '\u2019s branding, that ' + provName + ' is an independent business not employed or endorsed by Pieces of Perception, ' +
+          'and that I can withdraw this consent for future sharing at any time by emailing hello@piecesofperception.com. ' +
+          'All other terms of my agreement with Pieces of Perception, including its disclaimers and my data rights, are unchanged.' }));
+        list.appendChild(item);
+        // A new unchecked box exists → re-gate the Continue button.
+        const contBtn = document.getElementById('ack-continue-q');
+        if (contBtn) contBtn.disabled = true;
+      } catch (e) { /* soft-fail: normal flow unaffected */ }
+    })();
+
     card.appendChild(el('p', {
       className: 'ack-footnote'
     }, 'By checking these boxes you confirm you have read and agree to the full Beta Family Participation Agreement. You can revisit it any time at piecesofperception.com/beta-agreement.html.'));
@@ -2770,6 +2820,19 @@
         policy_type:    BETA_AGREEMENT.type,
         policy_version: BETA_AGREEMENT.version
       }];
+      // Provider flow: record the consent-to-share as its own acknowledgment
+      // row AND inside the answers payload (travels into answers.json, so the
+      // consent is visible in the pipeline and the report Q&A appendix).
+      if (PROVIDER_NAME) {
+        rows.push({
+          user_id:        session.user_id,
+          policy_type:    'provider_share_consent',
+          policy_version: 'v1.0 — ' + PROVIDER_NAME
+        });
+        state.data = state.data || {};
+        state.data.ack_provider_share =
+          'Yes — I consent to sharing my answers and reports with ' + PROVIDER_NAME + '.';
+      }
       try {
         await fetch(SUPABASE_URL + '/rest/v1/policy_acknowledgments', {
           method: 'POST',

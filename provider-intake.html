@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Provider Intake · Pieces of Perception</title>
+<style>
+  :root {
+    --accent: #6C63FF; --accent-dark: #574fd6; --accent-bg: rgba(108,99,255,0.06);
+    --warm: #E8845A; --text: #2B2B3D; --text-light: #6B6B80;
+    --border: #E4E4EF; --bg: #F7F7FC; --sage: #4C9A78;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; padding: 32px 16px 64px; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  .brand { text-align: center; margin-bottom: 22px; font-weight: 700; color: var(--accent); font-size: 18px; letter-spacing: 0.2px; }
+  .card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 32px 30px; box-shadow: 0 4px 24px rgba(43,43,61,0.06); }
+  .eyebrow { color: var(--warm); font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 28px; margin-bottom: 10px; }
+  .sub { color: var(--text-light); font-size: 14.5px; margin-bottom: 22px; }
+  label { display: block; font-weight: 600; font-size: 14px; margin: 18px 0 6px; }
+  label .opt-tag { color: var(--text-light); font-weight: 400; font-size: 12.5px; }
+  input[type=text], select, textarea {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 14.5px; font-family: inherit; background: white; color: var(--text);
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: var(--accent-bg); }
+  textarea { min-height: 96px; resize: vertical; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .row2 { grid-template-columns: 1fr; } }
+  .hint { font-size: 12.5px; color: var(--text-light); margin-top: 4px; }
+  .btn { display: inline-block; width: 100%; margin-top: 26px; padding: 14px 22px; border: none; border-radius: 12px;
+    background: var(--accent); color: white; font-size: 15.5px; font-weight: 700; cursor: pointer; }
+  .btn:hover { background: var(--accent-dark); }
+  .btn:disabled { opacity: 0.55; cursor: default; }
+  .alert { display: none; margin-top: 16px; padding: 12px 16px; border-radius: 10px; font-size: 14px; }
+  .alert-error { background: rgba(214,69,69,0.08); color: #B03030; border: 1px solid rgba(214,69,69,0.25); }
+  .success { display: none; text-align: center; padding: 20px 6px 6px; }
+  .success h2 { font-family: Georgia, serif; color: var(--sage); margin-bottom: 10px; }
+  .footnote { text-align: center; color: var(--text-light); font-size: 12px; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Pieces of Perception · Partner Program</div>
+  <div class="card">
+    <div id="form-view">
+      <div class="eyebrow">Provider Intake · ~2 minutes</div>
+      <h1>Tell us how you work with this client</h1>
+      <p class="sub">One short intake per family. Your answers shape the session checklist, pacing,
+        and setting-specific recommendations in the report — so it fits the way you actually work,
+        not a generic template. Your defaults can be pre-filled; just adjust what differs for this client.</p>
+
+      <div class="alert alert-error" id="err"></div>
+
+      <label>Your practice intake key</label>
+      <input type="text" id="intake_key" autocomplete="off" placeholder="From your onboarding email">
+      <div class="hint">Sent when your practice joined the program. One key per practice — don't share it outside your team.</div>
+
+      <label>Family code</label>
+      <input type="text" id="family_code" autocomplete="off" placeholder="e.g. RIV-001" style="text-transform:uppercase">
+      <div class="hint">The code you gave this family for their questionnaire link.</div>
+
+      <label>1 · Service type</label>
+      <select id="service_type">
+        <option value="">Select…</option>
+        <option>Applied Behavior Analysis (ABA)</option>
+        <option>Speech-Language Pathology (SLP)</option>
+        <option>Occupational Therapy (OT)</option>
+        <option>Physical Therapy (PT)</option>
+        <option>Mental / behavioral health</option>
+        <option>Special education / academic support</option>
+        <option>PASS / respite worker</option>
+        <option>Life-skills coach / community support</option>
+        <option>Other</option>
+      </select>
+
+      <label>2 · Session format</label>
+      <select id="session_format">
+        <option value="">Select…</option>
+        <option>1:1, in person</option>
+        <option>1:1, telehealth</option>
+        <option>Small group</option>
+        <option>Push-in / classroom-embedded</option>
+        <option>Consultative (coaching the caregiver/team)</option>
+      </select>
+
+      <div class="row2">
+        <div>
+          <label>3a · Session length</label>
+          <select id="session_length">
+            <option value="">Select…</option>
+            <option>30 minutes</option>
+            <option>45 minutes</option>
+            <option>60 minutes</option>
+            <option>90 minutes</option>
+            <option>Varies</option>
+          </select>
+        </div>
+        <div>
+          <label>3b · Cadence</label>
+          <select id="cadence">
+            <option value="">Select…</option>
+            <option>Weekly</option>
+            <option>2x per week</option>
+            <option>Every other week</option>
+            <option>Monthly</option>
+            <option>Intensive (3+ per week)</option>
+          </select>
+        </div>
+      </div>
+
+      <label>4 · Setting</label>
+      <select id="setting">
+        <option value="">Select…</option>
+        <option>Outpatient clinic</option>
+        <option>Home-based</option>
+        <option>School-based</option>
+        <option>Telehealth / virtual</option>
+        <option>Community setting</option>
+      </select>
+
+      <label>5 · Primary goal of this engagement</label>
+      <textarea id="engagement_goal" placeholder="One or two sentences. The report orients its plan, session targets, and progress markers toward this goal."></textarea>
+
+      <label>Known diagnoses / referral reason <span class="opt-tag">(optional)</span></label>
+      <input type="text" id="known_diagnoses" placeholder="Only if your intake paperwork adds something the family may not have surfaced">
+
+      <button class="btn" id="submit-btn" onclick="submitIntake()">Submit intake</button>
+    </div>
+
+    <div class="success" id="success-view">
+      <h2>Intake received — thank you!</h2>
+      <p class="sub" id="success-sub">We'll match it to the family's questionnaire and generate the reports.
+        You'll receive them by email once they're ready.</p>
+      <button class="btn" onclick="resetForm()" style="max-width:280px">Submit another client</button>
+    </div>
+  </div>
+  <p class="footnote">Questions? hello@piecesofperception.com · Reports are informational tools — your professional judgment governs.</p>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
+
+  function showError(msg) {
+    const e = document.getElementById('err');
+    e.textContent = msg; e.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function submitIntake() {
+    const btn = document.getElementById('submit-btn');
+    document.getElementById('err').style.display = 'none';
+    const val = id => document.getElementById(id).value.trim();
+
+    const required = [
+      ['intake_key', 'your practice intake key'],
+      ['family_code', 'the family code'],
+      ['service_type', 'service type'],
+      ['session_format', 'session format'],
+      ['session_length', 'session length'],
+      ['cadence', 'cadence'],
+      ['setting', 'setting'],
+      ['engagement_goal', 'the engagement goal']
+    ];
+    for (const [id, label] of required) {
+      if (!val(id)) { showError('Please fill in ' + label + '.'); return; }
+    }
+
+    btn.disabled = true; btn.textContent = 'Submitting…';
+    try {
+      const resp = await fetch(SUPABASE_URL + '/rest/v1/rpc/submit_provider_intake', {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          p_intake_key:      val('intake_key'),
+          p_family_code:     val('family_code').toUpperCase(),
+          p_service_type:    val('service_type'),
+          p_session_format:  val('session_format'),
+          p_session_length:  val('session_length'),
+          p_cadence:         val('cadence'),
+          p_setting:         val('setting'),
+          p_engagement_goal: val('engagement_goal'),
+          p_known_diagnoses: val('known_diagnoses') || null
+        })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.message || 'Request failed (' + resp.status + ')');
+      if (data && data.ok === false) { showError(data.error); btn.disabled = false; btn.textContent = 'Submit intake'; return; }
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('success-view').style.display = 'block';
+    } catch (e) {
+      showError('Something went wrong: ' + e.message + ' — please try again or email hello@piecesofperception.com.');
+      btn.disabled = false; btn.textContent = 'Submit intake';
+    }
+  }
+
+  function resetForm() {
+    // Keep the intake key + selections (practice defaults); clear per-client fields.
+    document.getElementById('family_code').value = '';
+    document.getElementById('engagement_goal').value = '';
+    document.getElementById('known_diagnoses').value = '';
+    document.getElementById('success-view').style.display = 'none';
+    document.getElementById('form-view').style.display = 'block';
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = false; btn.textContent = 'Submit intake';
+    window.scrollTo({ top: 0 });
+  }
+</script>
+</body>
+</html>
