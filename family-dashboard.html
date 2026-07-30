@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6C63FF">
+  <title>Family Dashboard | Pieces of Perception</title>
+  <meta name="description" content="Your private Pieces of Perception family dashboard — complete your questionnaire and download your personalized reports.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://piecesofperception.com/family-dashboard.html">
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Privacy-friendly analytics by Plausible -->
+  <script async src="https://plausible.io/js/pa-RHzpSmPEbIjbaOmxsM1AW.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #6C63FF;
+      --accent-dark:  #5349e0;
+      --accent-bg:    rgba(108,99,255,0.07);
+      --warm:         #E8845A;
+      --warm-light:   rgba(232,132,90,0.10);
+      --sage:         #52B788;
+      --sage-light:   rgba(82,183,136,0.10);
+      --sky:          #3FA8CC;
+      --sky-light:    rgba(63,168,204,0.10);
+      --lavender:     #8E7FC4;
+      --lavender-light: rgba(142,127,196,0.12);
+      --rose:         #D95B72;
+      --deep:         #16162A;
+      --text:         #2C2C3E;
+      --text-light:   #6B6B80;
+      --border:       #E6E8F0;
+      --border-soft:  rgba(108,99,255,0.12);
+      --bg:           #F7F8FC;
+      --white:        #ffffff;
+      --card-shadow:  0 2px 8px rgba(22,22,42,0.06), 0 8px 32px rgba(22,22,42,0.08);
+      --card-shadow-hover: 0 4px 16px rgba(22,22,42,0.10), 0 16px 48px rgba(22,22,42,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand .brand-name { font-size: 17px; font-weight: 700; color: var(--deep); letter-spacing: -0.3px; }
+    .nav-right { display: flex; align-items: center; gap: 18px; }
+    .nav-user {
+      font-size: 13.5px; color: var(--text-light); font-weight: 500;
+    }
+    .nav-user strong { color: var(--deep); font-weight: 600; }
+    .btn-signout {
+      padding: 8px 16px;
+      font-size: 13.5px; font-weight: 600;
+      background: white;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all .2s;
+    }
+    .btn-signout:hover {
+      border-color: var(--rose);
+      color: var(--rose);
+    }
+    @media (max-width: 600px) {
+      .nav { padding: 0 18px; }
+      .nav-user { display: none; }
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 28px; border-radius: 12px; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all .22s; border: none;
+      font-family: 'DM Sans', sans-serif; letter-spacing: -0.1px;
+    }
+    .btn-primary {
+      background: var(--accent); color: white;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.25);
+    }
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(108,99,255,0.35);
+    }
+    .btn-large { padding: 15px 36px; font-size: 16px; border-radius: 14px; }
+    .btn-warm { background: var(--warm); color: white; box-shadow: 0 2px 8px rgba(232,132,90,0.25); }
+    .btn-warm:hover { background: #d4744a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,132,90,0.35); }
+    .btn-outline { background: white; color: var(--accent); border: 1.5px solid rgba(108,99,255,0.3); }
+    .btn-outline:hover { border-color: var(--accent); background: var(--accent-bg); }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      padding: 60px 48px 80px;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 600px) { main { padding: 40px 18px 60px; } }
+
+    /* ── WELCOME ── */
+    .welcome {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 40px 36px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .welcome::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(108,99,255,0.10), transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .welcome .badge {
+      display: inline-block; padding: 5px 14px;
+      background: var(--lavender-light); color: var(--lavender);
+      border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.6px;
+      margin-bottom: 14px; border: 1px solid rgba(142,127,196,0.25);
+      text-transform: uppercase;
+    }
+    .welcome h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 4vw, 38px); font-weight: 800;
+      color: var(--deep); line-height: 1.2; margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    .welcome p {
+      font-size: 16px; color: var(--text-light);
+      max-width: 620px; line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    /* ── SECTION ── */
+    .section-head { text-align: center; margin-bottom: 32px; }
+    .section-head .label {
+      display: inline-block; padding: 5px 14px;
+      background: var(--accent-bg); color: var(--accent);
+      border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.4px;
+      margin-bottom: 12px; border: 1px solid var(--border-soft);
+    }
+    .section-head h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(24px, 3.6vw, 32px); font-weight: 800;
+      color: var(--deep); line-height: 1.2; margin-bottom: 10px;
+    }
+    .section-head p {
+      font-size: 15.5px; color: var(--text-light);
+      max-width: 580px; margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* ── REPORT CARDS ── */
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 12px;
+    }
+    @media (max-width: 760px) {
+      .reports-grid { grid-template-columns: 1fr; }
+    }
+    .report-card {
+      background: white;
+      border-radius: 22px;
+      border: 1.5px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 32px 30px;
+      transition: all .25s;
+      display: flex; flex-direction: column;
+    }
+    .report-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-3px);
+    }
+    .report-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(145deg, rgba(108,99,255,0.04), white);
+      position: relative;
+    }
+    .report-card.featured::after {
+      content: 'Most Comprehensive';
+      position: absolute;
+      top: 18px; right: 18px;
+      background: var(--accent); color: white;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .report-icon { font-size: 36px; margin-bottom: 14px; }
+    .report-card h3 {
+      font-size: 20px; font-weight: 700;
+      color: var(--deep); margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+    .report-tagline {
+      font-size: 13.5px; color: var(--text-light);
+      margin-bottom: 18px; font-weight: 500;
+    }
+    .report-price {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 32px; font-weight: 800;
+      color: var(--deep);
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+    }
+    .report-price .currency { font-size: 20px; vertical-align: super; margin-right: 2px; }
+    .report-price .strike { color: var(--text-light); text-decoration: line-through; font-weight: 600; font-size: 22px; margin-right: 10px; }
+    .report-beta-note { font-size: 12.5px; color: var(--sage); font-weight: 600; margin-bottom: 18px; }
+    .report-features { list-style: none; margin-bottom: 24px; }
+    .report-features li {
+      font-size: 14px; color: var(--text);
+      padding: 7px 0;
+      padding-left: 24px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .report-features li::before {
+      content: '✓';
+      position: absolute; left: 0; top: 6px;
+      color: var(--sage); font-weight: 700;
+    }
+    .report-card .btn { width: 100%; margin-top: auto; }
+
+    /* ── STATUS BANNER ── */
+    .status-banner {
+      background: var(--lavender-light);
+      border: 1px solid rgba(142,127,196,0.25);
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 13.5px;
+      color: var(--lavender);
+      margin-bottom: 28px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* ── NO ACCESS PANEL ── */
+    .no-access {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 48px 36px;
+      max-width: 540px;
+      margin: 60px auto;
+      text-align: center;
+    }
+    .no-access h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 26px; font-weight: 800;
+      color: var(--deep); margin-bottom: 14px;
+    }
+    .no-access p {
+      font-size: 15px; color: var(--text-light);
+      margin-bottom: 24px; line-height: 1.7;
+    }
+    .no-access a { color: var(--accent); font-weight: 500; }
+
+    /* ── LOADING ── */
+    #loading {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 60vh;
+      color: var(--text-light); font-size: 15px;
+    }
+    #content { display: none; }
+    #content.ready { display: block; }
+    #no-access-view { display: none; }
+    #no-access-view.show { display: block; }
+
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin-right: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 28px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-light);
+      border-top: 1px solid var(--border);
+      background: white;
+    }
+    footer a { color: var(--text-light); text-decoration: none; margin: 0 10px; }
+    footer a:hover { color: var(--accent); }
+
+    /* ── MY REPORTS ── (Phase 4.5) */
+    .my-reports {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 32px 32px 28px;
+      margin-bottom: 32px;
+    }
+    .my-reports h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 24px; font-weight: 800;
+      color: var(--deep); margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+    .my-reports .lede {
+      font-size: 14px; color: var(--text-light);
+      margin-bottom: 20px;
+    }
+    .reports-empty {
+      text-align: center;
+      padding: 20px 12px;
+      color: var(--text-light);
+      font-size: 14.5px;
+      line-height: 1.6;
+      background: var(--bg);
+      border-radius: 12px;
+    }
+    .report-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      transition: border-color .2s, background .2s;
+      background: white;
+    }
+    .report-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .report-item:last-child { margin-bottom: 0; }
+    .report-item-info { flex: 1; min-width: 0; }
+    .report-item-name {
+      font-size: 15px; font-weight: 600;
+      color: var(--deep);
+      letter-spacing: -0.1px;
+    }
+    .report-item-meta {
+      font-size: 12.5px; color: var(--text-light);
+      margin-top: 2px;
+    }
+    .report-download {
+      padding: 9px 18px;
+      background: var(--accent);
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background .15s, transform .12s;
+    }
+    .report-download:hover { background: var(--accent-dark); transform: translateY(-1px); }
+
+    /* ── PHASE 3: two-wave delivery cards ── */
+    .wave-card {
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px 20px; margin-bottom: 16px; background: white;
+    }
+    .wave-card:last-child { margin-bottom: 0; }
+    .wave-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 4px;
+    }
+    .wave-title {
+      font-size: 16px; font-weight: 700; color: var(--deep);
+      letter-spacing: -0.2px;
+    }
+    .wave-badge {
+      font-size: 12px; font-weight: 700; padding: 4px 12px;
+      border-radius: 20px; white-space: nowrap;
+    }
+    .wave-badge.delivered { background: rgba(82,183,136,0.16); color: #2f7a57; }
+    .wave-badge.pending { background: rgba(108,99,255,0.10); color: var(--accent-dark); }
+    .wave-sub { font-size: 13px; color: var(--text-light); margin-bottom: 12px; }
+    .wave-note {
+      font-size: 14px; color: var(--text); line-height: 1.55;
+      background: var(--accent-bg); border-radius: 10px; padding: 12px 14px;
+    }
+    .wave-body { margin-top: 6px; }
+
+    /* ── ACKNOWLEDGMENT VIEW ── (Phase 3.5) */
+    #ack-view { display: none; }
+    #ack-view.show { display: block; }
+    .ack-card {
+      background: white;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--card-shadow);
+      padding: 44px 40px;
+      max-width: 780px;
+      margin: 50px auto;
+    }
+    .ack-card h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 28px; font-weight: 800;
+      color: var(--deep);
+      margin-bottom: 10px;
+      letter-spacing: -0.4px;
+    }
+    .ack-lede {
+      font-size: 15px; color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 26px;
+    }
+    .ack-item {
+      display: flex; align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      background: white;
+    }
+    .ack-item:hover { border-color: var(--accent); background: var(--accent-bg); }
+    .ack-item:has(input:checked) {
+      border-color: var(--accent); background: var(--accent-bg);
+    }
+    .ack-item input[type="checkbox"] {
+      margin-top: 3px;
+      width: 18px; height: 18px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .ack-item-text {
+      flex: 1;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .ack-link {
+      color: var(--accent);
+      text-decoration: underline;
+      font-weight: 500;
+      font-size: 14px;
+      margin-left: 4px;
+    }
+    .ack-link:hover { color: var(--accent-dark); }
+    .ack-msg {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      margin: 14px 0;
+    }
+    #ack-continue {
+      width: 100%;
+      margin-top: 18px;
+    }
+    .ack-confirm {
+      margin-top: 26px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+    }
+    .ack-confirm-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 17px; font-weight: 700; color: var(--deep);
+      margin-bottom: 12px;
+    }
+    #ack-sections {
+      max-height: 460px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px 14px;
+      margin-bottom: 4px;
+      background: #fcfcff;
+    }
+    .ag-sec { border-bottom: 1px solid var(--border); }
+    .ag-sec:last-child { border-bottom: none; }
+    .ag-sec > summary {
+      cursor: pointer; list-style: none;
+      padding: 13px 4px;
+      font-size: 14.5px; font-weight: 600; color: var(--deep);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ag-sec > summary::-webkit-details-marker { display: none; }
+    .ag-sec > summary::before {
+      content: '+'; color: var(--accent); font-weight: 700;
+      width: 14px; display: inline-block; text-align: center;
+    }
+    .ag-sec[open] > summary::before { content: '\2212'; }
+    .ag-sec > summary:hover { color: var(--accent); }
+    .ag-body { padding: 2px 6px 16px 26px; }
+    .ag-body p { font-size: 13.5px; color: var(--text); line-height: 1.7; margin-bottom: 10px; }
+    .ag-body ul { margin: 4px 0 12px 18px; }
+    .ag-body li { font-size: 13.5px; color: var(--text); line-height: 1.65; margin-bottom: 5px; }
+    .ag-body .lead { font-weight: 700; color: var(--deep); margin-bottom: 4px; }
+    .ag-body .sub { font-size: 12.5px; color: var(--text-light); font-style: italic; }
+    .ag-body .sig { font-size: 12.5px; color: var(--text-light); font-style: italic; margin-bottom: 2px; }
+    .ag-body .caps { font-size: 11.5px; font-weight: 600; color: var(--deep); background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; letter-spacing: 0.2px; line-height: 1.55; }
+    .ack-footnote {
+      font-size: 12.5px;
+      color: var(--text-light);
+      text-align: center;
+      margin-top: 18px;
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/family-dashboard.html">
+    <svg width="36" height="30" viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-label="Pieces of Perception logo"><defs><clipPath id="pop-d"><rect x="2" y="1" width="36" height="30" rx="2.5"/></clipPath></defs><g clip-path="url(#pop-d)"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/></g><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg>
+    <span class="brand-name">Pieces of Perception</span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-user">Signed in as <strong id="nav-user-email">—</strong></span>
+    <button class="btn-signout" id="btn-signout" onclick="signOut()">Sign Out</button>
+  </div>
+</nav>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <span>Loading your dashboard...</span>
+</div>
+
+<!-- Phase 3.5: Shown when one or more required policy acknowledgments are missing -->
+<div id="ack-view">
+  <div class="ack-card">
+    <h2 class="serif">Your Family Service Agreement</h2>
+    <div style="background:rgba(232,132,90,0.12);border:1.5px solid #E8845A;color:#b05a35;border-radius:12px;padding:12px 16px;font-weight:700;font-size:13.5px;margin-bottom:16px;">DRAFT — This agreement is completing attorney review. If the final language changes, we&#8217;ll ask you to review and accept the updated version.</div>
+    <p class="ack-lede">Before you continue, please read the agreement below. It is one document, broken into sections so it is easy to read — tap any section to open it. You can also <a href="/customer-agreement.html" target="_blank" rel="noopener" class="ack-link">open the full agreement in a new tab</a>. When you are ready, confirm the points at the bottom.</p>
+    <div id="ack-sections"><!-- populated by JS --></div>
+    <div class="ack-confirm">
+      <h3 class="ack-confirm-title">Confirm to continue</h3>
+      <div id="ack-list"><!-- populated by JS --></div>
+    </div>
+    <div id="ack-msg"></div>
+    <button id="ack-continue" class="btn btn-primary btn-large" onclick="submitAcknowledgments()" disabled>I Agree — Continue to Dashboard</button>
+    <p class="ack-footnote">By checking these boxes you confirm you have read and agree to the full Family Service Agreement. You can revisit it any time at piecesofperception.com/customer-agreement.html.</p>
+  </div>
+</div>
+
+<!-- Shown when beta_access is false -->
+<div id="no-access-view">
+  <div class="no-access">
+    <h2 class="serif">One more step</h2>
+    <p>You're signed in, but your access code hasn't been linked to this account yet. Enter the code from your purchase confirmation email to unlock your dashboard.</p>
+    <div id="redeem-msg" style="display:none; padding:10px 14px; border-radius:10px; font-size:13px; margin: 12px 0;"></div>
+    <input type="text" id="redeem-code-input" placeholder="POP-XXXXXX"
+           style="width:100%; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; letter-spacing:1.5px; text-transform:uppercase; font-weight:600; text-align:center; margin: 8px 0 14px;">
+    <button class="btn btn-primary" id="redeem-btn" onclick="manualRedeem()" style="width:100%;">Redeem Code</button>
+    <p style="margin-top: 18px; font-size: 13px;">Don't have a code? Email <a href="mailto:hello@piecesofperception.com?subject=Access%20code%20question">hello@piecesofperception.com</a></p>
+    <button class="btn btn-outline" onclick="signOut()" style="margin-top: 12px;">Sign Out</button>
+  </div>
+</div>
+
+<main id="content">
+
+  <div class="welcome">
+    <div class="badge">FAMILY DASHBOARD</div>
+    <h1 class="serif">Welcome, <span id="welcome-name">friend</span>!</h1>
+    <p>This is your family&#8217;s home base. Your personalized reports are built from one warm, careful questionnaire about your child — complete it below, and your reports will appear right here when they&#8217;re ready.</p>
+    <a href="#" class="btn btn-primary btn-large" onclick="startReport(event)">Start Your Questionnaire &rarr;</a>
+  </div>
+
+  <!-- Your Reports -->
+  <div class="my-reports">
+    <h2>Your Reports</h2>
+    <p class="lede">PDFs we've built for your family. Each download link expires in an hour — re-open this page to get a fresh one.</p>
+    <div id="reports-list">
+      <div class="reports-empty">
+        Loading your reports&hellip;
+      </div>
+    </div>
+  </div>
+
+  <!-- Questionnaire -->
+  <div class="my-reports" style="margin-top:36px; text-align:center;">
+    <h2>Your Questionnaire</h2>
+    <p class="lede" style="max-width:560px; margin-left:auto; margin-right:auto;">Everything we create starts here. It takes about 45&ndash;60 minutes, you can save and come back anytime, and every question exists to make your child&#8217;s reports feel like they were written by someone who knows them.</p>
+    <a href="#" class="btn btn-primary" style="margin-top:6px;" onclick="startReport(event)">Open the Questionnaire &rarr;</a>
+  </div>
+
+  <!-- Add-ons -->
+  <div class="my-reports" style="margin-top:36px; text-align:center;">
+    <h2>Add to Your Report Set</h2>
+    <p class="lede" style="max-width:560px; margin-left:auto; margin-right:auto;">Care guides for the other adults in your child&#8217;s life — babysitters, grandparents, siblings, teachers, therapists, co-parents — plus IEP goal support. They&#8217;re built from the questionnaire you&#8217;ve already completed, so adding one later takes no extra work.</p>
+    <a href="/checkout.html" class="btn btn-primary" style="margin-top:6px;">Browse Add-Ons &rarr;</a>
+  </div>
+
+  <!-- Manage / delete your data -->
+  <div class="my-reports" style="margin-top:36px; text-align:center; border:1px solid #eadfd2; background:#fbf7f1;">
+    <h2>Your Data, Your Choice</h2>
+    <p class="lede" style="max-width:560px; margin-left:auto; margin-right:auto;">You can ask us to delete your account and everything you've shared about your family at any time, for any reason. We'll confirm by email and remove your identifying information within the timeframe described in your <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a>.</p>
+    <a id="delete-data-link" href="mailto:hello@piecesofperception.com?subject=Data%20deletion%20request&body=Hi%20Sarah%2C%0A%0AI%27d%20like%20to%20request%20deletion%20of%20my%20Pieces%20of%20Perception%20account%20and%20all%20data%20about%20my%20family.%0A%0AAccount%20email%3A%20%0A%0AThank%20you." class="btn btn-warm" style="margin-top:6px;">Request Data Deletion</a>
+    <p style="margin-top:14px; font-size:13px; color:#8a7d6d;">Prefer to write us directly? Email <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a>.</p>
+  </div>
+
+</main>
+
+<footer>
+  <a href="/index.html">Home</a>
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <a href="/disclaimer.html">Disclaimer</a>
+  <span style="margin-left:10px">&copy; 2026 Pieces of Perception LLC</span>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
+  const PENDING_CODE_KEY = 'pop_pending_invite_code';
+
+  function getSession() {
+    try {
+      const raw = localStorage.getItem('pop_session');
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s.access_token || !s.user_id) return null;
+      if (s.expires_at && s.expires_at < Date.now()) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+
+  function clearSession() {
+    try { localStorage.removeItem('pop_session'); } catch (_) {}
+  }
+
+  function redirectToAuth() {
+    window.location.href = '/portal.html';
+  }
+
+  function showNoAccessView() {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('no-access-view').classList.add('show');
+  }
+
+  async function fetchProfile(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/profiles?user_id=eq.${session.user_id}&select=name,email,beta_access`,
+        {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Accept': 'application/json'
+          }
+        }
+      );
+      if (!res.ok) return null;
+      const rows = await res.json();
+      return Array.isArray(rows) && rows.length ? rows[0] : null;
+    } catch (e) { return null; }
+  }
+
+  async function fetchInviteCodeFromMetadata(session) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+      if (!res.ok) return null;
+      const userData = await res.json();
+      return userData && userData.user_metadata && userData.user_metadata.invite_code || null;
+    } catch (e) { return null; }
+  }
+
+  async function tryRedeemPendingCode(session) {
+    let pendingCode = null;
+    try { pendingCode = localStorage.getItem(PENDING_CODE_KEY); } catch (_) {}
+    if (!pendingCode) {
+      pendingCode = await fetchInviteCodeFromMetadata(session);
+    }
+    if (!pendingCode) return false;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/claim_beta_invite`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ invite_code: pendingCode })
+      });
+      const data = await res.json();
+      try { localStorage.removeItem(PENDING_CODE_KEY); } catch (_) {}
+      return data && data.ok === true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function manualRedeem() {
+    const input = document.getElementById('redeem-code-input');
+    const msg = document.getElementById('redeem-msg');
+    const btn = document.getElementById('redeem-btn');
+    const code = (input.value || '').trim().toUpperCase();
+    msg.style.display = 'none';
+    if (!code) {
+      msg.style.display = 'block';
+      msg.style.background = 'rgba(217,91,114,0.08)';
+      msg.style.color = 'var(--rose)';
+      msg.textContent = 'Please enter your invite code.';
+      return;
+    }
+    const session = getSession();
+    if (!session) { redirectToAuth(); return; }
+    btn.disabled = true; btn.textContent = 'Redeeming...';
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/claim_beta_invite`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ invite_code: code })
+      });
+      const data = await res.json();
+      if (data && data.ok) {
+        msg.style.display = 'block';
+        msg.style.background = 'var(--sage-light)';
+        msg.style.color = 'var(--sage)';
+        msg.textContent = 'Confirmed! Loading your dashboard...';
+        try { localStorage.removeItem(PENDING_CODE_KEY); } catch (_) {}
+        setTimeout(() => { window.location.reload(); }, 700);
+      } else {
+        msg.style.display = 'block';
+        msg.style.background = 'rgba(217,91,114,0.08)';
+        msg.style.color = 'var(--rose)';
+        const err = (data && data.error) || 'unknown';
+        if (err === 'invalid_code') msg.textContent = "That code wasn't recognized. Double-check it.";
+        else if (err === 'already_used') msg.textContent = 'That code has already been redeemed by someone else.';
+        else msg.textContent = "We couldn't verify your code. Email hello@piecesofperception.com.";
+        btn.disabled = false; btn.textContent = 'Redeem Code';
+      }
+    } catch (e) {
+      msg.style.display = 'block';
+      msg.style.background = 'rgba(217,91,114,0.08)';
+      msg.style.color = 'var(--rose)';
+      msg.textContent = 'Network error. Please try again.';
+      btn.disabled = false; btn.textContent = 'Redeem Code';
+    }
+  }
+
+  // ── Phase 3.5: policy acknowledgment gate ──
+  const AGREEMENT_SECTIONS = [{"n":"","title":"A Plain-English Summary","html":"<p class='sub'>Pieces of Perception — Family Service Agreement</p><p>Hi — before you read the longer agreement that follows, here is the short version in normal English. The full document is thorough because my attorney wanted to make sure your family is protected. This page covers the essentials of what you are agreeing to.</p><p>What is this? You purchased one or more personalized reports from Pieces of Perception — a tool that builds personalized written guides for your child. This Agreement covers your purchase, your account, and how we handle your family’s information.</p><p>What you share: Your name and email, plus a detailed questionnaire about your child — their strengths, challenges, sensory needs, communication style, school setting, and anything else you choose to write in.</p><p>What we do with it: Generate the personalized reports you purchased, and make the product better. That is it.</p><p>What we will never do: Sell your information. Share your child’s information with anyone outside Pieces of Perception without your explicit permission. Use your child’s information for advertising.</p><p>Who else touches this data: A small handful of trusted service providers help us run the service — Stripe (payment processing; we never see your full card number), Supabase (secure storage), Anthropic / Claude (writing your reports), Resend and Google (sending account emails), Vercel (hosting), and Plausible (cookie-free analytics). Each one is contractually bound to handle your data carefully.</p><p>Keeping your reports current: If you purchased the Comprehensive Plan, your purchase includes ONE updated report run within your first year — you fill out a short “What’s Changed” questionnaire and we regenerate your reports with the new information factored in. Anyone can also subscribe to our annual Report Refresh ($44/year) for one update run per subscription year.</p><p>We don’t keep your family’s information forever. Your account stays active for 12 months after your most recent purchase (or subscription renewal). About a month before that period ends, we’ll email you a reminder to download your reports. Unless you make a new purchase or have an active Report Refresh subscription, your account — and all of your family’s information, including your reports — is then permanently deleted. This is deliberate: we don’t want to hold onto children’s records any longer than we need to.</p><p>You can also leave anytime. If you want out sooner, email hello@piecesofperception.com and we will delete your identifying information within 60 days. Deleting your information also deletes the questionnaire answers we would need to update your reports later, so any unused report updates are forfeited when your data is deleted.</p><p>This is not medical advice. The reports are supportive and informational. They are not a diagnosis, a treatment plan, or a substitute for working with your child’s doctor, therapist, or school team.</p><p>Questions? Email hello@piecesofperception.com. I read every message.</p><p>— Sarah</p><p>Pieces of Perception LLC</p>"},{"n":"","title":"About This Agreement","html":"<p>Welcome to Pieces of Perception. We are so glad you are here. This Agreement explains what the service is, what information you and your family will share with us, how we will use and protect that information, the terms that apply to your purchase, and the legal terms that apply to your use of the service. Please read it carefully before accepting. If anything is unclear, please reach out to us at hello@piecesofperception.com — we are happy to walk through it with you.</p><p>Throughout this Agreement, “we,” “us,” and “Pieces of Perception” refer to Pieces of Perception LLC, a Rhode Island limited liability company. “You” refers to the parent or legal guardian who accepts this Agreement on behalf of yourself and your minor child or children (referred to here as “your Child”).</p>"},{"n":"1","title":"About the Service","html":"<p>Pieces of Perception is a tool that creates personalized written guides for families of neurodiverse children. You answer a detailed questionnaire about your Child, and our system uses that information — together with evidence-informed best practices — to generate written reports tailored to your Child’s strengths, needs, sensory profile, and communication style.</p><p>What this looks like for you:</p><ul class='ag-ul'><li>You purchase one or more reports on our website. Payment is collected at the time of purchase, before the questionnaire is completed.</li><li>You will receive an email with a personal access code and a link to your private dashboard.</li><li>You will create an account, accept this Agreement, complete a questionnaire about your Child, and receive the written reports you purchased.</li><li>Your reports are delivered to your private dashboard, and you are notified by email when they are ready.</li><li>You can close your account at any time, for any reason, by emailing hello@piecesofperception.com.</li></ul><p>Reports are prepared with human review as part of our delivery process, and delivery times may vary. We will keep you informed of the expected timeline on your dashboard and by email.</p>"},{"n":"2","title":"Information We Collect","html":"<p>We collect the following kinds of information:</p><p class='h2'><strong>a) Information about you (the parent or guardian)</strong></p><ul class='ag-ul'><li>Your name and email address.</li><li>The access code issued with your purchase.</li><li>Your account login credentials (your password is stored only in encrypted form by our authentication provider).</li><li>Purchase and billing information: the items you purchased, amounts paid, and transaction identifiers. Payments are processed by Stripe, our payment processor; we do not receive or store your full card number.</li><li>Optional: your phone number, mailing address, or other contact information you choose to provide.</li></ul><p class='h2'><strong>b) Information about your Child</strong></p><p>The questionnaire is detailed and may include sensitive information. We collect only the information you choose to share with us. Examples include:</p><ul class='ag-ul'><li>Your Child’s first name, age, and grade level.</li><li>Diagnoses or developmental information you have shared (for example, autism, ADHD, sensory processing differences).</li><li>Information about your Child’s communication style, sensory needs, regulation patterns, school setting, and home life.</li><li>Information about your household and, if you choose, about siblings or other caregivers.</li><li>Open-ended responses you write describing what works, what is hard, and what you wish others understood about your Child.</li><li>If you use a report update or the Report Refresh subscription: your answers to the follow-up “What’s Changed” questionnaire, which are stored alongside — and do not replace — your original questionnaire responses.</li></ul><p>We do not require any specific medical record, IEP document, or formal diagnostic report to use the service. You may choose to upload, email, or otherwise provide documents or records relating to your Child, including but not limited to IEPs, Section 504 plans, evaluations, assessments, therapy records, school communications, medical records, behavioral plans, or similar materials. You represent and warrant that you have all rights, authorizations, and legal authority necessary to provide such materials to Pieces of Perception LLC and to permit Pieces of Perception LLC to store, process, analyze, and use them for the purposes described in this Agreement. You acknowledge that Pieces of Perception LLC is not a school, school district, educational institution, healthcare provider, health plan, healthcare clearinghouse, or other covered entity under HIPAA, FERPA, or similar laws, and that records or information you upload to the service may not receive the same legal protections that would apply when maintained directly by a school, healthcare provider, or governmental agency. Once information or reports are downloaded, shared, forwarded, printed, or otherwise distributed by you, Pieces of Perception LLC cannot control or be responsible for how third parties store, use, disclose, or protect that information. You retain ownership of the information, records, documents, questionnaire responses, and other content you submit through the service (“User Content”). You grant Pieces of Perception LLC a non-exclusive, worldwide, royalty-free license to host, store, reproduce, transmit, process, analyze, and use such User Content solely as necessary to operate the service, maintain your account, generate the reports and outputs you request, provide customer support, comply with law, and otherwise fulfill the purposes described in this Agreement.</p><p class='h2'><strong>c) Technical information</strong></p><ul class='ag-ul'><li>Basic, privacy-respecting analytics from Plausible (no cookies, no cross-site tracking, and no storage of full IP addresses by Plausible itself).</li><li>Standard web server, hosting, and security logs maintained by our hosting and infrastructure providers. These logs may include technical information such as IP addresses, browser type, device information, operating system information, timestamps, referral URLs, and page-request activity for purposes including security, fraud prevention, troubleshooting, performance monitoring, and operation of the service.</li><li>Error and diagnostic logs that may incidentally include account identifiers when something goes wrong.</li></ul>"},{"n":"3","title":"How We Use Your Information","html":"<p>We use the information you share with us to:</p><ul class='ag-ul'><li>Process your purchase and deliver the personalized written reports you have purchased.</li><li>Provide report updates and Report Refresh subscription re-runs you are entitled to, which requires combining your original questionnaire responses with your “What’s Changed” responses.</li><li>Maintain your account, send you account-related and purchase-related emails, and respond when you contact us.</li><li>Improve the product, including identifying bugs, refining the questionnaire, and improving the quality of reports.</li><li>Comply with our legal obligations and protect the safety and rights of families, our company, and the public.</li></ul><p>We will never sell your information or your Child’s information to a third party. We will not use your Child’s information for advertising. We will not share identifiable information about your family with anyone outside of Pieces of Perception without your explicit consent, except as described in Section 4 (third-party service providers who help us operate the service) or as required by law.</p>"},{"n":"4","title":"Third-Party Services We Use","html":"<p>To operate Pieces of Perception, we rely on a small number of trusted service providers. Each one is named below, with what they handle and a link to their own privacy and security practices.</p><ul class='ag-ul'><li>Stripe. Processes payments and subscriptions. Stripe receives your payment card details directly; we do not store your full card number. (stripe.com/privacy)</li><li>Supabase. Stores your account information, questionnaire responses, and reports. Data is hosted in the United States. (supabase.com/privacy)</li><li>Anthropic (Claude). Generates the written portions of your personalized reports. We send the relevant questionnaire content to the Claude API; per Anthropic’s commercial terms, this content is not used to train Claude’s models. (anthropic.com/legal)</li><li>Resend. Sends you transactional emails (account confirmations, report-ready notices). (resend.com/legal/privacy-policy)</li><li>Google (Apps Script). Part of our email-notification automation; processes your name and email address when notifications are sent. (policies.google.com/privacy)</li><li>Vercel. Hosts the Pieces of Perception website. (vercel.com/legal/privacy-policy)</li><li>Plausible Analytics. Provides cookie-free, privacy-friendly visit metrics. (plausible.io/privacy)</li><li>GoDaddy. Manages our domain name registrations. (No personal information about you is stored here.)</li></ul><p>Each of these providers is contractually bound to handle our data in accordance with their own privacy and security commitments. We do not send your Child’s information to any service provider not listed above.</p><p>To generate reports and other outputs requested by you, Pieces of Perception may transmit relevant questionnaire responses, uploaded materials, and other information you provide to third-party artificial intelligence service providers acting on Pieces of Perception’s behalf. Pieces of Perception uses commercial-tier services that, pursuant to the provider’s applicable terms, do not use customer-submitted content to train the provider’s general artificial intelligence models. Pieces of Perception uses your information for the purpose of generating the reports and outputs you request. Except as expressly authorized through any optional consent you separately provide, Pieces of Perception will not use your identifiable information to train internal artificial intelligence models or for broader research or product-development purposes beyond operating the service for your account.</p>"},{"n":"5","title":"Children’s Privacy and Parental Consent","html":"<p>Your Child does not directly use Pieces of Perception. The questionnaire and dashboard are designed for parents and guardians. However, the information you share is about your Child, and we treat it with the heightened care that any information about a minor deserves.</p><p>By accepting this Agreement, you confirm that:</p><ul class='ag-ul'><li>You are at least 18 years old.</li><li>You are the parent, legal guardian, or other adult with the legal authority to share information about your Child for the purposes described in this Agreement.</li><li>You consent, on your Child’s behalf, to our collection, use, storage, and processing of the information you provide.</li><li>All information you provide regarding your authority to act on behalf of your Child is truthful and accurate.</li></ul><p class='h2'><strong>Children under 13 (COPPA):</strong></p><p>If your Child is under thirteen (13), the federal Children’s Online Privacy Protection Act (“COPPA”) may require verifiable parental consent before we collect certain personal information concerning your Child online. By accepting this Agreement, you are providing parental consent for the collection, use, storage, and processing of your Child’s information as described herein. Pieces of Perception may require additional steps to verify parental identity, parental authority, or parental consent as necessary to comply with COPPA, applicable law, or changes in the service.</p><p>You may, at any time, request access to the information we have collected concerning your Child, request correction of inaccurate information, request deletion of information concerning your Child (subject to applicable legal retention requirements), or withdraw your consent on a going-forward basis by contacting us at hello@piecesofperception.com. Pieces of Perception may take reasonable steps to verify the identity and authority of the requesting individual before responding.</p><p>Pieces of Perception is intended solely for use by adults. Children may not create accounts or use the service directly.</p>"},{"n":"6","title":"Data Storage, Security, and Retention","html":"<p>We take the security of your family’s information seriously. The information you share with us is:</p><ul class='ag-ul'><li>Transmitted over encrypted HTTPS connections.</li><li>Stored in a secure database with row-level access controls — meaning that even within our infrastructure, account data is segmented per family.</li><li>Accessible only to a limited number of authorized personnel inside Pieces of Perception, and only when necessary to operate the service or respond to a request from you.</li></ul><p>No system is completely secure. While we follow industry-standard practices, we cannot guarantee that unauthorized access will never occur. In the unlikely event of a data breach affecting your information, we will notify you promptly and in accordance with applicable law.</p><p class='h2'><strong>Data retention — the 12-month retention period:</strong></p><p>We deliberately limit how long we keep your family’s information. Your account remains active for twelve (12) months after your most recent purchase or Report Refresh subscription renewal (the “Retention Period”). Each new purchase, and each subscription renewal, restarts the Retention Period.</p><p>Approximately thirty (30) days before your Retention Period ends, we will email you a notice reminding you to download your reports and explaining that a new purchase or an active Report Refresh subscription will keep your account active. We will send a final reminder approximately seven (7) days before deletion. If the Retention Period ends without a new purchase or active subscription, your account and all identifying information about you and your Child — including your questionnaire responses and your generated reports — will be permanently deleted. Because your reports are delivered as downloadable PDF files, we encourage you to download and save them when they are delivered; after deletion we cannot recover them.</p><p>You do not have to wait: you may request deletion at any time, and we will delete identifying information about you and your Child within sixty (60) days of your request. In either case, we may retain certain records (such as purchase and tax records) where required to comply with law, resolve disputes, or enforce our agreements, and de-identified information that cannot reasonably be linked back to you may be retained indefinitely. Deletion — scheduled or requested — also deletes the data needed to generate report updates, so any unused report update entitlements and any remaining Report Refresh subscription term are forfeited upon deletion, without refund of amounts already paid.</p>"},{"n":"7","title":"Your Rights and Choices","html":"<p>You have the following rights regarding your information and your Child’s information:</p><ul class='ag-ul'><li>Access — you can request a copy of the information we hold about you and your Child.</li><li>Correction — you can request that we correct any information that is wrong or out of date.</li><li>Deletion — you can request that we delete your account and all identifying information about you and your Child, subject to the limits in Section 6 (including forfeiture of unused report updates).</li><li>Closure — you can close your account at any time, for any reason.</li><li>Opt-out of optional uses — even if you have agreed to the optional releases at the end of this Agreement, you can revoke that consent at any time going forward.</li></ul><p>To exercise any of these rights, email hello@piecesofperception.com. We will respond within 30 days.</p>"},{"n":"8","title":"Acceptable Use and Restrictions","html":"<p>You agree to use Pieces of Perception LLC’s services and reports only for lawful, personal, and non-commercial purposes related to supporting your own family or a Child for whom you have legal authority to provide information. You may not use the service in any manner that violates applicable law, infringes the rights of another person, or interferes with the operation or security of the service. Without limiting the foregoing, you agree that you will not:</p><ul class='ag-ul'><li>Upload, submit, or share information, records, or materials that you do not have legal authority or permission to provide.</li><li>Upload malicious code, harmful files, or materials intended to disrupt, damage, test, probe, or gain unauthorized access to the service or any connected system.</li><li>Use the service to generate content intended to harass, discriminate against, defame, exploit, or harm any person.</li><li>Use reports generated by Pieces of Perception LLC as a substitute for emergency services, professional medical care, therapeutic intervention, educational evaluation, legal advice, or crisis-response services.</li><li>Copy, scrape, reproduce, resell, sublicense, commercially exploit, or distribute the service, questionnaires, reports, prompts, workflows, templates, or generated materials except for your own personal family use.</li><li>Attempt to reverse engineer, decompile, extract source code from, discover underlying prompts or model instructions for, or otherwise attempt to recreate the service or its underlying systems.</li><li>Use automated scripts, bots, or scraping tools to access or interact with the service without our prior written permission.</li><li>Misrepresent your identity, your authority to act on behalf of a Child, or the origin of any information submitted through the service.</li></ul><p>We reserve the right to suspend or terminate access to the service if we reasonably believe that your use violates this Agreement, creates legal or security risk, harms other users, or threatens the integrity or operation of the service.</p><p>Pieces of Perception LLC and its licensors retain all rights, title, and interest in and to the service itself, including all software, code, designs, layouts, report formats, questionnaires, workflows, prompts, methodologies, compilations, visual elements, trademarks, branding, documentation, and other intellectual property used to provide the service or generate reports (“Pieces of Perception LLC IP”). Your purchase does not transfer ownership of any Pieces of Perception LLC IP to you. Subject to your compliance with this Agreement, Pieces of Perception LLC grants you a limited, non-exclusive, non-transferable, revocable license to access and use the reports and materials generated for you through the service solely for your personal, family, caregiving, and non-commercial purposes. You may download, print, and share reports with family members, schools, healthcare providers, therapists, caregivers, or other persons involved in supporting your Child, at your own discretion and risk.</p><p>You may not copy, reproduce, modify, distribute, publish, sublicense, sell, commercially exploit, create derivative works from, or use the Pieces of Perception LLC IP or generated reports for commercial purposes without Pieces of Perception LLC’s prior written consent, except as expressly permitted by this Agreement. Nothing in this Agreement limits your right to access or use factual information relating to your Child or your family that you provided to the service.</p>"},{"n":"9","title":"Service Disclaimers","html":"<p>You should understand the following about the service:</p><ul class='ag-ul'><li>The service may occasionally have bugs, errors, or unplanned downtime.</li><li>Features may change, be added, or be removed; we will not remove your access to reports you have purchased and received.</li><li>We may contact you for feedback. You are never obligated to respond.</li></ul><p class='warn'>EXCEPT AS REQUIRED BY LAW OR AS EXPRESSLY PROVIDED IN THIS AGREEMENT, THE SERVICE IS PROVIDED “AS IS” AND “AS AVAILABLE,” WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, OR SECURE FROM UNAUTHORIZED ACCESS.</p>"},{"n":"10","title":"Not Medical, Therapeutic, Educational, or Legal Advice","html":"<p>Pieces of Perception is an informational and supportive tool. It is NOT a substitute for professional medical, psychological, therapeutic, educational, or legal advice. The reports we generate are not diagnostic. They are not designed to be relied upon to make medical, treatment, IEP, school placement, or other consequential decisions without the involvement of qualified professionals.</p><p>Pieces of Perception and the reports generated through the service are intended solely as supportive informational tools for parents and caregivers. They are not educational evaluations, independent educational evaluations (IEEs), behavioral intervention plans, Section 504 plans, Individualized Education Programs (IEPs), formal accommodations recommendations, legal advocacy materials, or expert opinions. Pieces of Perception does not represent or warrant that any report, recommendation, communication strategy, suggested accommodation, or implementation framework complies with the Individuals with Disabilities Education Act (IDEA), Section 504 of the Rehabilitation Act, the Americans with Disabilities Act (ADA), FERPA, state special-education laws, or any school district policy or procedure.</p><p>The reports generated by Pieces of Perception are not prepared by licensed educators, school psychologists, attorneys, behavior analysts, or other credentialed professionals unless expressly stated otherwise in writing. Any use of a report in connection with a school meeting, IEP process, disciplinary proceeding, due-process matter, mediation, administrative hearing, or educational dispute is solely at your discretion and risk. Pieces of Perception does not guarantee that any school, educational institution, provider, insurer, agency, or third party will accept, rely upon, implement, or respond to any recommendation or information contained in a report. Once information or reports are downloaded, shared, forwarded, printed, or otherwise distributed by you, Pieces of Perception LLC cannot control or be responsible for how third parties store, use, disclose, or protect that information.</p><p>We are not a covered entity under the Health Insurance Portability and Accountability Act (HIPAA), and our service is not a HIPAA-regulated platform. Information you choose to share with us is not protected health information for HIPAA purposes.</p><p>Pieces of Perception LLC is an informational tool and has not been clinically validated, peer reviewed, certified, approved, or evaluated by any governmental agency, medical board, educational authority, psychological association, or professional licensing body. The reports, recommendations, communication strategies, implementation suggestions, and other outputs generated through the service are not guaranteed to be accurate, effective, appropriate, evidence-based, therapeutically beneficial, or suitable for any particular Child, family, school environment, or situation. Any examples, frameworks, behavioral approaches, sensory-support suggestions, communication recommendations, or organizational strategies generated through the service are generalized informational content generated from the information provided by you and automated systems. Individual outcomes may vary significantly, and Pieces of Perception LLC makes no representation or warranty regarding any particular result, improvement, outcome, or benefit that may or may not occur from using the service or implementing any recommendation contained in a report.</p><p>Do not rely on this service in emergencies, crisis situations, self-harm situations, suicidality, aggression, elopement risk, abuse situations, or situations requiring professional intervention. If your Child is in crisis, in distress, or you have urgent concerns about their safety, please contact your pediatrician, a licensed mental-health professional, or in an emergency dial 911 (or the 988 Suicide and Crisis Lifeline) immediately.</p>"},{"n":"11","title":"Use of Artificial Intelligence","html":"<p>The reports, summaries, recommendations, suggested language, implementation ideas, behavioral frameworks, and other materials generated through Pieces of Perception are produced in whole or in part using artificial intelligence and automated processing systems. Artificial intelligence systems may generate content that is inaccurate, incomplete, outdated, inconsistent, misleading, inappropriate for your Child’s circumstances, or that does not reflect current professional standards or best practices. Outputs may also vary over time, including when similar information is submitted more than once (for example, an updated report generated from a “What’s Changed” questionnaire may differ in wording and structure from your original report even where the underlying information is unchanged). You acknowledge and agree that Pieces of Perception does not independently verify all generated content for accuracy, appropriateness, educational suitability, safety, or effectiveness before it is delivered to you unless expressly stated otherwise in writing. The generated materials are intended solely as supportive informational content for parents and caregivers and are not a substitute for independent professional judgment or consultation with qualified medical, psychological, therapeutic, educational, behavioral, or legal professionals. You remain solely responsible for evaluating whether any recommendation, strategy, communication approach, environmental adjustment, referral suggestion, or other output is appropriate for your Child and your family’s circumstances before acting upon it. You should not rely on any AI-generated output as the sole basis for making medical, mental-health, therapeutic, educational, disciplinary, safety-related, crisis-intervention, or legal decisions concerning your Child.</p>"},{"n":"12","title":"Our Commitment to Confidentiality","html":"<p>Information you share with us about your Child and your family will be treated as confidential. Specifically:</p><ul class='ag-ul'><li>We will not publicly identify your Child or your family without your express written permission (see Optional Releases below).</li><li>We will not discuss your specific responses with any other family.</li><li>If we use examples in marketing or product materials, those examples will be either (a) drawn from your responses with your express written permission, or (b) entirely fictional or composite, with no reasonable possibility of identifying any real family.</li></ul>"},{"n":"13","title":"Feedback and Suggestions","html":"<p>If you choose to share feedback, suggestions, or ideas with us about the service — for example, in a survey response, an email, or a conversation — you grant us a perpetual, royalty-free, worldwide license to use that feedback to improve our products and services, without obligation to compensate you. This does not include the personal information about your Child, which is governed by the rest of this Agreement and is not considered “feedback.”</p>"},{"n":"14","title":"Purchases, Pricing, and Refunds","html":"<p>Prices for reports, guides, and other offerings are displayed at the time of purchase. Payment is collected in full at the time of purchase, before the questionnaire is completed and before any report is generated. All prices are in U.S. dollars. We may change prices at any time, but price changes will not affect purchases you have already completed.</p><p>Supplementary guides and companions (for example, caregiver guides and the IEP Prep Companion) are add-ons to a report plan and require the purchase of an Action Report or Comprehensive Plan for the same Child. If an add-on is purchased without a qualifying plan, we will contact you to complete the plan purchase or refund the add-on.</p><p>Additional items purchased with the same account email are added to your existing order and delivered together with, or added to, your report set.</p><p class='h2'><strong>Refunds:</strong></p><p>Because every report is personalized to your Child and generated from your questionnaire responses, refunds are handled as follows:</p><ul class='ag-ul'><li>Before you submit your questionnaire: you may request a full refund of any purchase, for any reason, by emailing hello@piecesofperception.com.</li><li>After you submit your questionnaire: report generation begins, and purchases become non-refundable, except as described below or as required by law.</li><li>If we fail to deliver a purchased report, you are entitled to a full refund of the undelivered item.</li><li>If something is wrong with your report — for example, it does not reflect the information you provided — contact us and we will work with you to correct and regenerate it. If we cannot make it right, we will refund the affected item.</li></ul>"},{"n":"15","title":"Report Updates and the Report Refresh Subscription","html":"<p class='h2'><strong>a) The included first-year update (Comprehensive Plan only)</strong></p><p>If you purchase the Comprehensive Plan, your purchase includes one (1) report update, which you may use at any time within twelve (12) months after your purchase date. A report update works like this: you complete a short follow-up “What’s Changed” questionnaire describing changes since your reports were generated (for example, new diagnoses, school changes, new strategies, or changes at home). We then regenerate the reports associated with your account — your plan report and the add-on guides you own — with those changes factored in. Your original questionnaire responses are preserved, not overwritten; the update builds on them.</p><p>The included update is limited to one use, applies to the same Child as the original purchase, and expires twelve (12) months after the purchase date if unused. The included update has no cash value and is not transferable or refundable.</p><p class='h2'><strong>b) The Report Refresh subscription</strong></p><p>Any customer who purchased their reports directly from Pieces of Perception and has a completed report set may subscribe to Report Refresh for $44 per year. Each subscription year includes one (1) report update, as described above. Unused updates do not roll over to the next subscription year. An active Report Refresh subscription also keeps your account, your reports, and your dashboard active — each renewal restarts the 12-month Retention Period described in Section 6.</p><p>Report updates and the Report Refresh subscription are available only for reports purchased directly from Pieces of Perception. Reports provided to your family through a therapist, agency, school, or other professional partner of Pieces of Perception are part of that provider’s engagement with your family and are not eligible for the included update or the Report Refresh subscription.</p><p class='h2'><strong>c) Automatic renewal — please read</strong></p><p class='warn'>THE REPORT REFRESH SUBSCRIPTION AUTOMATICALLY RENEWS EACH YEAR, AND YOUR PAYMENT METHOD WILL BE CHARGED $44 (PLUS ANY APPLICABLE TAXES) AT THE START OF EACH SUBSCRIPTION YEAR, UNTIL YOU CANCEL. YOU MAY CANCEL AT ANY TIME, AND CANCELLATION TAKES EFFECT AT THE END OF THE CURRENT SUBSCRIPTION YEAR. TO CANCEL, EMAIL HELLO@PIECESOFPERCEPTION.COM OR USE THE CANCELLATION LINK ON YOUR DASHBOARD OR IN YOUR SUBSCRIPTION EMAILS.</p><p>If we change the subscription price, we will notify you by email at least thirty (30) days before your next renewal, and the new price will apply only from your next renewal. If a renewal payment fails, we will notify you and retry; if payment is not completed, the subscription lapses at the end of the paid period.</p><p class='h2'><strong>d) What an update is — and is not</strong></p><p>A report update regenerates your existing report set using your original responses plus your “What’s Changed” responses. It is not a new full questionnaire, a report for a different Child, or an expansion of your report set — add-ons you did not purchase remain available for separate purchase. Updated reports are delivered to your dashboard alongside your original reports and are subject to all of the disclaimers in this Agreement, including Sections 9, 10, and 11.</p>"},{"n":"16","title":"Limitation of Liability","html":"<p class='warn'>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, PIECES OF PERCEPTION LLC AND ITS MEMBERS, OFFICERS, EMPLOYEES, AND CONTRACTORS WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR FOR ANY LOSS OF PROFITS, REVENUE, DATA, OR BUSINESS OPPORTUNITY, ARISING OUT OF OR IN CONNECTION WITH YOUR USE OF THE SERVICE, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p><p class='warn'>OUR TOTAL CUMULATIVE LIABILITY TO YOU FOR ALL CLAIMS ARISING OUT OF OR RELATED TO THIS AGREEMENT OR THE SERVICE WILL NOT EXCEED THE GREATER OF (A) ONE HUNDRED U.S. DOLLARS ($100.00) OR (B) THE TOTAL AMOUNTS YOU PAID TO PIECES OF PERCEPTION LLC IN THE TWELVE (12) MONTHS PRECEDING THE EVENT GIVING RISE TO THE CLAIM. YOU ACKNOWLEDGE THAT THIS LIMITATION IS AN ESSENTIAL TERM OF THIS AGREEMENT AND THAT WE WOULD NOT OFFER THE SERVICE AT ITS CURRENT PRICES WITHOUT IT.</p><p>Some jurisdictions do not allow the limitation or exclusion of liability for certain damages, so some of the above limitations may not apply to you.</p>"},{"n":"17","title":"Indemnification","html":"<p>You agree to indemnify, defend, and hold harmless Pieces of Perception LLC and its members, officers, employees, and contractors from and against any claims, damages, losses, liabilities, and expenses (including reasonable attorneys’ fees) arising out of or related to: (a) your breach of this Agreement; (b) your provision of information about your Child that you do not have legal authority to share; or (c) your misuse of any reports, materials, information, recommendations, or outputs provided through the service, including representing that such materials constitute medical, therapeutic, educational, legal, or other professional advice, diagnoses, evaluations, or recommendations beyond the scope described in this Agreement.</p>"},{"n":"18","title":"Termination and Account Closure","html":"<p>You may close your account at any time, for any reason. We may suspend or terminate your access if we reasonably believe your use violates this Agreement, creates legal or security risk, harms other users, or threatens the integrity or operation of the service. If we terminate your access other than for suspected abuse, illegal activity, or a serious breach of this Agreement, we will (a) give you a reasonable opportunity to download or request a copy of any reports we have generated for you, and (b) refund any amounts paid for purchased items not yet delivered and the unused portion of any active Report Refresh subscription.</p><p>Upon termination or closure, the rights and obligations that by their nature should survive — including Sections 6 (data retention), 13 (feedback), 14 (purchases and refunds), 16 (liability), 17 (indemnification), and 19 (governing law and disputes) — will continue in effect.</p>"},{"n":"19","title":"Changes to This Agreement","html":"<p>We may update this Agreement from time to time. If we make a material change, we will email you and ask you to review and accept the updated Agreement before your next purchase, report update, or subscription renewal. Non-material changes (such as fixing a typo) will be made with notice on your dashboard but will not require re-acceptance. Material changes will not retroactively alter the terms that applied to purchases you have already completed.</p>"},{"n":"20","title":"Governing Law and Disputes","html":"<p>Please read this Section carefully. Before either party files a legal claim, the party asserting the claim agrees to first send written notice describing the dispute and attempting in good faith to resolve the matter informally. Notices to Pieces of Perception LLC shall be sent to hello@piecesofperception.com. The parties agree to attempt informal resolution for at least thirty (30) days before initiating arbitration, unless immediate injunctive relief is reasonably necessary.</p><p>Any dispute, claim, or controversy arising out of or relating to this Agreement, your purchase, the reports generated through the service, or your use of Pieces of Perception LLC shall be resolved exclusively through final and binding confidential arbitration rather than in court. The arbitration shall be administered by the American Arbitration Association (“AAA”) in accordance with its Consumer Arbitration Rules then in effect, except as modified by this Agreement. The arbitration shall be conducted by a single arbitrator. The arbitration shall be conducted remotely by videoconference unless the arbitrator determines that an in-person hearing is necessary. Any in-person hearing shall occur in the county or state where you reside, unless the parties agree otherwise. Rhode Island law shall govern this Agreement and the arbitration proceeding, without regard to conflict-of-laws principles.</p><p>The arbitrator shall have exclusive authority to resolve any dispute relating to the interpretation, applicability, enforceability, or formation of this arbitration provision, including any claim that all or any part of this provision is void or unenforceable. The parties agree that the arbitration proceeding, all materials exchanged during the proceeding, and any arbitration decision or award shall remain confidential except as necessary to enforce an award, comply with legal obligations, or seek legal or financial advice.</p><p class='warn'>TO THE MAXIMUM EXTENT PERMITTED BY LAW, YOU AND PIECES OF PERCEPTION LLC AGREE THAT ANY CLAIM SHALL BE BROUGHT ONLY IN AN INDIVIDUAL CAPACITY, AND NOT AS A PLAINTIFF, CLASS MEMBER, OR PARTICIPANT IN ANY PURPORTED CLASS, COLLECTIVE, CONSOLIDATED, MASS, OR REPRESENTATIVE ACTION OR PROCEEDING. THE ARBITRATOR SHALL NOT HAVE AUTHORITY TO CONSOLIDATE CLAIMS OR CONDUCT ANY CLASS, COLLECTIVE, COORDINATED, OR REPRESENTATIVE PROCEEDING.</p>"},{"n":"21","title":"Contact Us","html":"<p>Questions about this Agreement, your purchase, or how we handle your information? We want to hear from you.</p><p>Pieces of Perception LLC</p><p>Email: hello@piecesofperception.com</p><p>Written legal notices may be sent to Pieces of Perception at its address on file with the Rhode Island Secretary of State or such other address as Pieces of Perception may designate in writing.</p>"},{"n":"","title":"Optional Releases","html":"<p>These releases are entirely OPTIONAL. Your purchase and your use of the service do not depend on agreeing to any of them. You may opt in to one, more than one, or none. You may revoke any of these consents at any time by emailing hello@piecesofperception.com.</p><p class='h2'><strong>Release A — Anonymized Use of Information for Product Improvement</strong></p><p>I agree that Pieces of Perception may use the information I share, in DE-IDENTIFIED form (with all names, specific identifying details, and direct identifiers removed), to study patterns, improve the product, train internal evaluation tools, and produce internal research. De-identified means information that has been stripped of identifiers and that Pieces of Perception does not reasonably believe can be used to identify a particular individual, child, or household. Pieces of Perception will not attempt to re-identify de-identified information except as permitted or required by law. If I later withdraw this consent or close my account, Pieces of Perception will stop using my information for new product-improvement or research activities going forward. However, information that has already been de-identified and incorporated into completed analyses, research, quality-improvement efforts, or product-development activities before withdrawal may continue to be used in de-identified form.</p><p class='h2'><strong>Release B — Testimonial / Quote Release</strong></p><p>I agree that Pieces of Perception may use any written feedback, quotes, or stories I voluntarily share with them, attributed to me by my first name and last initial only (e.g., “Sarah M.”), in their marketing, website, social media, or other public materials. I understand that attribution by first name and last initial is not anonymous and may identify me and my family (including my Child) to some individuals who know me. My Child’s name and identifying information will NEVER be used in any public material.</p><p class='h2'><strong>Release C — Photo or Video Release</strong></p><p>If I voluntarily provide a photograph or video to Pieces of Perception (for example, a photo of myself for a testimonial), I grant Pieces of Perception permission to use it in their marketing or website, attributed to me by first name and last initial only. I understand that attribution by first name and last initial is not anonymous and may identify me and my family (including my Child) to some individuals who know me. I understand that any photograph or video I voluntarily provide may be publicly displayed in accordance with this release and that, once published, Pieces of Perception may not be able to prevent further sharing or redistribution by third parties. I will NOT submit photos or videos of my Child for use under this release.</p>"},{"n":"","title":"Acceptance","html":"<p>By checking the acceptance boxes on my Pieces of Perception dashboard and clicking “I Agree,” I confirm that I have read this Agreement, that I have had the opportunity to ask questions, that I am at least 18 years old, that I am the parent or legal guardian of the Child(ren) whose information I provide, and that I agree to be bound by this Agreement on behalf of myself and on behalf of my Child(ren) for the purposes described in this Agreement. My electronic acceptance has the same force and effect as a handwritten signature.</p><p>Recorded at acceptance: account email, agreement version, date and time.</p>"}];
+
+  // NOTE: version bumps to 'v1.0' when the attorney-approved final language
+  // lands (re-run "User Agreement/render_html.js" with IS_DRAFT=false, paste the
+  // regenerated AGREEMENT_SECTIONS below, and update this version). Anyone who
+  // accepted v1.0-draft will then see the gate again — by design.
+  // PROVIDER-FLOW NOTE: provider-family codes redeem through the same access-code
+  // path (beta_invites rows carrying provider_id) — the payment bypass is the code
+  // itself, so this portal/dashboard needs no structural change for B2B; the
+  // provider consent checkbox + exclusions ride in the questionnaire and UPD tasks.
+  const CUSTOMER_AGREEMENT = { type: 'customer_agreement', version: 'v1.0-draft', url: '/customer-agreement.html' };
+
+  // ONE set of rules — the grouped points below all live inside the single
+  // Family Service Agreement shown above (DRAFT pending attorney review).
+  const ACK_POINTS = [
+    'I have read the full <strong>Family Service Agreement</strong> ' +
+      '<a href="' + CUSTOMER_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a> ' +
+      'and I agree to its terms on behalf of myself and my child.',
+    'I understand Pieces of Perception is an informational and supportive tool — ' +
+      '<strong>not</strong> medical, psychological, therapeutic, educational, or legal advice, ' +
+      'and not a diagnosis, IEP, 504 plan, or evaluation.',
+    'I understand the reports are generated in whole or in part using <strong>artificial intelligence</strong>, ' +
+      'may contain errors, and that I am responsible for reviewing them before acting on them.',
+    'I confirm I am the parent or legal guardian, I am at least 18 years old, and I <strong>consent on my child&#8217;s behalf</strong> ' +
+      'to the collection and use of the information I provide.',
+    'I understand the <strong>purchase, refund, and (if applicable) subscription terms</strong>, that liability is limited, ' +
+      'and that disputes are resolved as described in the Agreement (including binding arbitration).',
+    'I understand my account and my family&#8217;s information are kept for <strong>12 months after my most recent purchase or subscription renewal</strong> ' +
+      'and are then permanently deleted, as described in the Agreement — I&#8217;ll be reminded by email to download my reports first.'
+  ];
+
+  async function fetchAcknowledgments(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.${session.user_id}&select=policy_type,policy_version`,
+        {
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Accept': 'application/json'
+          }
+        }
+      );
+      if (!res.ok) return new Set();
+      const rows = await res.json();
+      const set = new Set();
+      for (const r of rows) set.add(r.policy_type + ':' + r.policy_version);
+      return set;
+    } catch (e) { return new Set(); }
+  }
+
+  function hasAgreementAck(ackSet) {
+    return ackSet.has(CUSTOMER_AGREEMENT.type + ':' + CUSTOMER_AGREEMENT.version);
+  }
+
+  function renderAgreementSections() {
+    const wrap = document.getElementById('ack-sections');
+    wrap.innerHTML = AGREEMENT_SECTIONS.map(function (sec) {
+      const label = sec.n ? (sec.n + '. ' + sec.title) : sec.title;
+      return '<details class="ag-sec">' +
+               '<summary>' + escapeText(label) + '</summary>' +
+               '<div class="ag-body">' + sec.html + '</div>' +
+             '</details>';
+    }).join('');
+  }
+
+  function renderAcknowledgmentView() {
+    renderAgreementSections();
+    const listEl = document.getElementById('ack-list');
+    listEl.innerHTML = ACK_POINTS.map(function (pt) {
+      return '<label class="ack-item">' +
+               '<input type="checkbox" onchange="updateAckContinueButton()">' +
+               '<span class="ack-item-text">' + pt + '</span>' +
+             '</label>';
+    }).join('');
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('ack-view').classList.add('show');
+  }
+
+  function updateAckContinueButton() {
+    const boxes = document.querySelectorAll('#ack-list input[type="checkbox"]');
+    const allChecked = boxes.length > 0 &&
+      Array.from(boxes).every(b => b.checked);
+    document.getElementById('ack-continue').disabled = !allChecked;
+  }
+
+  async function submitAcknowledgments() {
+    const session = getSession();
+    if (!session) { redirectToAuth(); return; }
+    const btn = document.getElementById('ack-continue');
+    const msg = document.getElementById('ack-msg');
+    msg.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const rows = [{
+      user_id:        session.user_id,
+      policy_type:    CUSTOMER_AGREEMENT.type,
+      policy_version: CUSTOMER_AGREEMENT.version
+    }];
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/policy_acknowledgments`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=ignore-duplicates'
+        },
+        body: JSON.stringify(rows)
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error('HTTP ' + res.status + ': ' + text);
+      }
+      window.location.reload();
+    } catch (e) {
+      msg.style.display = 'block';
+      msg.style.background = 'rgba(217,91,114,0.08)';
+      msg.style.color = 'var(--rose)';
+      msg.textContent = "We couldn't save your acknowledgment. Please try again.";
+      btn.disabled = false;
+      btn.textContent = 'I Agree — Continue to Dashboard';
+    }
+  }
+
+  // ── Phase 4.5: list + signed-URL download for the user's reports ──
+  function humanizeReportName(filename) {
+    let n = filename.replace(/\.pdf$/i, '');
+    const parts = n.split('_');
+    if (parts.length > 1) { parts.shift(); n = parts.join('_'); }
+    return n.replace(/_/g, ' ');
+  }
+
+  function escapeText(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  async function loadReports(session) {
+    const listEl = document.getElementById('reports-list');
+    if (!listEl) return;
+    const emptyHtml =
+      '<div class="reports-empty">' +
+      'Your generated reports will appear here once they\'re ready. ' +
+      'I\'ll email you the moment they are.' +
+      '</div>';
+    try {
+      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/list/reports`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prefix: session.user_id + '/',
+          limit: 100,
+          sortBy: { column: 'name', order: 'asc' }
+        })
+      });
+      if (!res.ok) { listEl.innerHTML = emptyHtml; return; }
+      const files = await res.json();
+      const real = Array.isArray(files)
+        ? files.filter(f => f && f.name && !f.name.startsWith('.'))
+        : [];
+      if (real.length === 0) { listEl.innerHTML = emptyHtml; return; }
+
+      const items = await Promise.all(real.map(async (f) => {
+        // IMPORTANT: encode each path segment separately so the / between
+        // user_id and filename stays a real slash, not %2F.
+        const pathInUrl = encodeURIComponent(session.user_id) + '/' + encodeURIComponent(f.name);
+        let url = null;
+        try {
+          const signRes = await fetch(
+            `${SUPABASE_URL}/storage/v1/object/sign/reports/${pathInUrl}`,
+            {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${session.access_token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ expiresIn: 3600 })
+            }
+          );
+          if (signRes.ok) {
+            const sd = await signRes.json();
+            const signedPath = sd.signedURL || sd.signedUrl || sd.signed_url;
+            if (signedPath) url = SUPABASE_URL + '/storage/v1' + signedPath;
+          }
+        } catch (e) { /* leave url null */ }
+        const sizeBytes = f.metadata && f.metadata.size;
+        const sizeKB = sizeBytes ? Math.max(1, Math.round(sizeBytes / 1024)) : null;
+        return { name: f.name, url, sizeKB };
+      }));
+
+      // ONE-WAVE delivery (live customers): a single report set, revealed when
+      // the pipeline stamps reports_ready_at (or comprehensive_ready_at as a
+      // fallback for migrated accounts). Gate on the timestamp, not file
+      // presence; fall back to file presence if the row can't be read.
+      const rowHtml = (it) => {
+        const display = humanizeReportName(it.name);
+        const meta = (it.sizeKB ? `${it.sizeKB} KB \u00B7 PDF` : 'PDF');
+        return '<div class="report-item">' +
+            '<div class="report-item-info">' +
+              '<div class="report-item-name">' + escapeText(display) + '</div>' +
+              '<div class="report-item-meta">' + escapeText(meta) + '</div>' +
+            '</div>' +
+            (it.url
+              ? '<a href="' + it.url + '" class="report-download" download="' + escapeText(it.name) + '">Download</a>'
+              : '<span style="color:var(--text-light);font-size:13px;">Unavailable</span>') +
+          '</div>';
+      };
+
+      let ts = null, tsFetchOk = false;
+      try {
+        const qr = await fetch(
+          `${SUPABASE_URL}/rest/v1/questionnaire_responses?user_id=eq.` +
+          encodeURIComponent(session.user_id) +
+          `&select=reports_ready_at,comprehensive_ready_at&order=created_at.desc&limit=1`,
+          { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}` } });
+        if (qr.ok) {
+          tsFetchOk = true;
+          const rows = await qr.json();
+          if (rows && rows[0]) { ts = rows[0].reports_ready_at || rows[0].comprehensive_ready_at; }
+        }
+      } catch (e) { /* fall back to file presence below */ }
+
+      const fmtDate = (x) => {
+        try { return new Date(x).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); }
+        catch (e) { return ''; }
+      };
+
+      const delivered = tsFetchOk ? !!ts : items.length > 0;
+      if (delivered && items.length > 0) {
+        const sub = ts ? '<div class="wave-sub">Delivered ' + escapeText(fmtDate(ts)) + '</div>' : '';
+        listEl.innerHTML = sub + '<div>' + items.map(rowHtml).join('') + '</div>';
+      } else if (delivered) {
+        listEl.innerHTML = '<div class="reports-empty">Your reports are being finalized and will appear here shortly.</div>';
+      } else {
+        listEl.innerHTML =
+          '<div class="reports-empty">Once you complete your questionnaire, we get to work. ' +
+          'Your personalized reports are carefully reviewed before delivery \u2014 ' +
+          'we\u2019ll email you the moment they\u2019re ready.</div>';
+      }
+    } catch (e) {
+      listEl.innerHTML =
+        '<div class="reports-empty">Could not load your reports right now. ' +
+        'Try refreshing the page in a moment.</div>';
+    }
+  }
+
+  async function init() {
+    const session = getSession();
+    if (!session) { redirectToAuth(); return; }
+
+    let profile = await fetchProfile(session);
+
+    if (!profile || !profile.beta_access) {
+      const redeemed = await tryRedeemPendingCode(session);
+      if (redeemed) {
+        profile = await fetchProfile(session);
+      }
+    }
+
+    if (!profile || !profile.beta_access) {
+      showNoAccessView();
+      return;
+    }
+
+    // Family Service Agreement gate (single unified agreement)
+    const acks = await fetchAcknowledgments(session);
+    if (!hasAgreementAck(acks)) {
+      renderAcknowledgmentView();
+      return;
+    }
+
+    const displayName  = profile.name  || session.name  || '';
+    const displayEmail = profile.email || session.email || '';
+
+    document.getElementById('welcome-name').textContent = displayName ? displayName.split(' ')[0] : 'friend';
+    document.getElementById('nav-user-email').textContent = displayEmail || '—';
+
+    // Pre-fill the data-deletion request with the signed-in account email so we can identify the request.
+    const delLink = document.getElementById('delete-data-link');
+    if (delLink && displayEmail) {
+      const body = 'Hi Sarah,\n\nI\'d like to request deletion of my Pieces of Perception account and all data about my family.\n\nAccount email: ' + displayEmail + '\n\nThank you.';
+      delLink.href = 'mailto:hello@piecesofperception.com?subject=' +
+        encodeURIComponent('Data deletion request') +
+        '&body=' + encodeURIComponent(body);
+    }
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').classList.add('ready');
+
+    loadReports(session);
+  }
+
+  async function signOut() {
+    const session = getSession();
+    if (session) {
+      try {
+        await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`
+          }
+        });
+      } catch (_) {}
+    }
+    clearSession();
+    window.location.href = '/index.html';
+  }
+
+  function startReport(e, kind) {
+    if (e) e.preventDefault();
+    const url = kind === 'action' || kind === 'comprehensive'
+      ? `/questionnaire.html?flow=${kind}`
+      : '/questionnaire.html';
+    window.location.href = url;
+  }
+
+  init();
+</script>
+
+</body>
+</html>
