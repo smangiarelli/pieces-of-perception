@@ -36,7 +36,7 @@ const CONFIG = {
       id: "comprehensive",
       badge: "BEST VALUE",
       name: "Comprehensive Plan",
-      blurb: "Everything in the Action Report, plus the full 12-week framework, communication scripts for every audience, crisis playbook, and a year of updates.",
+      blurb: "Everything in the Action Report, plus the full 12-week framework, communication scripts for every audience, crisis playbook, and one updated report in your first year.",
       price: 149,
       paymentLink: "https://buy.stripe.com/dRmdR96Ou3Lbd7rfZp5AQ09"
     },
@@ -64,6 +64,18 @@ const CONFIG = {
     { id: "teacher",    name: "Teacher / School Guide", blurb: "Classroom supports, communication approaches, and de-escalation steps for the school team.", price: 15, paymentLink: "https://buy.stripe.com/14A9ATc8OgxX3wRaF55AQ04" },
     { id: "provider",   name: "Service Provider Guide", blurb: "For therapists, coaches, and providers — what works best in sessions with your child.", price: 15, paymentLink: "https://buy.stripe.com/6oU6oHb4KdlL8Rb3cD5AQ03" },
     { id: "partnership", name: "Parenting in Partnership Guide", blurb: "A shared playbook for the adults raising your child together — one household or two.", price: 15, paymentLink: "https://buy.stripe.com/cNi28rfl0chH7N7aF55AQ02" }
+  ],
+
+  // Pay It Forward — contributions that fund reports for families who
+  // can't afford full price. NOT purchases, NOT donations to a charity.
+  // Paste each Payment Link after you create the four Stripe products
+  // (steps in PAY_IT_FORWARD_SETUP.md). Product names in Stripe MUST
+  // contain "Pay It Forward" so the webhook handles them correctly.
+  contributions: [
+    { id: "pif25",  name: "Give $25",  blurb: "Every contribution pools toward reports for families in need.", price: 25,  paymentLink: "" },
+    { id: "pif50",  name: "Give $50",  blurb: "Half the cost of a sponsored guide bundle and then some.",       price: 50,  paymentLink: "" },
+    { id: "pif99",  name: "Sponsor an Action Report",     blurb: "Covers one family's complete Action Report — profile, sensory map, toolkit, and all.", price: 99,  paymentLink: "" },
+    { id: "pif149", name: "Sponsor a Comprehensive Plan", blurb: "Covers one family's full Comprehensive Plan — the complete 12-week framework.",        price: 149, paymentLink: "" }
   ]
 };
 </script>
@@ -173,7 +185,7 @@ const CONFIG = {
   <div class="page-head">
     <div class="eyebrow">Checkout</div>
     <h1 class="serif">Choose your plan</h1>
-    <p>One-time purchase. No subscription. Your report is yours to keep and share forever.</p>
+    <p>One-time purchase — no required subscription. Your reports are yours to download, keep, and share.</p>
   </div>
 
   <!-- Founding-family code -->
@@ -207,11 +219,23 @@ const CONFIG = {
     <div id="guideList"></div>
   </div>
 
+  <!-- Pay It Forward -->
+  <div class="addons" id="pay-it-forward">
+    <div class="section-label" style="color:var(--warm)">💛 Pay It Forward</div>
+    <div class="unlock" style="border-color:rgba(232,132,90,0.35);background:var(--warm-light)">
+      <p style="margin:0;color:var(--text)"><strong style="color:var(--deep)">Help another family get the map they need.</strong> Pay It Forward contributions pool into our Access Program fund, which covers reduced-cost and sponsored reports for families who can't afford full price. 100% of this fund goes to other families' reports — nothing else.</p>
+    </div>
+    <div id="pifList"></div>
+    <p style="font-size:11.5px;color:var(--text-light);line-height:1.65;margin-top:10px">
+      Pieces of Perception is not a nonprofit organization, so Pay It Forward contributions are <strong>not tax-deductible</strong>. They are voluntary contributions to our Access Program and are not refundable once a sponsorship has been granted. Discount codes do not apply to contributions.
+    </p>
+  </div>
+
   <!-- Trust -->
   <div class="trust">
     <div class="row">
       <span>&#128274; Encrypted payment</span>
-      <span>&#9989; One-time, no subscription</span>
+      <span>&#9989; No required subscription</span>
       <span>&#128179; Powered by Stripe</span>
     </div>
     <div>Questions? Email <a href="mailto:hello@piecesofperception.com" style="color:var(--accent);font-weight:600">hello@piecesofperception.com</a></div>
@@ -265,7 +289,7 @@ const CONFIG = {
                '<h3 class="serif">' + p.name + '</h3>' +
                '<div class="blurb">' + p.blurb + '</div>' +
                priceBlockHTML(p) +
-               '<div class="price-note">One-time payment &middot; yours to keep forever</div>' +
+               '<div class="price-note">One-time payment &middot; yours to download and keep</div>' +
                buyButtonHTML(p, cls) +
              '</div>';
     }).join("");
@@ -274,6 +298,22 @@ const CONFIG = {
   function renderAddons() {
     renderAddonListInto("addonList", CONFIG.addons);
     renderAddonListInto("guideList", CONFIG.guides || []);
+    renderContributions();
+  }
+
+  // Pay It Forward: never gated, never discounted (no promo code carried).
+  function renderContributions() {
+    var list = document.getElementById("pifList");
+    if (!list) return;
+    list.innerHTML = (CONFIG.contributions || []).map(function (p) {
+      var button = p.paymentLink
+        ? '<a class="buy warm" style="width:auto;padding:11px 20px;font-size:13.5px" href="' + p.paymentLink + '">Contribute</a>'
+        : '<span class="buy disabled" style="width:auto;padding:11px 20px;font-size:13.5px">Coming soon</span>';
+      return '<div class="addon" style="border-color:rgba(232,132,90,0.25)">' +
+               '<div class="info"><h4>' + p.name + '</h4><p>' + p.blurb + '</p></div>' +
+               '<div class="right"><span class="ap">' + money(p.price) + '</span>' + button + '</div>' +
+             '</div>';
+    }).join("");
   }
 
   function renderAddonListInto(elementId, items) {
