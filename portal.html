@@ -374,23 +374,49 @@
 </footer>
 
 <script>
-  // ── RECOVERY-LINK DEFENSE ──────────────────────────────────────
-  // If Supabase lands a password-recovery URL on THIS page instead of
-  // /reset-password.html (which can happen when the Allowed Redirect URLs
-  // list isn't configured yet), forward the user with the hash intact.
-  (function forwardRecoveryHash() {
-    try {
-      const hash = window.location.hash || '';
-      if (hash.includes('type=recovery') || hash.includes('access_token=')) {
-        const target = '/reset-password.html' + hash;
-        window.location.replace(target);
-      }
-    } catch (_) { /* ignore */ }
-  })();
-
   const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
   const PENDING_CODE_KEY = 'pop_pending_invite_code';
+
+  // ── AUTH-LINK HANDLER ──────────────────────────────────────────
+  // Supabase auth links can land here with tokens in the URL hash.
+  //  - Password recovery -> forward to /reset-password.html (hash intact).
+  //  - Email confirmation (type=signup) -> finish sign-in automatically and
+  //    go straight to the dashboard, where any pending access code redeems.
+  (function handleAuthHash() {
+    try {
+      const hash = window.location.hash || '';
+      if (!hash) return;
+      if (hash.includes('type=recovery')) {
+        window.location.replace('/reset-password.html' + hash);
+        return;
+      }
+      if (!hash.includes('access_token=')) return;
+      const p = new URLSearchParams(hash.slice(1));
+      const access_token = p.get('access_token');
+      if (!access_token) return;
+      history.replaceState(null, '', window.location.pathname); // scrub tokens from URL
+      fetch(SUPABASE_URL + '/auth/v1/user', {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + access_token }
+      })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (u) {
+          if (!u || !u.id) return; // fall through to normal sign-in UI
+          try {
+            localStorage.setItem('pop_session', JSON.stringify({
+              access_token: access_token,
+              refresh_token: p.get('refresh_token') || '',
+              user_id: u.id,
+              email: u.email || '',
+              name: (u.user_metadata && u.user_metadata.name) || '',
+              expires_at: Date.now() + (parseInt(p.get('expires_in') || '3600', 10) * 1000)
+            }));
+          } catch (_) {}
+          window.location.replace('/family-dashboard.html');
+        })
+        .catch(function (_) { /* fall through to normal sign-in UI */ });
+    } catch (_) { /* ignore */ }
+  })();
 
   // ── Tab switching ──
   function switchTab(which) {
@@ -553,7 +579,7 @@
 
     try {
       // 1) Sign up with Supabase Auth
-      const signupRes = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+      const signupRes = await fetch(`${SUPABASE_URL}/auth/v1/signup?redirect_to=` + encodeURIComponent('https://piecesofperception.com/portal.html'), {
         method: 'POST',
         headers: {
           'apikey': SUPABASE_ANON_KEY,
