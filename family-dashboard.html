@@ -615,6 +615,15 @@
     </div>
   </div>
 
+  <!-- Report update (UPD-3) — hidden unless get_my_update_status() says an
+       update is available. Provider-program accounts never see this card. -->
+  <div class="my-reports" id="update-card" style="display:none; margin-top:36px; text-align:center; border:1px solid rgba(82,183,136,0.45); background:rgba(82,183,136,0.10);">
+    <h2>Update Your Reports</h2>
+    <p class="lede" id="update-card-copy" style="max-width:560px; margin-left:auto; margin-right:auto;"></p>
+    <a href="/update.html" class="btn btn-primary" style="margin-top:6px;">Start the 10&ndash;15 Minute Update &rarr;</a>
+    <p id="update-card-expiry" style="margin-top:12px; font-size:12.5px; color:var(--text-light);"></p>
+  </div>
+
   <!-- Questionnaire -->
   <div class="my-reports" style="margin-top:36px; text-align:center;">
     <h2>Your Questionnaire</h2>
@@ -1006,15 +1015,23 @@
 
       let ts = null, tsFetchOk = false;
       try {
+        // NOTE (UPD-3): look across recent rows, not just the newest — a
+        // freshly-submitted UPDATE row has NULL timestamps and must not
+        // hide reports that were already delivered on the original row.
         const qr = await fetch(
           `${SUPABASE_URL}/rest/v1/questionnaire_responses?user_id=eq.` +
           encodeURIComponent(session.user_id) +
-          `&select=reports_ready_at,comprehensive_ready_at&order=created_at.desc&limit=1`,
+          `&select=reports_ready_at,comprehensive_ready_at&order=created_at.desc&limit=10`,
           { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}` } });
         if (qr.ok) {
           tsFetchOk = true;
           const rows = await qr.json();
-          if (rows && rows[0]) { ts = rows[0].reports_ready_at || rows[0].comprehensive_ready_at; }
+          if (Array.isArray(rows)) {
+            for (const row of rows) {
+              const t = row.reports_ready_at || row.comprehensive_ready_at;
+              if (t && (!ts || new Date(t) > new Date(ts))) ts = t;
+            }
+          }
         }
       } catch (e) { /* fall back to file presence below */ }
 
@@ -1085,6 +1102,47 @@
     document.getElementById('content').classList.add('ready');
 
     loadReports(session);
+    loadUpdateCard(session);
+  }
+
+  // UPD-3: show the "Update Your Reports" card only when the UPD-5 RPC says
+  // this account has an available update. Fails closed (card stays hidden).
+  async function loadUpdateCard(session) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_update_status`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: '{}'
+      });
+      if (!res.ok) return;
+      const st = await res.json();
+      if (!st || st.ok !== true || st.provider_family || !st.available) return;
+
+      const copyBySource = {
+        comprehensive_first_year:
+          'Included with your Comprehensive plan: one full report update in your first year. Tell us what\u2019s changed \u2014 new school, new strategies, new wins \u2014 and we\u2019ll weave it into every report you own.',
+        beta_free_update:
+          'A thank-you for being one of our founding beta families: one full report update, on us. Tell us what\u2019s changed and we\u2019ll refresh every report you own.',
+        refresh_subscription:
+          'Your yearly Report Refresh is ready to use. Tell us what\u2019s changed and we\u2019ll re-run everything you own with the latest picture of your child.',
+        courtesy:
+          'A report update is available on your account. Tell us what\u2019s changed and we\u2019ll weave it into every report you own.'
+      };
+      document.getElementById('update-card-copy').textContent =
+        copyBySource[st.source] || copyBySource.courtesy;
+
+      if (st.expires_at) {
+        try {
+          const d = new Date(st.expires_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          document.getElementById('update-card-expiry').textContent = 'Available until ' + d + '.';
+        } catch (e) {}
+      }
+      document.getElementById('update-card').style.display = '';
+    } catch (e) { /* card stays hidden */ }
   }
 
   async function signOut() {
