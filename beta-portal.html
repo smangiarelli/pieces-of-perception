@@ -434,6 +434,7 @@
     if (t.includes('user already registered'))  return 'An account with this email already exists. Try signing in instead.';
     if (t.includes('password should be at least')) return 'Password must be at least 8 characters.';
     if (t.includes('rate limit'))               return 'Too many attempts. Please wait a minute and try again.';
+    if (t.includes('security purposes') || t.includes('you can only request this after')) return 'Your first tap likely worked! Check your email (including spam) for a confirmation link. If nothing arrives in a few minutes, wait 60 seconds and tap Create Account once more.';
     if (t.includes('invalid email'))            return 'That doesn\'t look like a valid email address.';
     return raw;
   }
