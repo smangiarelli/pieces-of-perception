@@ -614,6 +614,15 @@
     </div>
   </div>
 
+  <!-- Report update (UPD-3, ported from family-dashboard 2026-08-08) — hidden unless
+       get_my_update_status() says an update is available. Fails closed. -->
+  <div class="my-reports" id="update-card" style="display:none; margin-top:36px; text-align:center; border:1px solid rgba(82,183,136,0.45); background:rgba(82,183,136,0.10);">
+    <h2>Update Your Reports</h2>
+    <p class="lede" id="update-card-copy" style="max-width:560px; margin-left:auto; margin-right:auto;"></p>
+    <a href="/update.html" class="btn btn-primary" style="margin-top:6px;">Start the 10&ndash;15 Minute Update &rarr;</a>
+    <p id="update-card-expiry" style="margin-top:12px; font-size:12.5px; color:var(--text-light);"></p>
+  </div>
+
   <div class="status-banner">
     <span>✨</span>
     <span>Beta families: questionnaires are free during the beta. No payment needed.</span>
@@ -1096,6 +1105,47 @@
     }
   }
 
+  // UPD-3 (ported from family-dashboard 2026-08-08): show the "Update Your Reports"
+  // card only when the UPD-5 RPC says this account has an available update.
+  // Fails closed (card stays hidden).
+  async function loadUpdateCard(session) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_update_status`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: '{}'
+      });
+      if (!res.ok) return;
+      const st = await res.json();
+      if (!st || st.ok !== true || st.provider_family || !st.available) return;
+
+      const copyBySource = {
+        comprehensive_first_year:
+          'Included with your Comprehensive plan: one full report update in your first year. Tell us what’s changed — new school, new strategies, new wins — and we’ll weave it into every report you own.',
+        beta_free_update:
+          'A thank-you for being one of our founding beta families: one full report update, on us. Tell us what’s changed and we’ll refresh every report you own.',
+        refresh_subscription:
+          'Your yearly Report Refresh is ready to use. Tell us what’s changed and we’ll re-run everything you own with the latest picture of your child.',
+        courtesy:
+          'A report update is available on your account. Tell us what’s changed and we’ll weave it into every report you own.'
+      };
+      document.getElementById('update-card-copy').textContent =
+        copyBySource[st.source] || copyBySource.courtesy;
+
+      if (st.expires_at) {
+        try {
+          const d = new Date(st.expires_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          document.getElementById('update-card-expiry').textContent = 'Available until ' + d + '.';
+        } catch (e) {}
+      }
+      document.getElementById('update-card').style.display = '';
+    } catch (e) { /* card stays hidden */ }
+  }
+
   async function init() {
     const session = getSession();
     if (!session) { redirectToAuth(); return; }
@@ -1139,6 +1189,7 @@
     document.getElementById('content').classList.add('ready');
 
     loadReports(session);
+    loadUpdateCard(session);
   }
 
   async function signOut() {
