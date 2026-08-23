@@ -23,12 +23,27 @@
 
      "price" is only what's SHOWN on this page. The real charge comes
      from Stripe. Keep them in sync.
+
+     ATTORNEY-REQUIRED FLOW (MES redline 2026-08-19):
+       accept Agreement + confirm authority  ->  PAY  ->  questionnaire.
+     Nothing about a child is collected until all three are done. The
+     acceptance gate below is what enforces that. Do not remove it, and do
+     not let any payment link render before acceptGate.satisfied is true.
      ===================================================================== -->
 <script>
 const CONFIG = {
   // The founding-family discount. The script you ran created this code.
   founderCode: "FOUNDER",
   founderPercent: 20,
+
+  // ---- Family Service Agreement (must match customer_agreement_source.js) ----
+  agreementVersion: "v1.0",
+  agreementLastUpdated: "September 1, 2026",
+  agreementUrl: "/customer-agreement.html",
+
+  // ---- Acceptance record store (Supabase) ----
+  supabaseUrl: "https://ezberjgmwdahiljzproz.supabase.co",
+  supabaseAnonKey: "sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX",
 
   // Main reports
   products: [
@@ -47,6 +62,19 @@ const CONFIG = {
       blurb: "Your child's complete profile, sensory map, strengths spotlight, regulation toolkit, quick-reference cheat sheet, and week-one checklist.",
       price: 99,
       paymentLink: "https://buy.stripe.com/3cI14nb4KchH6J36oP5AQ08"
+    },
+    {
+      // Third standalone plan (2026-08-17). Counts as a MAIN PLAN, not an
+      // add-on: the Stripe product name must contain "Next Chapter" so
+      // edge_stripe_webhook.ts issues an access code for it.
+      // paymentLink stays empty until the Stripe LIVE product exists —
+      // an empty link renders as "Coming soon" rather than a dead button.
+      id: "nextchapter",
+      badge: "AGES 16+",
+      name: "Next Chapter Profile",
+      blurb: "For the transition years. Everything in the Comprehensive Plan, plus independence, work, the decisions that arrive at 18 — and a Handoff Pack built to give an adult program, an employer, or a job coach.",
+      price: 149,
+      paymentLink: ""
     }
   ],
 
@@ -65,6 +93,23 @@ const CONFIG = {
     { id: "provider",   name: "Service Provider Guide", blurb: "For therapists, coaches, and providers — what works best in sessions with your child.", price: 15, paymentLink: "https://buy.stripe.com/6oU6oHb4KdlL8Rb3cD5AQ03" },
     { id: "partnership", name: "Parenting in Partnership Guide", blurb: "A shared playbook for the adults raising your child together — one household or two.", price: 15, paymentLink: "https://buy.stripe.com/cNi28rfl0chH7N7aF55AQ02" }
   ],
+
+  // ---- Report Refresh (annual subscription) ----
+  // DO NOT set enabled:true until ALL of the following are live and tested:
+  //   1. Stripe recurring product + Payment Link (UPD-6)
+  //   2. invoice.paid handling in edge_stripe_webhook.ts
+  //   3. a working ONLINE cancel button on family-dashboard.html
+  //   4. the immediate subscription-confirmation email (name, price,
+  //      auto-renewal terms, how to cancel)
+  // Items 3 and 4 are state-law requirements (California ARL among others).
+  // Attorney note (MES 2026-08-19): "Definitely make sure functional."
+  reportRefresh: {
+    enabled: false,
+    name: "Report Refresh",
+    blurb: "One updated report run every subscription year, using the short “What’s Changed” questionnaire. Keeps your account and reports active too.",
+    price: 44,
+    paymentLink: ""
+  },
 
   // Pay It Forward — contributions that fund reports for families who
   // can't afford full price. NOT purchases, NOT donations to a charity.
@@ -86,7 +131,7 @@ const CONFIG = {
     --accent:#6C63FF; --accent-dark:#5349e0; --accent-bg:rgba(108,99,255,0.07);
     --warm:#E8845A; --warm-light:rgba(232,132,90,0.10);
     --sage:#52B788; --sage-light:rgba(82,183,136,0.12);
-    --sky:#3FA8CC;
+    --sky:#3FA8CC; --rose:#D95B72;
     --deep:#16162A; --text:#2C2C3E; --text-light:#6B6B80;
     --border:#E6E8F0; --border-soft:rgba(108,99,255,0.12);
     --bg:#F7F8FC; --white:#ffffff;
@@ -106,6 +151,37 @@ const CONFIG = {
   .page-head .eyebrow { font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--accent); text-transform:uppercase; }
   .page-head h1 { font-family:'Playfair Display', serif; font-size:34px; font-weight:800; color:var(--deep); margin:8px 0 10px; line-height:1.2; }
   .page-head p { color:var(--text-light); max-width:560px; margin:0 auto; font-size:15px; }
+
+  /* ===== Acceptance gate ===== */
+  .gate { background:var(--white); border:2px solid var(--accent); border-radius:20px; padding:28px 28px 24px; margin:0 auto 34px; max-width:760px; box-shadow:var(--card-shadow); scroll-margin-top:20px; }
+  .gate.done { border-color:var(--sage); }
+  .gate .step { font-size:11px; font-weight:700; letter-spacing:1.4px; color:var(--accent); text-transform:uppercase; }
+  .gate.done .step { color:var(--sage); }
+  .gate h2 { font-family:'Playfair Display', serif; font-size:23px; color:var(--deep); margin:6px 0 12px; }
+  .gate .note { font-size:14px; color:var(--text); margin-bottom:16px; line-height:1.7; }
+  .gate .note em { color:var(--text-light); font-style:normal; }
+  .gate .sig { font-family:'Playfair Display', serif; font-size:15px; color:var(--text-light); }
+  .gate label.chk { display:flex; align-items:flex-start; gap:11px; font-size:14px; color:var(--text); cursor:pointer; padding:12px 14px; border:1.5px solid var(--border); border-radius:12px; margin-bottom:10px; background:#fbfbfe; }
+  .gate label.chk:hover { border-color:var(--border-soft); }
+  .gate label.chk input { width:19px; height:19px; margin-top:1px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+  .gate label.chk.req { background:var(--accent-bg); }
+  .gate .fieldlabel { font-size:13px; font-weight:700; color:var(--deep); margin:4px 0 7px; }
+  .gate input[type=email] { width:100%; padding:13px 15px; border:1.5px solid var(--border); border-radius:12px; font-family:inherit; font-size:15px; background:var(--white); margin-bottom:6px; }
+  .gate input[type=email]:focus { outline:none; border-color:var(--accent); }
+  .gate .hint { font-size:12px; color:var(--text-light); margin-bottom:16px; }
+  .gate .agree-btn { display:block; width:100%; padding:15px; border:none; border-radius:13px; background:var(--accent); color:#fff; font-family:inherit; font-weight:700; font-size:15.5px; cursor:pointer; margin-top:6px; }
+  .gate .agree-btn:disabled { background:var(--border); color:var(--text-light); cursor:not-allowed; }
+  .gate .gate-msg { font-size:13px; font-weight:600; margin-top:10px; min-height:18px; }
+  .gate .gate-msg.err { color:var(--rose); }
+  .gate .gate-msg.ok { color:var(--sage); }
+  .gate .optional-head { font-size:12.5px; font-weight:700; letter-spacing:.4px; color:var(--text-light); text-transform:uppercase; margin:22px 0 8px; }
+  .gate .optional-sub { font-size:12.5px; color:var(--text-light); margin-bottom:10px; line-height:1.6; }
+  .accepted-box { display:none; }
+  .gate.done .accepted-box { display:block; }
+  .gate.done .gate-form { display:none; }
+  .accepted-box .tick { color:var(--sage); font-weight:700; font-size:15px; }
+  .accepted-box .recorded { font-size:13px; color:var(--text-light); margin-top:6px; line-height:1.7; }
+  .gate .lastupd { font-size:12px; color:var(--text-light); margin-top:12px; }
 
   /* Founder banner */
   .founder { background:linear-gradient(135deg, rgba(108,99,255,0.08), rgba(232,132,90,0.08)); border:1px solid var(--border-soft); border-radius:18px; padding:22px 24px; margin:0 auto 34px; max-width:680px; }
@@ -140,6 +216,8 @@ const CONFIG = {
   .buy.warm { background:var(--warm); }
   .buy.warm:hover { filter:brightness(0.95); }
   .buy.disabled { background:var(--border); color:var(--text-light); cursor:not-allowed; pointer-events:none; }
+  /* needs-accept: still clickable on purpose — the click opens the modal */
+  .buy.needs-accept { background:var(--border); color:var(--text-light); }
 
   .addons { margin-top:36px; }
   .addon { background:var(--white); border:1px solid var(--border); border-radius:14px; padding:18px 22px; display:flex; align-items:center; gap:18px; margin-bottom:12px; box-shadow:var(--card-shadow); }
@@ -160,6 +238,7 @@ const CONFIG = {
     .addon { flex-direction:column; align-items:flex-start; }
     .addon .right { width:100%; justify-content:space-between; }
     .page-head h1 { font-size:27px; }
+    .gate { padding:22px 18px; }
   }
 
   /* Add-on gate */
@@ -168,6 +247,24 @@ const CONFIG = {
   .unlock label { display:flex; align-items:flex-start; gap:10px; font-size:14.5px; font-weight:600; color:var(--deep); cursor:pointer; }
   .unlock input { width:18px; height:18px; margin-top:2px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
   .buy.locked { background:var(--border); color:var(--text-light); cursor:not-allowed; pointer-events:none; }
+
+  /* Auto-renewal disclosure (Report Refresh) */
+  .arl { border:2px solid var(--deep); border-radius:14px; padding:16px 18px; background:#fff; margin-bottom:14px; }
+  .arl .arl-title { font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--deep); margin-bottom:8px; }
+  .arl p { font-size:13px; color:var(--text); line-height:1.7; margin-bottom:10px; }
+  .arl label { display:flex; align-items:flex-start; gap:10px; font-size:13.5px; font-weight:600; color:var(--deep); cursor:pointer; }
+  .arl input { width:18px; height:18px; margin-top:2px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+
+  /* Modal */
+  .modal-bg { display:none; position:fixed; inset:0; background:rgba(22,22,42,0.55); z-index:900; align-items:center; justify-content:center; padding:20px; }
+  .modal-bg.show { display:flex; }
+  .modal { background:#fff; border-radius:20px; max-width:460px; width:100%; padding:28px 26px 24px; box-shadow:0 24px 64px rgba(22,22,42,0.3); }
+  .modal h3 { font-family:'Playfair Display', serif; font-size:21px; color:var(--deep); margin-bottom:10px; }
+  .modal p { font-size:14px; color:var(--text); line-height:1.7; margin-bottom:18px; }
+  .modal .mrow { display:flex; gap:10px; }
+  .modal button { flex:1; padding:13px; border-radius:12px; border:none; font-family:inherit; font-weight:700; font-size:14.5px; cursor:pointer; }
+  .modal .primary { background:var(--accent); color:#fff; }
+  .modal .ghost { background:var(--bg); color:var(--text); border:1.5px solid var(--border); }
 </style>
 </head>
 <body>
@@ -188,6 +285,79 @@ const CONFIG = {
     <p>One-time purchase — no required subscription. Your reports are yours to download, keep, and share.</p>
   </div>
 
+  <!-- ============ STEP 1: ACCEPTANCE GATE (attorney-required, pre-payment) ============ -->
+  <div class="gate" id="gate">
+    <div class="step">Step 1 of 2</div>
+    <h2 class="serif">Before you pay</h2>
+
+    <div class="gate-form" id="gate-form">
+      <!-- Warm, non-contractual intro. This replaces the "Plain-English Summary"
+           page that used to sit inside the agreement (removed on attorney advice
+           2026-08-19: the summary read as if the terms existed to protect the
+           family, and a summary inside a contract muddies what was agreed to). -->
+      <p class="note">
+        Here is the short version, in normal English. You are buying personalized written guides
+        about your child. To make them, I need you to tell me about your child — so before you pay,
+        I need you to confirm that you have the right to share that, and that you have read the terms.
+        I keep your family's information for a year, then delete it on purpose. I never sell it,
+        and I never share your child's information with anyone outside Pieces of Perception without
+        your permission. <em>The full agreement below is the part that legally counts — please read it.</em>
+      </p>
+      <p class="sig">— Sarah</p>
+
+      <div class="fieldlabel" style="margin-top:20px">Your email address</div>
+      <input id="acceptEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" spellcheck="false">
+      <div class="hint">Use the same email at payment — it is how your reports, your access code, and this acceptance record are linked to your account.</div>
+
+      <label class="chk req">
+        <input type="checkbox" id="ck1">
+        <span>I have read and agree to the
+          <a href="/customer-agreement.html" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Family Service Agreement</a>
+          (the &ldquo;Agreement&rdquo;), including the parental consent provisions in the Agreement.</span>
+      </label>
+
+      <label class="chk req">
+        <input type="checkbox" id="ck2">
+        <span>I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person legally authorized to provide information about the Child for whom I am purchasing a Report and to provide any documents or records I choose to submit to Pieces of Perception.</span>
+      </label>
+
+      <label class="chk req">
+        <input type="checkbox" id="ck3">
+        <span>I understand that my questionnaire responses and Reports will remain available through my account for the applicable 12-month Retention Period described in the Agreement. After the applicable Retention Period ends, this information will be permanently deleted. I am responsible for downloading any Reports I wish to retain before deletion and am encouraged to immediately download and save all Reports.</span>
+      </label>
+
+      <div class="optional-head">Optional — you can skip all of these</div>
+      <div class="optional-sub">
+        These are entirely optional and governed by Section 21 of the Agreement. Your purchase and your
+        use of the service do not depend on agreeing to any of them, and you can withdraw any of them later
+        by emailing hello@piecesofperception.com.
+      </div>
+
+      <label class="chk">
+        <input type="checkbox" id="opt_deid">
+        <span><strong>De-identified information for product improvement.</strong> Pieces of Perception may use my information in de-identified form to study patterns and improve the product (Section 21(a)).</span>
+      </label>
+      <label class="chk">
+        <input type="checkbox" id="opt_testimonial">
+        <span><strong>Testimonials and quotes.</strong> Pieces of Perception may use feedback or stories I voluntarily provide, attributed to my first name and last initial only (Section 21(b)). My child&rsquo;s name is never used.</span>
+      </label>
+      <label class="chk">
+        <input type="checkbox" id="opt_photo">
+        <span><strong>Photographs and videos.</strong> If I voluntarily send a photo or video of myself, Pieces of Perception may use it in marketing, attributed to my first name and last initial only (Section 21(c)). I will not submit photos or videos of my child.</span>
+      </label>
+
+      <button class="agree-btn" id="agreeBtn" disabled>I Agree — Continue to Payment</button>
+      <div class="gate-msg" id="gateMsg"></div>
+      <div class="lastupd">Family Service Agreement <span id="verLabel"></span></div>
+    </div>
+
+    <div class="accepted-box" id="acceptedBox">
+      <div class="tick">&#10003; Thank you — your acceptance is recorded.</div>
+      <div class="recorded" id="acceptedDetail"></div>
+      <div style="margin-top:12px"><a href="#" id="changeAccept" style="color:var(--accent);font-weight:600;font-size:13px">Use a different email or change your choices</a></div>
+    </div>
+  </div>
+
   <!-- Founding-family code -->
   <div class="founder">
     <h2 class="serif">Have a founding-family code?</h2>
@@ -200,14 +370,14 @@ const CONFIG = {
   </div>
 
   <!-- Main reports -->
-  <div class="section-label">Reports</div>
+  <div class="section-label">Step 2 of 2 &middot; Reports</div>
   <div class="grid" id="productGrid"></div>
 
   <!-- Add-ons -->
   <div class="addons">
     <div class="section-label">Optional add-ons</div>
     <div class="unlock">
-      <p>Add-ons are personalized from your child's full profile, so they require a Comprehensive Plan or Action Report.</p>
+      <p>Add-ons are personalized from your child's full profile, so they require a Comprehensive Plan or Action Report for the same child. If an add-on is purchased without a plan, we will contact you to complete the plan purchase or refund the add-on (Section 14).</p>
       <label><input type="checkbox" id="unlockAddons"> I have one already, or I'm purchasing one today</label>
     </div>
     <div id="addonList"></div>
@@ -219,15 +389,27 @@ const CONFIG = {
     <div id="guideList"></div>
   </div>
 
+  <!-- Report Refresh (hidden until CONFIG.reportRefresh.enabled === true) -->
+  <div class="addons" id="refresh-block" style="display:none">
+    <div class="section-label">Keep your reports current</div>
+    <div class="arl">
+      <div class="arl-title">Automatic renewal — please read</div>
+      <p id="arlText"></p>
+      <label><input type="checkbox" id="arlConsent"> I agree that my Report Refresh subscription will automatically renew each year and that my payment method will be charged the then-applicable annual subscription price until I cancel.</label>
+    </div>
+    <div id="refreshList"></div>
+  </div>
+
   <!-- Pay It Forward -->
   <div class="addons" id="pay-it-forward">
     <div class="section-label" style="color:var(--warm)">💛 Pay It Forward</div>
     <div class="unlock" style="border-color:rgba(232,132,90,0.35);background:var(--warm-light)">
-      <p style="margin:0;color:var(--text)"><strong style="color:var(--deep)">Help another family get the map they need.</strong> Pay It Forward contributions pool into our Access Program fund, which covers reduced-cost and sponsored reports for families who can't afford full price. 100% of this fund goes to other families' reports — nothing else.</p>
+      <p style="margin:0 0 12px;color:var(--text)"><strong style="color:var(--deep)">Help another family get the map they need.</strong> Pay It Forward contributions pool into our Access Program fund, which covers reduced-cost and sponsored reports for families who can't afford full price. 100% of this fund goes to other families' reports — nothing else.</p>
+      <label><input type="checkbox" id="pifConsent"> I would like to contribute to the Pieces of Perception Pay It Forward program. I understand my contribution is entirely voluntary, nonrefundable, and is <strong>not</strong> a charitable donation or tax-deductible contribution. I am responsible for confirming the amount before completing my purchase, and contributions will not be refunded or adjusted because I selected the wrong amount, except as required by law or in the event of a processing error. My contribution is subject to the Pay It Forward Program terms in Section 22 of the Family Service Agreement.</label>
     </div>
     <div id="pifList"></div>
     <p style="font-size:11.5px;color:var(--text-light);line-height:1.65;margin-top:10px">
-      Pieces of Perception is not a nonprofit organization, so Pay It Forward contributions are <strong>not tax-deductible</strong>. They are voluntary contributions to our Access Program and are not refundable once a sponsorship has been granted. Discount codes do not apply to contributions.
+      Pieces of Perception is not a nonprofit organization, so Pay It Forward contributions are <strong>not tax-deductible</strong>. They are voluntary contributions to our Access Program. Discount codes do not apply to contributions.
     </p>
   </div>
 
@@ -241,31 +423,201 @@ const CONFIG = {
     <div>Questions? Email <a href="mailto:hello@piecesofperception.com" style="color:var(--accent);font-weight:600">hello@piecesofperception.com</a></div>
     <div class="disclaimer">
       All report content &mdash; including frameworks, playbooks, scripts, and checklists &mdash; are informational resources and suggested strategies, not clinical prescriptions. They are intended to be reviewed and implemented in partnership with your child's licensed care team.
+      Refunds are governed by <a href="/customer-agreement.html#s14" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600">Section 14 of the Family Service Agreement</a>.
     </div>
   </div>
 
+</div>
+
+<!-- Modal shown when someone clicks a payment button before accepting -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h3 class="serif" id="modalTitle">One step first</h3>
+    <p id="modalBody">Before you can pay, please enter your email and check the three boxes at the top of this page. That is where you accept the Family Service Agreement and confirm you have the authority to share information about your child — we cannot take payment or collect anything about your child until you do.</p>
+    <div class="mrow">
+      <button class="ghost" id="modalClose">Close</button>
+      <button class="primary" id="modalGo">Take me there</button>
+    </div>
+  </div>
 </div>
 
 <script>
 (function () {
   let founderApplied = false;
   let addonsUnlocked = false;
+  let accepted = null;   // { email, at, version, optional:{...} }
 
-  function withCode(link) {
+  const LS_KEY = "pop_agreement_acceptance_" + CONFIG.agreementVersion;
+
+  // ---------------------------------------------------------------
+  // Acceptance record
+  // ---------------------------------------------------------------
+  function loadStoredAcceptance() {
+    try {
+      const raw = window.localStorage.getItem(LS_KEY);
+      if (!raw) return null;
+      const o = JSON.parse(raw);
+      if (o && o.email && o.version === CONFIG.agreementVersion) return o;
+    } catch (e) { /* private mode / storage disabled — gate simply re-shows */ }
+    return null;
+  }
+
+  function storeAcceptance(o) {
+    try { window.localStorage.setItem(LS_KEY, JSON.stringify(o)); } catch (e) {}
+  }
+
+  function clearStoredAcceptance() {
+    try { window.localStorage.removeItem(LS_KEY); } catch (e) {}
+  }
+
+  // Writes the durable record. Stripe's own terms-acceptance on the payment
+  // link is the second, independent record — so if this write fails we log it
+  // and still let the family through rather than losing the sale to an outage.
+  async function recordAcceptance(payload) {
+    const url = CONFIG.supabaseUrl + "/rest/v1/agreement_acceptances";
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "apikey": CONFIG.supabaseAnonKey,
+        "Authorization": "Bearer " + CONFIG.supabaseAnonKey,
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+      },
+      body: JSON.stringify([payload])
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status + " " + (await res.text()));
+    return res.json();
+  }
+
+  function buildPayload(email) {
+    return {
+      email: email,
+      agreement_version: CONFIG.agreementVersion,
+      agreement_last_updated: CONFIG.agreementLastUpdated,
+      accepted_agreement: true,
+      accepted_authority: true,
+      accepted_retention: true,
+      opt_deidentified: document.getElementById("opt_deid").checked,
+      opt_testimonial: document.getElementById("opt_testimonial").checked,
+      opt_photo_video: document.getElementById("opt_photo").checked,
+      source_page: "checkout.html",
+      user_agent: (navigator.userAgent || "").slice(0, 400)
+    };
+  }
+
+  function requiredBoxesChecked() {
+    return document.getElementById("ck1").checked &&
+           document.getElementById("ck2").checked &&
+           document.getElementById("ck3").checked;
+  }
+
+  function validEmail(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((v || "").trim());
+  }
+
+  function refreshAgreeButton() {
+    const ok = requiredBoxesChecked() && validEmail(document.getElementById("acceptEmail").value);
+    document.getElementById("agreeBtn").disabled = !ok;
+  }
+
+  async function doAccept() {
+    const btn = document.getElementById("agreeBtn");
+    const msg = document.getElementById("gateMsg");
+    const email = document.getElementById("acceptEmail").value.trim().toLowerCase();
+    if (!validEmail(email) || !requiredBoxesChecked()) return;
+
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+    msg.className = "gate-msg";
+    msg.textContent = "";
+
+    const payload = buildPayload(email);
+    let savedServerSide = false;
+    try {
+      await recordAcceptance(payload);
+      savedServerSide = true;
+    } catch (e) {
+      // Do not block the purchase: Stripe records terms acceptance too.
+      if (window.console) console.warn("acceptance record failed, continuing:", e);
+    }
+
+    accepted = {
+      email: email,
+      at: new Date().toISOString(),
+      version: CONFIG.agreementVersion,
+      server: savedServerSide,
+      optional: {
+        deid: payload.opt_deidentified,
+        testimonial: payload.opt_testimonial,
+        photo: payload.opt_photo_video
+      }
+    };
+    storeAcceptance(accepted);
+    btn.textContent = "I Agree — Continue to Payment";
+    paintAccepted();
+    renderAll();
+    const grid = document.getElementById("productGrid");
+    if (grid && grid.scrollIntoView) grid.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function fmtWhen(iso) {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString(undefined, { dateStyle: "long", timeStyle: "short" });
+    } catch (e) { return iso; }
+  }
+
+  function paintAccepted() {
+    const gate = document.getElementById("gate");
+    if (!accepted) { gate.classList.remove("done"); return; }
+    gate.classList.add("done");
+    const opts = [];
+    if (accepted.optional && accepted.optional.deid) opts.push("de-identified product improvement");
+    if (accepted.optional && accepted.optional.testimonial) opts.push("testimonials and quotes");
+    if (accepted.optional && accepted.optional.photo) opts.push("photographs and videos");
+    document.getElementById("acceptedDetail").innerHTML =
+      "Family Service Agreement " + CONFIG.agreementVersion +
+      " (last updated " + CONFIG.agreementLastUpdated + ")<br>" +
+      "Accepted by <strong>" + escapeHtml(accepted.email) + "</strong> on " + escapeHtml(fmtWhen(accepted.at)) + "<br>" +
+      (opts.length ? "Optional permissions: " + escapeHtml(opts.join(", ")) : "Optional permissions: none");
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+  }
+
+  // ---------------------------------------------------------------
+  // Payment links
+  // ---------------------------------------------------------------
+  function decorate(link, opts) {
     if (!link) return "";
-    if (!founderApplied) return link;
-    var sep = link.indexOf("?") === -1 ? "?" : "&";
-    return link + sep + "prefilled_promo_code=" + encodeURIComponent(CONFIG.founderCode);
+    opts = opts || {};
+    const params = [];
+    if (founderApplied && !opts.noPromo) {
+      params.push("prefilled_promo_code=" + encodeURIComponent(CONFIG.founderCode));
+    }
+    if (accepted && accepted.email) {
+      params.push("prefilled_email=" + encodeURIComponent(accepted.email));
+    }
+    if (!params.length) return link;
+    const sep = link.indexOf("?") === -1 ? "?" : "&";
+    return link + sep + params.join("&");
   }
 
   function money(n) { return "$" + Number(n).toFixed(0); }
   function discounted(n) { return n * (1 - CONFIG.founderPercent / 100); }
 
-  function buyButtonHTML(p, cls) {
-    if (!p.paymentLink) {
-      return '<span class="buy disabled">Coming soon</span>';
+  // Every purchase button routes through here. If the family has not accepted,
+  // the button is inert and opens the modal instead of Stripe.
+  function buyButtonHTML(p, cls, opts) {
+    opts = opts || {};
+    if (!p.paymentLink) return '<span class="buy disabled">Coming soon</span>';
+    if (!accepted) {
+      return '<button type="button" class="buy needs-accept" data-needs-accept="1">Accept the agreement first</button>';
     }
-    return '<a class="buy ' + (cls || "") + '" href="' + withCode(p.paymentLink) + '">Continue to payment</a>';
+    return '<a class="buy ' + (cls || "") + '" href="' + decorate(p.paymentLink, opts) + '">Continue to payment</a>';
   }
 
   function priceBlockHTML(p) {
@@ -298,17 +650,51 @@ const CONFIG = {
   function renderAddons() {
     renderAddonListInto("addonList", CONFIG.addons);
     renderAddonListInto("guideList", CONFIG.guides || []);
+    renderRefresh();
     renderContributions();
   }
 
-  // Pay It Forward: never gated, never discounted (no promo code carried).
+  // Report Refresh: hidden entirely until the subscription is actually built.
+  function renderRefresh() {
+    var block = document.getElementById("refresh-block");
+    var rr = CONFIG.reportRefresh || {};
+    if (!rr.enabled) { block.style.display = "none"; return; }
+    block.style.display = "";
+    document.getElementById("arlText").textContent =
+      "The Report Refresh subscription automatically renews each year, and your payment method will be charged " +
+      money(rr.price) + " (plus any applicable taxes) at the start of each subscription year, until you cancel. " +
+      "You may cancel automatic renewal at any time from your dashboard, from the cancellation link in your " +
+      "subscription emails, or by emailing hello@piecesofperception.com. If you cancel, your subscription will " +
+      "remain active through the end of your current paid subscription year and will not renew.";
+    var consent = document.getElementById("arlConsent");
+    var button = (accepted && consent && consent.checked)
+      ? '<a class="buy" style="width:auto;padding:11px 20px;font-size:13.5px" href="' + decorate(rr.paymentLink, { noPromo: true }) + '">Subscribe</a>'
+      : '<span class="buy locked" style="width:auto;padding:11px 20px;font-size:13.5px">' +
+          (accepted ? "Check the box above" : "Accept the agreement first") + '</span>';
+    document.getElementById("refreshList").innerHTML =
+      '<div class="addon">' +
+        '<div class="info"><h4>' + rr.name + '</h4><p>' + rr.blurb + '</p></div>' +
+        '<div class="right"><span class="ap">' + money(rr.price) + '/yr</span>' + button + '</div>' +
+      '</div>';
+  }
+
+  // Pay It Forward: never discounted. Gated on its own acknowledgment box
+  // (Section 22) rather than the parent/child gate — a contributor is not
+  // necessarily buying a report for a child.
   function renderContributions() {
     var list = document.getElementById("pifList");
     if (!list) return;
+    var consent = document.getElementById("pifConsent");
+    var ok = consent && consent.checked;
     list.innerHTML = (CONFIG.contributions || []).map(function (p) {
-      var button = p.paymentLink
-        ? '<a class="buy warm" style="width:auto;padding:11px 20px;font-size:13.5px" href="' + p.paymentLink + '">Contribute</a>'
-        : '<span class="buy disabled" style="width:auto;padding:11px 20px;font-size:13.5px">Coming soon</span>';
+      var button;
+      if (!p.paymentLink) {
+        button = '<span class="buy disabled" style="width:auto;padding:11px 20px;font-size:13.5px">Coming soon</span>';
+      } else if (!ok) {
+        button = '<span class="buy locked" style="width:auto;padding:11px 20px;font-size:13.5px">Check the box above</span>';
+      } else {
+        button = '<a class="buy warm" style="width:auto;padding:11px 20px;font-size:13.5px" href="' + p.paymentLink + '">Contribute</a>';
+      }
       return '<div class="addon" style="border-color:rgba(232,132,90,0.25)">' +
                '<div class="info"><h4>' + p.name + '</h4><p>' + p.blurb + '</p></div>' +
                '<div class="right"><span class="ap">' + money(p.price) + '</span>' + button + '</div>' +
@@ -352,16 +738,70 @@ const CONFIG = {
     }
   }
 
+  // ---------------------------------------------------------------
+  // Modal
+  // ---------------------------------------------------------------
+  function openModal() { document.getElementById("modalBg").classList.add("show"); }
+  function closeModal() { document.getElementById("modalBg").classList.remove("show"); }
+
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  document.getElementById("modalGo").addEventListener("click", function () {
+    closeModal();
+    var gate = document.getElementById("gate");
+    gate.scrollIntoView({ behavior: "smooth", block: "start" });
+    var email = document.getElementById("acceptEmail");
+    if (email && !email.value) setTimeout(function () { email.focus(); }, 400);
+  });
+  document.getElementById("modalBg").addEventListener("click", function (e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Any inert purchase button anywhere on the page opens the modal.
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest ? e.target.closest("[data-needs-accept]") : null;
+    if (el) { e.preventDefault(); openModal(); }
+  });
+
+  // ---------------------------------------------------------------
+  // Wiring
+  // ---------------------------------------------------------------
+  ["ck1", "ck2", "ck3"].forEach(function (id) {
+    document.getElementById(id).addEventListener("change", refreshAgreeButton);
+  });
+  document.getElementById("acceptEmail").addEventListener("input", refreshAgreeButton);
+  document.getElementById("agreeBtn").addEventListener("click", doAccept);
+
+  document.getElementById("changeAccept").addEventListener("click", function (e) {
+    e.preventDefault();
+    accepted = null;
+    clearStoredAcceptance();
+    ["ck1", "ck2", "ck3"].forEach(function (id) { document.getElementById(id).checked = false; });
+    document.getElementById("gate").classList.remove("done");
+    refreshAgreeButton();
+    renderAll();
+    document.getElementById("gate").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
   document.getElementById("unlockAddons").addEventListener("change", function (e) {
     addonsUnlocked = e.target.checked;
     renderAddons();
   });
+
+  document.getElementById("pifConsent").addEventListener("change", renderContributions);
+  var arl = document.getElementById("arlConsent");
+  if (arl) arl.addEventListener("change", renderRefresh);
 
   document.getElementById("promoBtn").addEventListener("click", applyPromo);
   document.getElementById("promoInput").addEventListener("keydown", function (e) {
     if (e.key === "Enter") applyPromo();
   });
 
+  document.getElementById("verLabel").textContent =
+    CONFIG.agreementVersion + " · last updated " + CONFIG.agreementLastUpdated;
+
+  accepted = loadStoredAcceptance();
+  paintAccepted();
+  refreshAgreeButton();
   renderAll();
 })();
 </script>

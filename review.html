@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6C63FF">
+  <title>Share Your Experience | Pieces of Perception</title>
+  <meta name="description" content="A short review for Pieces of Perception families.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://piecesofperception.com/review.html">
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Privacy-friendly analytics by Plausible -->
+  <script async src="https://plausible.io/js/pa-RHzpSmPEbIjbaOmxsM1AW.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:       #6C63FF;
+      --accent-dark:  #5349e0;
+      --accent-mid:   #8B84FF;
+      --accent-bg:    rgba(108,99,255,0.07);
+      --warm:         #E8845A;
+      --warm-light:   rgba(232,132,90,0.10);
+      --sage:         #52B788;
+      --sage-light:   rgba(82,183,136,0.10);
+      --lavender:     #8E7FC4;
+      --lavender-light: rgba(142,127,196,0.12);
+      --rose:         #D95B72;
+      --gold:         #E2A03F;
+      --deep:         #16162A;
+      --text:         #2C2C3E;
+      --text-light:   #6B6B80;
+      --border:       #E6E8F0;
+      --bg:           #F7F8FC;
+      --white:        #ffffff;
+      --card-shadow:  0 2px 8px rgba(22,22,42,0.06), 0 8px 32px rgba(22,22,42,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+    .serif { font-family: 'Playfair Display', Georgia, serif; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand .brand-name { font-size: 17px; font-weight: 700; color: var(--deep); letter-spacing: -0.3px; }
+    .nav-back { font-size: 14px; color: var(--text-light); text-decoration: none; font-weight: 500; transition: color .2s; }
+    .nav-back:hover { color: var(--accent); }
+    @media (max-width: 600px) { .nav { padding: 0 20px; } }
+
+    .wrap { flex: 1; width: 100%; max-width: 660px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .hero { text-align: center; margin-bottom: 32px; }
+    .time-badge {
+      display: inline-block;
+      background: var(--sage-light);
+      color: #2F7F5B;
+      font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 6px; margin-bottom: 14px;
+    }
+    .hero h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(26px, 4.5vw, 36px); color: var(--deep); line-height: 1.2; margin-bottom: 12px; }
+    .hero p { color: var(--text-light); font-size: 15.5px; max-width: 520px; margin: 0 auto; }
+
+    .card {
+      background: white; border-radius: 18px; border: 1px solid var(--border);
+      box-shadow: var(--card-shadow); padding: 32px 30px; margin-bottom: 22px;
+    }
+    @media (max-width: 600px) { .card { padding: 24px 18px; } }
+
+    .context {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--accent-bg); border: 1px solid rgba(108,99,255,0.18);
+      border-radius: 12px; padding: 12px 16px; margin-bottom: 24px;
+      font-size: 14px; color: var(--text);
+    }
+    .context strong { color: var(--deep); }
+
+    .q { margin-bottom: 28px; }
+    .q:last-child { margin-bottom: 4px; }
+    .q-label { font-size: 15.5px; font-weight: 600; color: var(--deep); margin-bottom: 4px; }
+    .q-hint { font-size: 13px; color: var(--text-light); margin-bottom: 12px; }
+    .optional { font-weight: 400; color: var(--text-light); font-size: 12.5px; }
+
+    /* ── Stars ── */
+    .stars { display: flex; gap: 6px; justify-content: flex-start; }
+    .star {
+      background: none; border: none; padding: 2px 4px; cursor: pointer;
+      font-size: 38px; line-height: 1; color: #D9DCE6;
+      transition: transform .12s, color .12s;
+      font-family: inherit;
+    }
+    .star:hover { transform: scale(1.12); }
+    .star.on { color: var(--gold); }
+    .star:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+    .star-caption { margin-top: 8px; font-size: 13.5px; color: var(--text-light); min-height: 20px; font-weight: 500; }
+
+    /* ── Choice chips ── */
+    .choices { display: flex; flex-direction: column; gap: 8px; }
+    .choice {
+      display: flex; align-items: flex-start; gap: 10px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: white; padding: 12px 14px;
+      font-size: 14.5px; color: var(--text);
+      cursor: pointer; transition: all .15s; text-align: left;
+      font-family: inherit; width: 100%;
+    }
+    .choice:hover { border-color: var(--accent-mid); background: var(--accent-bg); }
+    .choice.sel { border-color: var(--accent); background: var(--accent-bg); }
+    .choice .tick {
+      flex: none; width: 19px; height: 19px; margin-top: 2px;
+      border: 1.5px solid var(--border); border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 12px; color: white; transition: all .15s; background: white;
+    }
+    .choice.sel .tick { background: var(--accent); border-color: var(--accent); }
+    .choice.square .tick { border-radius: 5px; }
+    .choice .ctext b { display: block; font-weight: 600; color: var(--deep); }
+    .choice .ctext span { display: block; font-size: 13px; color: var(--text-light); margin-top: 1px; }
+
+    textarea, input[type="text"] {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 11px 14px; font-family: inherit; font-size: 14.5px; color: var(--text);
+      background: white; outline: none; transition: border-color .15s;
+    }
+    textarea:focus, input:focus { border-color: var(--accent); }
+    textarea { min-height: 92px; resize: vertical; }
+
+    .private-note {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--lavender-light); color: #5C4F86;
+      border-radius: 6px; padding: 3px 8px;
+      font-size: 11.5px; font-weight: 600; letter-spacing: .3px;
+      margin-bottom: 10px;
+    }
+
+    #name-wrap { display: none; margin-top: 12px; padding-left: 30px; }
+    #name-wrap.show { display: block; }
+
+    .submit-btn {
+      display: block; width: 100%;
+      background: var(--accent); color: white;
+      border: none; border-radius: 12px; padding: 16px;
+      font-family: inherit; font-size: 16px; font-weight: 700; letter-spacing: 0.2px;
+      cursor: pointer; transition: background .2s;
+    }
+    .submit-btn:hover:not(:disabled) { background: var(--accent-dark); }
+    .submit-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .submit-msg { display: none; margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 14px; }
+    .submit-msg.err { display: block; background: rgba(217,91,114,0.10); color: #A83A50; border: 1px solid rgba(217,91,114,0.25); }
+    .foot-note { text-align: center; font-size: 12.5px; color: var(--text-light); margin-top: 14px; }
+
+    .state-view { display: none; text-align: center; padding: 70px 24px; }
+    .state-view.show { display: block; }
+    .state-view .big { font-size: 44px; margin-bottom: 14px; }
+    .state-view h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 26px; color: var(--deep); margin-bottom: 10px; }
+    .state-view p { color: var(--text-light); font-size: 15px; max-width: 480px; margin: 0 auto 22px; }
+    .state-view a.btn {
+      display: inline-block; background: var(--accent); color: white;
+      text-decoration: none; font-weight: 600; font-size: 14.5px;
+      padding: 12px 26px; border-radius: 10px;
+    }
+
+    #survey-view { display: none; }
+    #survey-view.show { display: block; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 22px 48px; text-align: center;
+      font-size: 13px; color: var(--text-light);
+      background: white;
+    }
+    footer a { color: var(--text-light); text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="/index.html">
+    <span class="brand-name">Pieces of Perception</span>
+  </a>
+  <a class="nav-back" href="/family-dashboard.html">&larr; Back to Dashboard</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- LOADING -->
+  <div id="loading" class="state-view show">
+    <div class="big">&#9203;</div>
+    <h2>Loading&hellip;</h2>
+  </div>
+
+  <!-- ALREADY SUBMITTED -->
+  <div id="done-view" class="state-view">
+    <div class="big">&#128156;</div>
+    <h2>You&rsquo;ve already shared this one</h2>
+    <p>Thank you — it&rsquo;s recorded. If you&rsquo;d like to change what you said, or change your mind about sharing it, just reply to any email from me and I&rsquo;ll take care of it.</p>
+    <a class="btn" href="/family-dashboard.html">Back to Dashboard</a>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="success-view" class="state-view">
+    <div class="big">&#128153;</div>
+    <h2>Thank you.</h2>
+    <p id="success-note">That genuinely helps. I read every one of these myself.</p>
+    <a class="btn" href="/family-dashboard.html">Back to Dashboard</a>
+  </div>
+
+  <!-- SURVEY -->
+  <div id="survey-view">
+    <div class="hero">
+      <span class="time-badge">About 90 seconds</span>
+      <h1>How did it go?</h1>
+      <p>Three questions. Your honest answer matters more than a kind one — including if it missed the mark.</p>
+    </div>
+
+    <div class="card">
+      <div id="context-line" class="context" style="display:none;"></div>
+
+      <!-- 1 · rating -->
+      <div class="q">
+        <div class="q-label">Overall, how was it?</div>
+        <div class="q-hint">Tap a star.</div>
+        <div class="stars" id="stars" role="radiogroup" aria-label="Overall rating"></div>
+        <div class="star-caption" id="star-caption"></div>
+      </div>
+
+      <!-- 2 · the quote -->
+      <div class="q">
+        <div class="q-label">What did it actually change for you? <span class="optional">optional</span></div>
+        <div class="q-hint">A sentence or two is plenty. If you let me share your feedback below, this is the part I&rsquo;d share.</div>
+        <textarea id="quote" maxlength="900" placeholder="It gave me the words for something I'd been trying to explain for three years."></textarea>
+      </div>
+
+      <!-- 3 · the criticism -->
+      <div class="q">
+        <div class="q-label">What would you change or add? <span class="optional">optional</span></div>
+        <span class="private-note">&#128274; NEVER SHARED &mdash; JUST FOR ME</span>
+        <div class="q-hint">What fell flat, what was missing, what you skipped. This is the most useful box on the page.</div>
+        <textarea id="improve" maxlength="900" placeholder="The section on ___ didn't really fit us because..."></textarea>
+      </div>
+    </div>
+
+    <!-- consent -->
+    <div class="card">
+      <div class="q">
+        <div class="q-label">May I share your feedback?</div>
+        <div class="q-hint">Other families deciding whether this is worth it find real words from real parents more convincing than anything I can write. Entirely your call, and &ldquo;no&rdquo; is a completely normal answer.</div>
+        <div class="choices" id="consent" role="radiogroup" aria-label="Sharing permission"></div>
+
+        <div id="name-wrap">
+          <label class="q-hint" for="display-name" style="display:block;margin-bottom:6px;">How should I credit you?</label>
+          <input type="text" id="display-name" maxlength="40" placeholder="Your first name">
+          <div class="q-hint" style="margin-top:6px;margin-bottom:0;">First name only. I&rsquo;ll never publish your last name, your email, your child&rsquo;s name, or anything that identifies your family.</div>
+        </div>
+      </div>
+
+      <div class="q">
+        <button type="button" class="choice square" id="contact-opt" aria-pressed="false">
+          <span class="tick">&#10003;</span>
+          <span class="ctext">
+            <b>You can email me about this</b>
+            <span>Only if you want to follow up on something I said.</span>
+          </span>
+        </button>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" disabled>Send</button>
+      <div class="submit-msg" id="submit-msg"></div>
+      <div class="foot-note">Your rating and words are stored with your account. You can change your mind any time by replying to one of my emails.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a href="/privacy.html">Privacy</a>
+  <a href="/terms.html">Terms</a>
+  <a href="/disclaimer.html">Disclaimer</a>
+  <span style="margin-left:10px">&copy; 2026 Pieces of Perception LLC</span>
+</footer>
+
+<script>
+  const SUPABASE_URL      = 'https://ezberjgmwdahiljzproz.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
+
+  // Bump this whenever the consent wording below changes. The chosen
+  // option's exact text is stored on the row alongside it, so a row always
+  // records what the family actually agreed to — not what the page says today.
+  const CONSENT_VERSION = 'review-consent-v1';
+
+  const CONSENT_OPTIONS = [
+    { id: 'named',
+      title: 'Yes — with my first name',
+      sub: 'e.g. &ldquo;&mdash; Dana, parent of a 9-year-old&rdquo;. First name only, never a last name.' },
+    { id: 'anonymous',
+      title: 'Yes — but keep me anonymous',
+      sub: 'Shared with no name attached at all.' },
+    { id: 'private',
+      title: 'No — please keep it private',
+      sub: 'For Sarah only. Never published anywhere.' }
+  ];
+
+  const STAR_CAPTIONS = {
+    1: 'It missed the mark. I want to know why.',
+    2: 'Not what you needed. Tell me below.',
+    3: 'Some of it landed.',
+    4: 'Mostly landed.',
+    5: 'It landed.'
+  };
+
+  const REPORT_LABEL = {
+    comprehensive: 'Comprehensive Plan',
+    action:        'Action Report',
+    next_chapter:  'Next Chapter Profile',
+    other:         'your reports'
+  };
+
+  const state = {
+    rating: null,
+    share_consent: null,
+    may_contact: false,
+    response_id: null,
+    report_kind: null,
+    child_first_name: null
+  };
+
+  // ── Session (same pattern as family-dashboard / feedback) ──
+  function getSession() {
+    try {
+      const raw = localStorage.getItem('pop_session');
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s.access_token || !s.user_id) return null;
+      if (s.expires_at && s.expires_at < Date.now()) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+
+  function authHeaders(session, extra) {
+    return Object.assign({
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + session.access_token
+    }, extra || {});
+  }
+
+  function flowToKind(flow) {
+    const f = String(flow || '').toLowerCase();
+    if (f === 'next_chapter' || f === 'transition') return 'next_chapter';
+    if (f === 'comprehensive') return 'comprehensive';
+    if (f === 'action' || f === 'focused') return 'action';
+    return 'other';
+  }
+
+  // Which report run is this review about? The most recent submission whose
+  // reports have actually been delivered. Null is tolerated — a comped or
+  // hand-run family may never get the reports_ready_at stamp, and their
+  // review still counts.
+  async function fetchLatestReport(session) {
+    try {
+      const url = SUPABASE_URL + '/rest/v1/questionnaire_responses'
+        + '?user_id=eq.' + encodeURIComponent(session.user_id)
+        + '&select=id,flow,child_first_name,reports_ready_at'
+        + '&order=created_at.desc&limit=5';
+      const res = await fetch(url, { headers: authHeaders(session) });
+      if (!res.ok) return null;
+      const rows = await res.json();
+      if (!Array.isArray(rows) || !rows.length) return null;
+      return rows.find(function (r) { return r.reports_ready_at; }) || rows[0];
+    } catch (e) { return null; }
+  }
+
+  async function alreadyReviewed(session, responseId) {
+    try {
+      let url = SUPABASE_URL + '/rest/v1/customer_reviews'
+        + '?user_id=eq.' + encodeURIComponent(session.user_id) + '&select=id,response_id';
+      const res = await fetch(url, { headers: authHeaders(session) });
+      if (!res.ok) return false;   // fail open — the unique index is the hard gate
+      const rows = await res.json();
+      if (!Array.isArray(rows) || !rows.length) return false;
+      return rows.some(function (r) {
+        return (r.response_id || null) === (responseId || null);
+      });
+    } catch (e) { return false; }
+  }
+
+  async function fetchFirstName(session) {
+    try {
+      const res = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: authHeaders(session) });
+      if (!res.ok) return '';
+      const u = await res.json();
+      const n = (u && u.user_metadata && (u.user_metadata.name || u.user_metadata.full_name)) || '';
+      return String(n).trim().split(/\s+/)[0] || '';
+    } catch (e) { return ''; }
+  }
+
+  // ── Build the controls ──
+  function buildStars() {
+    const wrap = document.getElementById('stars');
+    const cap  = document.getElementById('star-caption');
+    for (let i = 1; i <= 5; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'star';
+      b.textContent = '★';
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', 'false');
+      b.setAttribute('aria-label', i + (i === 1 ? ' star' : ' stars'));
+      b.addEventListener('click', function () {
+        state.rating = i;
+        Array.prototype.forEach.call(wrap.children, function (el, idx) {
+          const on = idx < i;
+          el.classList.toggle('on', on);
+          el.setAttribute('aria-checked', String(idx === i - 1));
+        });
+        cap.textContent = STAR_CAPTIONS[i] || '';
+        refreshSubmit();
+      });
+      wrap.appendChild(b);
+    }
+  }
+
+  function buildConsent() {
+    const wrap = document.getElementById('consent');
+    CONSENT_OPTIONS.forEach(function (opt) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'choice';
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', 'false');
+      b.dataset.id = opt.id;
+      b.innerHTML = '<span class="tick">&#10003;</span><span class="ctext"><b>'
+        + opt.title + '</b><span>' + opt.sub + '</span></span>';
+      b.addEventListener('click', function () {
+        state.share_consent = opt.id;
+        Array.prototype.forEach.call(wrap.children, function (el) {
+          const sel = el.dataset.id === opt.id;
+          el.classList.toggle('sel', sel);
+          el.setAttribute('aria-checked', String(sel));
+        });
+        document.getElementById('name-wrap').classList.toggle('show', opt.id === 'named');
+        refreshSubmit();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  function refreshSubmit() {
+    // A rating and an explicit sharing decision are both required. No
+    // sharing option is preselected on purpose — consent should be an
+    // action someone took, not a default they failed to notice.
+    document.getElementById('submit-btn').disabled =
+      !(state.rating && state.share_consent);
+  }
+
+  // Decode through the DOM, not a regex. A regex that maps every &entity;
+  // to a quote character turned "e.g. &ldquo;— Dana&rdquo;" into garbage —
+  // and this string is the legal record of what the family agreed to, so it
+  // has to be exactly the words that were on their screen.
+  function decodeHtml(html) {
+    const d = document.createElement('div');
+    d.innerHTML = String(html == null ? '' : html);
+    return (d.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function consentTextFor(id) {
+    const o = CONSENT_OPTIONS.find(function (x) { return x.id === id; });
+    if (!o) return null;
+    return decodeHtml(o.title) + ' — ' + decodeHtml(o.sub);
+  }
+
+  // ── Submit ──
+  async function submit() {
+    const session = getSession();
+    if (!session) { window.location.href = '/portal.html'; return; }
+
+    const btn = document.getElementById('submit-btn');
+    const msg = document.getElementById('submit-msg');
+    msg.className = 'submit-msg';
+    msg.style.display = 'none';
+
+    const quote   = (document.getElementById('quote').value || '').trim();
+    const improve = (document.getElementById('improve').value || '').trim();
+    let displayName = (document.getElementById('display-name').value || '').trim();
+    if (state.share_consent !== 'named') displayName = null;
+
+    const payload = {
+      user_id:        session.user_id,
+      response_id:    state.response_id,
+      report_kind:    state.report_kind,
+      rating:         state.rating,
+      quote:          quote || null,
+      improve:        improve || null,
+      share_consent:  state.share_consent,
+      display_name:   displayName,
+      may_contact:    state.may_contact,
+      consent_text:   consentTextFor(state.share_consent),
+      consent_version: CONSENT_VERSION,
+      source_page:    'review.html',
+      user_agent:     navigator.userAgent.slice(0, 400),
+      answers: {
+        child_first_name: state.child_first_name || null,
+        submitted_at_local: new Date().toString()
+      }
+    };
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/customer_reviews', {
+        method: 'POST',
+        headers: authHeaders(session, {
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        }),
+        body: JSON.stringify(payload)
+      });
+
+      if (res.status === 409) {   // unique index — already reviewed this run
+        show('done-view');
+        return;
+      }
+      if (!res.ok) {
+        throw new Error('Save failed (' + res.status + '): ' + (await res.text()));
+      }
+
+      try { plausible('Customer Review Submitted', { props: { rating: String(state.rating) } }); } catch (_) {}
+
+      if (state.share_consent === 'private') {
+        document.getElementById('success-note').textContent =
+          'That genuinely helps, and it stays between us. I read every one of these myself.';
+      } else if (state.share_consent === 'anonymous') {
+        document.getElementById('success-note').textContent =
+          'That genuinely helps — and thank you for letting me share it anonymously. I read every one of these myself.';
+      } else {
+        document.getElementById('success-note').textContent =
+          'That genuinely helps — and thank you for letting me share it. I will only ever use your first name.';
+      }
+      show('success-view');
+    } catch (err) {
+      console.error(err);
+      btn.disabled = false;
+      btn.textContent = 'Send';
+      msg.className = 'submit-msg err';
+      msg.textContent = 'Something went wrong saving that. Please try again — or just reply to my email and tell me there.';
+    }
+  }
+
+  function show(id) {
+    ['loading', 'done-view', 'success-view', 'survey-view'].forEach(function (v) {
+      const el = document.getElementById(v);
+      el.classList.toggle('show', v === id);
+    });
+    window.scrollTo(0, 0);
+  }
+
+  // ── Init ──
+  (async function init() {
+    const session = getSession();
+    if (!session) { window.location.href = '/portal.html'; return; }
+
+    buildStars();
+    buildConsent();
+
+    document.getElementById('contact-opt').addEventListener('click', function () {
+      state.may_contact = !state.may_contact;
+      this.classList.toggle('sel', state.may_contact);
+      this.setAttribute('aria-pressed', String(state.may_contact));
+    });
+    document.getElementById('submit-btn').addEventListener('click', submit);
+
+    const latest = await fetchLatestReport(session);
+    if (latest) {
+      state.response_id      = latest.id || null;
+      state.report_kind      = flowToKind(latest.flow);
+      state.child_first_name = latest.child_first_name || null;
+      const line = document.getElementById('context-line');
+      const label = REPORT_LABEL[state.report_kind] || REPORT_LABEL.other;
+      line.innerHTML = state.child_first_name
+        ? 'You’re reviewing <strong>' + state.child_first_name + '’s ' + label + '</strong>.'
+        : 'You’re reviewing your <strong>' + label + '</strong>.';
+      line.style.display = 'flex';
+    } else {
+      state.report_kind = 'other';
+    }
+
+    if (await alreadyReviewed(session, state.response_id)) { show('done-view'); return; }
+
+    const first = await fetchFirstName(session);
+    if (first) document.getElementById('display-name').value = first;
+
+    show('survey-view');
+  })();
+</script>
+
+</body>
+</html>

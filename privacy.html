@@ -199,10 +199,11 @@
 <!-- ─── CONTENT ─── -->
 <div class="content-wrap">
 
-  <span class="effective-date">Effective Date: April 23, 2026</span>
+  <span class="effective-date">Effective Date: September 1, 2026</span>
 
   <div class="highlight-box">
     <p>Your family's information is sacred to us. We collect only what we need, we never sell your data, and we treat your child's information with the same care we would want for our own.</p>
+    <p style="margin-top:10px">If you have purchased from us, the <a href="/customer-agreement.html">Family Service Agreement</a> you accepted at checkout also describes how we handle your information &mdash; in more detail, and in binding terms. <strong>In the event of any conflict between this policy and that Agreement, the Agreement controls.</strong></p>
   </div>
 
   <h2>1. Who We Are</h2>
@@ -237,20 +238,26 @@
   </ul>
 
   <h2>4. How We Share Your Information</h2>
-  <p>We do not sell, rent, or share your personal information with third parties for their marketing purposes — ever.</p>
-  <p>We work with a small number of trusted service providers who help us operate the platform:</p>
+  <p>We do not sell, rent, or share your personal information with third parties for their marketing purposes &mdash; ever.</p>
+  <p>We work with a small number of trusted service providers who help us operate the platform. This list matches Section 4 of the <a href="/customer-agreement.html#s4">Family Service Agreement</a>:</p>
   <ul>
-    <li><strong>Supabase</strong> — secure database and authentication infrastructure</li>
-    <li><strong>Stripe</strong> — payment processing</li>
-    <li><strong>Anthropic</strong> — AI report generation (your questionnaire responses are sent to generate your report and are not used to train AI models)</li>
-    <li><strong>Vercel</strong> — website hosting</li>
+    <li><strong>Stripe</strong> &mdash; payment and subscription processing. Stripe receives your card details directly; we never store your full card number.</li>
+    <li><strong>Supabase</strong> &mdash; secure database and authentication. Stores your account information, questionnaire responses, and reports, hosted in the United States.</li>
+    <li><strong>Anthropic (Claude)</strong> &mdash; generates the written portions of your reports. Under Anthropic's commercial terms, this content is not used to train their models.</li>
+    <li><strong>Resend</strong> &mdash; sends transactional email (account confirmations, report-ready notices).</li>
+    <li><strong>Google (Apps Script)</strong> &mdash; runs our email-notification automation. When a submission or delivery event occurs, the automation receives the associated account and questionnaire record &mdash; which includes your name and email address, your child's first name and age, and the items you purchased &mdash; for the purpose of sending notifications.</li>
+    <li><strong>Vercel</strong> &mdash; website hosting.</li>
+    <li><strong>Plausible Analytics</strong> &mdash; cookie-free, privacy-friendly visit metrics.</li>
+    <li><strong>GoDaddy</strong> &mdash; domain registration. No personal information about you is stored here.</li>
   </ul>
-  <p>Each of these providers is bound by their own privacy and security policies. We may also share information when required by law or to protect the safety of our users.</p>
+  <p>We require service providers that process personal information on our behalf to use it only as necessary to provide their services to us, subject to applicable contractual and legal requirements. The providers we use may change over time; the current list is maintained here and in the Family Service Agreement. We may also share information when required by law or to protect the safety of our users &mdash; see Section 23 of the Agreement for how we handle subpoenas and other legal process.</p>
 
   <h2>5. Children's Privacy</h2>
   <p>Our platform is designed to be used by parents and caregivers on behalf of their children — not directly by children themselves. By completing the questionnaire, you represent that you are the parent or legal guardian of the child whose information you are providing, or that you otherwise have authorization to share that information.</p>
   <p>The questionnaire collects identifying information such as a child's first name and age, as well as sensitive developmental, behavioral, and health information (including sensory profiles, communication patterns, trauma history, and medication use). This information is used solely to generate the personalized report you have requested and is not shared with third parties except as described in Section 4.</p>
-  <p>We do not knowingly collect personal information directly from children under the age of 13 without verifiable parental consent in accordance with the Children's Online Privacy Protection Act (COPPA). If you believe your child has provided information to our Platform without your consent, please contact us immediately at <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a> and we will delete it promptly.</p>
+  <p>We do not knowingly collect personal information directly from children under the age of 13 without verifiable parental consent in accordance with the Children's Online Privacy Protection Act (COPPA).</p>
+  <p><strong>How we obtain that consent, in order:</strong> before we collect anything about your child, you (1) review and accept the <a href="/customer-agreement.html">Family Service Agreement</a>, (2) separately confirm that you are over 18 and are the parent, legal guardian, or other person legally authorized to provide information about that child, and (3) complete a credit or debit card transaction, which is also used to verify parental consent. Only after all three steps does the questionnaire open. We record the version of the Agreement you accepted, which boxes you checked, and the date and time.</p>
+  <p>If you believe your child has provided information to our platform without your consent, please contact us immediately at <a href="mailto:hello@piecesofperception.com">hello@piecesofperception.com</a> and we will delete it promptly.</p>
   <p><strong>Sensitive disclosures:</strong> If you share information in the questionnaire suggesting that a child is currently being abused, neglected, or is in danger, please know that Pieces of Perception is not a mandated reporter and cannot take action on disclosures made through our platform. If a child is in immediate danger, please call <strong>911</strong> or contact your local child protective services directly.</p>
 
   <h2>5a. A Note on HIPAA</h2>
@@ -277,7 +284,16 @@
   <p>We use minimal, essential cookies to keep you logged in and to make our platform function properly. We do not use cookies for advertising or cross-site tracking. You can disable cookies in your browser settings, though this may affect some features of the platform.</p>
 
   <h2>9. Retention</h2>
-  <p>We retain your personal information for as long as your account is active or as needed to provide our services. If you request deletion of your account, we will respond to your request within 30 days and will delete or anonymize your identifying information within 60 days, except where retention is required by law. De-identified information that cannot reasonably be linked back to you may be retained indefinitely.</p>
+  <p><strong>We delete your family's information on purpose, on a schedule.</strong> We do not want to hold children's records any longer than we need to, so retention is built in rather than left to us to remember.</p>
+  <ul>
+    <li>Unless you have an active Report Refresh subscription, your account stays active for <strong>twelve (12) months after your most recent purchase</strong> (the &ldquo;Retention Period&rdquo;). Each new purchase restarts it.</li>
+    <li>With an active Report Refresh subscription, your account stays active throughout the subscription period, and a new 12-month Retention Period begins when your last paid subscription period ends.</li>
+    <li>If you use a report update, a new 12-month Retention Period for that report begins when the updated report is delivered.</li>
+    <li>About <strong>30 days before</strong> the Retention Period ends we email you a reminder to download your reports, and a <strong>final reminder about 7 days</strong> before deletion.</li>
+    <li>If the Retention Period ends without a new purchase or active subscription, your account and all identifying information about you and your child &mdash; questionnaire responses and generated reports included &mdash; is <strong>permanently deleted</strong>. Your reports are downloadable PDFs; please save them when they arrive, because after deletion we cannot recover them.</li>
+  </ul>
+  <p>You do not have to wait. You may request deletion at any time, and we will delete identifying information about you and your child within sixty (60) days of your request. In either case we may retain certain records (such as purchase and tax records) where required to comply with law, resolve disputes, or enforce our agreements, and de-identified information that cannot reasonably be linked back to you may be retained indefinitely.</p>
+  <p>Deletion &mdash; scheduled or requested &mdash; also removes the data we would need to generate a report update, so any unused update or remaining subscription benefit ends with it, without refund. The controlling version of these terms is <a href="/customer-agreement.html#s6">Section 6 of the Family Service Agreement</a>.</p>
 
   <h2>10. Changes to This Policy</h2>
   <p>We may update this Privacy Policy from time to time. If we make material changes, we will notify waitlist members by email and post a notice on our website. The effective date at the top of this page will always reflect the most recent version.</p>
@@ -291,7 +307,7 @@
 
   <hr>
 
-  <p style="font-size: 13px; color: var(--text-light);">This policy was last reviewed on April 23, 2026. This document is intended as a good-faith disclosure of our data practices and will be reviewed by legal counsel prior to full platform launch.</p>
+  <p style="font-size: 13px; color: var(--text-light);">This policy was last reviewed by counsel and updated on September 1, 2026. In the event of any conflict or inconsistency between this policy and the <a href="/customer-agreement.html">Family Service Agreement</a>, the Family Service Agreement controls.</p>
 
 </div>
 

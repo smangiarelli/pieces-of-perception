@@ -742,6 +742,25 @@
   // ─────────────────────────────────────────────────────────────
   // BOOT
   // ─────────────────────────────────────────────────────────────
+  // Fails CLOSED: any error means "not accepted", so the gate stays up.
+  async function hasCustomerAgreementAck(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.${session.user_id}` +
+        `&policy_type=eq.customer_agreement&policy_version=eq.v1.0` +
+        `&select=policy_type&limit=1`,
+        { headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Accept': 'application/json'
+          } }
+      );
+      if (!res.ok) return false;
+      const rows = await res.json();
+      return Array.isArray(rows) && rows.length > 0;
+    } catch (e) { return false; }
+  }
+
   async function init() {
     const session = await ensureFreshSession();
     if (!session) { redirectToAuth(); return; }
@@ -781,7 +800,24 @@
     if (!st.available) {
       showGate('&#128257;', 'No update available on this account yet',
         'Your account doesn’t currently have a report update to use.' +
-        '<span class="gate-note" style="display:block;">Want a refresh? The <strong>$44/year Report Refresh</strong> re-runs everything you own with what’s changed — one refresh per year, cancel anytime. Email <a href="mailto:hello@piecesofperception.com?subject=Report%20Refresh">hello@piecesofperception.com</a> and we’ll set you up.</span>');
+        '<span class="gate-note" style="display:block;">Want a refresh? The <strong>Report Refresh</strong> subscription re-runs everything you own with what’s changed — one refresh per subscription year, cancel anytime. Email <a href="mailto:hello@piecesofperception.com?subject=Report%20Refresh">hello@piecesofperception.com</a> and we’ll set you up.</span>');
+      return;
+    }
+
+    // Family Service Agreement v1.0 gate. Beta families must accept the current
+    // Agreement before a free beta-family update (attorney direction, MES
+    // 2026-08-19); paying customers already accepted it at checkout, so this
+    // never fires for them. Backstop for anyone who links straight here rather
+    // than going through the dashboard card. Fails CLOSED.
+    const hasFSA = await hasCustomerAgreementAck(session);
+    if (!hasFSA) {
+      showGate('&#128220;', 'One quick step first',
+        'Before receiving a Report update, you need to accept the current ' +
+        '<a href="/customer-agreement.html" target="_blank" rel="noopener"><strong>Family Service Agreement</strong></a>. ' +
+        'Acceptance governs this update and your family’s continued use of the service going forward.' +
+        '<span class="gate-note" style="display:block;">Head back to your dashboard — the update card there walks you through it. ' +
+        'If this is your free beta-family update, accepting does <strong>not</strong> mean paying: that update is still free.<br><br>' +
+        '<a href="/beta-dashboard.html" style="font-weight:700">Back to your dashboard &rarr;</a></span>');
       return;
     }
 
