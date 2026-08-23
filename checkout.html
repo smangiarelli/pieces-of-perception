@@ -475,18 +475,34 @@ const CONFIG = {
   // and still let the family through rather than losing the sale to an outage.
   async function recordAcceptance(payload) {
     const url = CONFIG.supabaseUrl + "/rest/v1/agreement_acceptances";
+    // apikey ONLY -- supabaseAnonKey is a publishable key, not a JWT, so it
+    // must not be sent as a Bearer token.
+    // return=minimal -- anon holds INSERT and deliberately NOT SELECT (no
+    // email enumeration). Asking for the row back needs SELECT, and PostgREST
+    // rolls the whole insert back rather than returning it. This is what was
+    // silently losing every acceptance record.
     const res = await fetch(url, {
       method: "POST",
       headers: {
         "apikey": CONFIG.supabaseAnonKey,
-        "Authorization": "Bearer " + CONFIG.supabaseAnonKey,
         "Content-Type": "application/json",
-        "Prefer": "return=representation"
+        "Prefer": "return=minimal"
       },
       body: JSON.stringify([payload])
     });
     if (!res.ok) throw new Error("HTTP " + res.status + " " + (await res.text()));
-    return res.json();
+    return true;   // 201/204, no body to parse
+  }
+
+  // One retry. A transient blip should not cost us the legal record.
+  async function recordAcceptanceWithRetry(payload) {
+    try {
+      return await recordAcceptance(payload);
+    } catch (e) {
+      if (window.console) console.warn("acceptance write failed, retrying:", e);
+      await new Promise(function (r) { setTimeout(r, 900); });
+      return await recordAcceptance(payload);
+    }
   }
 
   function buildPayload(email) {
@@ -534,7 +550,7 @@ const CONFIG = {
     const payload = buildPayload(email);
     let savedServerSide = false;
     try {
-      await recordAcceptance(payload);
+      await recordAcceptanceWithRetry(payload);
       savedServerSide = true;
     } catch (e) {
       // Do not block the purchase: Stripe records terms acceptance too.
@@ -579,7 +595,12 @@ const CONFIG = {
       "Family Service Agreement " + CONFIG.agreementVersion +
       " (last updated " + CONFIG.agreementLastUpdated + ")<br>" +
       "Accepted by <strong>" + escapeHtml(accepted.email) + "</strong> on " + escapeHtml(fmtWhen(accepted.at)) + "<br>" +
-      (opts.length ? "Optional permissions: " + escapeHtml(opts.join(", ")) : "Optional permissions: none");
+      (opts.length ? "Optional permissions: " + escapeHtml(opts.join(", ")) : "Optional permissions: none") +
+      (accepted.server === false
+        ? '<br><span style="color:var(--text-light);font-size:12px">' +
+          'Recorded on this device. Your acceptance is also recorded by our ' +
+          'payment processor when you pay.</span>'
+        : "");
   }
 
   function escapeHtml(s) {
