@@ -131,6 +131,10 @@
 
     .content-wrap a { color: var(--accent); text-decoration: none; }
     .content-wrap a:hover { text-decoration: underline; }
+    /* .content-wrap a (0,1,1) outranks .btn-primary (0,1,0) and was
+       painting button text purple-on-purple. Restore the button. */
+    .content-wrap a.btn-primary,
+    .content-wrap a.btn-primary:hover { color: #fff; text-decoration: none; }
 
     .effective-date {
       display: inline-block;

@@ -323,7 +323,16 @@
     }
 
     /* ── TWO PATHS ── */
-    .paths-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 780px; margin: 0 auto; }
+    .paths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1140px; margin: 0 auto; }
+    @media (max-width: 1040px) { .paths-grid { grid-template-columns: 1fr; max-width: 480px; } }
+    /* Next Chapter -- not yet available, so it must not read as clickable */
+    .path-card.soon { border-style: dashed; border-color: rgba(63,168,204,0.45);
+      background: rgba(63,168,204,0.04); cursor: default; }
+    .path-card.soon:hover { transform: none; box-shadow: var(--card-shadow); }
+    .path-card.soon .path-meta { color: #3FA8CC; font-weight: 700; }
+    .path-soon-pill { display: inline-block; background: var(--deep); color: #fff;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 4px 12px;
+      border-radius: 20px; margin-bottom: 12px; }
     .path-card {
       background: white; border-radius: 22px;
       border: 1.5px solid var(--border);
@@ -821,9 +830,9 @@
 
 <section style="background:var(--bg)">
   <div class="section-inner" style="text-align:center">
-    <div class="section-label">Two Ways to Get Support</div>
+    <div class="section-label">Three Ways to Get Support</div>
     <h2 class="section-title">Start Where You Are</h2>
-    <p class="section-sub">Every family is different.<br>Choose the path that fits where you are right now.<br>You can always explore both.</p>
+    <p class="section-sub">Every family is different.<br>Choose the path that fits where you are right now.<br>You can always explore more than one.</p>
     <div class="paths-grid">
       <div class="path-card">
         <div class="path-icon">🧭</div>
@@ -836,6 +845,13 @@
         <h3>Action Report</h3>
         <p>There's something specific happening right now — a trigger, a trauma response, a school crisis — and you need targeted strategies. This path digs deep into the specific challenge and delivers focused, actionable guidance.</p>
         <p class="path-meta">⏱ About 25–35 minutes &nbsp;·&nbsp; 13 sections</p>
+      </div>
+      <div class="path-card soon" id="nextchapter-path">
+        <div class="path-icon">🌅</div>
+        <div class="path-soon-pill">COMING SOON</div>
+        <h3>The Next Chapter Profile</h3>
+        <p>For the transition years, ages 16&ndash;21+. Everything a family has learned, rewritten for the adults who come next &mdash; adult day and employment programs, employers and job coaches, the school transition team &mdash; and for the young adult themselves.</p>
+        <p class="path-meta">In development with families now</p>
       </div>
     </div>
   </div>
