@@ -124,9 +124,6 @@
       <label>5 · Primary goal of this engagement</label>
       <textarea id="engagement_goal" placeholder="One or two sentences. The report orients its plan, session targets, and progress markers toward this goal."></textarea>
 
-      <label>Known diagnoses / referral reason <span class="opt-tag">(optional)</span></label>
-      <input type="text" id="known_diagnoses" placeholder="Only if your intake paperwork adds something the family may not have surfaced">
-
       <button class="btn" id="submit-btn" onclick="submitIntake()">Submit intake</button>
     </div>
 
@@ -183,7 +180,11 @@
           p_cadence:         val('cadence'),
           p_setting:         val('setting'),
           p_engagement_goal: val('engagement_goal'),
-          p_known_diagnoses: val('known_diagnoses') || null
+          // Intentionally always null. The Family Service Agreement (Section 1) states that
+          // Pieces of Perception does not request child-specific medical, diagnostic, or
+          // treatment information from a Provider. The intake field was removed 2026-08-24.
+          // The argument is still sent so the RPC signature matches. Do not reintroduce a field here.
+          p_known_diagnoses: null
         })
       });
       const data = await resp.json();
@@ -201,7 +202,6 @@
     // Keep the intake key + selections (practice defaults); clear per-client fields.
     document.getElementById('family_code').value = '';
     document.getElementById('engagement_goal').value = '';
-    document.getElementById('known_diagnoses').value = '';
     document.getElementById('success-view').style.display = 'none';
     document.getElementById('form-view').style.display = 'block';
     const btn = document.getElementById('submit-btn');
