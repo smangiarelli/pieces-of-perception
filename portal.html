@@ -374,6 +374,22 @@
 </footer>
 
 <script>
+
+  // Where to send someone after they sign in.
+  // A review email points at review.html; if they were not signed in, review.html
+  // sends them here with ?next=review.html so we can put them back. Allowlisted
+  // on purpose -- an unchecked ?next= is an open redirect.
+  function nextDestination() {
+    var ALLOWED = ['review.html', 'family-dashboard.html',
+                   'update.html', 'questionnaire.html'];
+    try {
+      var n = new URLSearchParams(window.location.search).get('next') || '';
+      n = n.replace(/^\/+/, '').split('?')[0].split('#')[0];
+      if (ALLOWED.indexOf(n) !== -1) return '/' + n;
+    } catch (e) {}
+    return '/family-dashboard.html';
+  }
+
   const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
   const PENDING_CODE_KEY = 'pop_pending_invite_code';
@@ -412,7 +428,7 @@
               expires_at: Date.now() + (parseInt(p.get('expires_in') || '3600', 10) * 1000)
             }));
           } catch (_) {}
-          window.location.replace('/family-dashboard.html');
+          window.location.replace(nextDestination());
         })
         .catch(function (_) { /* fall through to normal sign-in UI */ });
     } catch (_) { /* ignore */ }
@@ -548,7 +564,7 @@
       }
 
       showMsg('Signed in! Taking you to your dashboard...', 'success');
-      setTimeout(() => { window.location.href = '/family-dashboard.html'; }, 600);
+      setTimeout(() => { window.location.href = nextDestination(); }, 600);
     } catch (err) {
       showMsg('Network error. Please check your connection and try again.', 'error');
       setLoading('btn-signin', false, 'Sign In');
@@ -636,7 +652,7 @@
         try { localStorage.removeItem(PENDING_CODE_KEY); } catch (_) {}
         saveSession(signupData, name);
         showMsg('Account created and your purchase is linked. Taking you to your dashboard...', 'success');
-        setTimeout(() => { window.location.href = '/family-dashboard.html'; }, 800);
+        setTimeout(() => { window.location.href = nextDestination(); }, 800);
       } else {
         // Email confirmation required — code stays in localStorage, redeemed on first signin
         showMsg('Check your email for a confirmation link, then come back and sign in. Your access code is saved.', 'info');

@@ -501,7 +501,7 @@
   // ── Submit ──
   async function submit() {
     const session = getSession();
-    if (!session) { window.location.href = '/portal.html'; return; }
+    if (!session) { window.location.href = '/portal.html?next=review.html'; return; }
 
     const btn = document.getElementById('submit-btn');
     const msg = document.getElementById('submit-msg');
@@ -587,7 +587,7 @@
   // ── Init ──
   (async function init() {
     const session = getSession();
-    if (!session) { window.location.href = '/portal.html'; return; }
+    if (!session) { window.location.href = '/portal.html?next=review.html'; return; }
 
     buildStars();
     buildConsent();
