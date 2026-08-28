@@ -2697,7 +2697,7 @@
   // reach this form the ack is already on record and this screen is skipped.
   // The screen below is the fallback for any account that arrives without an
   // acknowledgment — and it now uses the CUSTOMER agreement, not the beta one.
-  const CUSTOMER_AGREEMENT = { type: 'customer_agreement', version: 'v1.0', url: '/customer-agreement.html' };
+  const CUSTOMER_AGREEMENT = { type: 'customer_agreement', version: 'v1.1', url: '/customer-agreement.html' };
   const BETA_AGREEMENT     = { type: 'beta_agreement',     version: 'v1.0', url: '/beta-agreement.html' };
   // What a NEW acknowledgment recorded from this screen is recorded as.
   const ACTIVE_AGREEMENT = CUSTOMER_AGREEMENT;
@@ -2716,8 +2716,7 @@
       '<a href="' + ACTIVE_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>, ' +
       'including the parental consent provisions in the Agreement.',
     'I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person ' +
-      'legally authorized to provide information about the Child for whom I am obtaining a Report ' +
-      'and to provide any documents or records I choose to submit to Pieces of Perception.',
+      'legally authorized to provide information about the Child for whom I am obtaining a Report.',
     'I understand that my questionnaire responses and Reports will remain available through my ' +
       'account for the applicable <strong>12-month Retention Period</strong> described in the Agreement. ' +
       'After the applicable Retention Period ends, this information will be permanently deleted. ' +
@@ -3433,7 +3432,7 @@
     // the check errors.
     if (!state.acks_confirmed) {
       try {
-        // Accept EITHER agreement on record: customer_agreement v1.0 (live
+        // Accept EITHER agreement on record: customer_agreement v1.1 (live
         // customers, accepted at checkout before payment) OR beta_agreement
         // v1.0 (beta families completing their original questionnaire). Beta
         // families are separately required to accept the current Family
@@ -3442,9 +3441,12 @@
         const ar = await fetch(
           `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.` +
           encodeURIComponent(session.user_id) +
-          `&policy_type=in.(` + encodeURIComponent(CUSTOMER_AGREEMENT.type) + `,` +
-                                encodeURIComponent(BETA_AGREEMENT.type) + `)` +
-          `&policy_version=eq.v1.0` +
+          // Per-type versions. The live Agreement is v1.1; the beta agreement
+          // stays v1.0. A single &policy_version filter across both types would
+          // lock every beta family out of their own questionnaire, so each type
+          // carries its own version here.
+          `&or=(and(policy_type.eq.${CUSTOMER_AGREEMENT.type},policy_version.eq.${CUSTOMER_AGREEMENT.version}),` +
+              `and(policy_type.eq.${BETA_AGREEMENT.type},policy_version.eq.${BETA_AGREEMENT.version}))` +
           `&select=policy_type&limit=1`,
           { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}`, 'Accept': 'application/json' } });
         if (ar.ok) {

@@ -37,7 +37,7 @@ const CONFIG = {
   founderPercent: 20,
 
   // ---- Family Service Agreement (must match customer_agreement_source.js) ----
-  agreementVersion: "v1.0",
+  agreementVersion: "v1.1",
   agreementLastUpdated: "September 1, 2026",
   agreementUrl: "/customer-agreement.html",
 
@@ -318,7 +318,7 @@ const CONFIG = {
 
       <label class="chk req">
         <input type="checkbox" id="ck2">
-        <span>I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person legally authorized to provide information about the Child for whom I am purchasing a Report and to provide any documents or records I choose to submit to Pieces of Perception.</span>
+        <span>I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person legally authorized to provide information about the Child for whom I am purchasing a Report.</span>
       </label>
 
       <label class="chk req">
@@ -510,9 +510,14 @@ const CONFIG = {
       email: email,
       agreement_version: CONFIG.agreementVersion,
       agreement_last_updated: CONFIG.agreementLastUpdated,
-      accepted_agreement: true,
-      accepted_authority: true,
-      accepted_retention: true,
+      // LC-14 fix (2026-08-27): read the live checkbox state instead of
+      // hardcoding true. The page already refuses to submit unless all three
+      // are ticked, so the values are the same in practice -- but a value the
+      // code asserts is not evidence of what the parent did, and this row is
+      // the consent record the attorney asked us to be able to pull up.
+      accepted_agreement: document.getElementById("ck1").checked,
+      accepted_authority: document.getElementById("ck2").checked,
+      accepted_retention: document.getElementById("ck3").checked,
       opt_deidentified: document.getElementById("opt_deid").checked,
       opt_testimonial: document.getElementById("opt_testimonial").checked,
       opt_photo_video: document.getElementById("opt_photo").checked,

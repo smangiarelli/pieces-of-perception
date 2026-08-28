@@ -619,7 +619,25 @@
   <div class="my-reports" id="update-card" style="display:none; margin-top:36px; text-align:center; border:1px solid rgba(82,183,136,0.45); background:rgba(82,183,136,0.10);">
     <h2>Update Your Reports</h2>
     <p class="lede" id="update-card-copy" style="max-width:560px; margin-left:auto; margin-right:auto;"></p>
-    <a href="/update.html" class="btn btn-primary" style="margin-top:6px;">Start the 10&ndash;15 Minute Update &rarr;</a>
+    <a href="/update.html" id="update-card-start" class="btn btn-primary" style="margin-top:6px;">Start the 10&ndash;15 Minute Update &rarr;</a>
+
+    <!-- Beta families must accept the CURRENT Family Service Agreement before a
+         free update (attorney direction, MES 2026-08-19). Accepting does not
+         mean paying — the beta update stays free. Hidden entirely for anyone
+         who already has the current customer_agreement version on record. -->
+    <div id="update-fsa-gate" style="display:none; margin-top:18px; text-align:left; max-width:640px; margin-left:auto; margin-right:auto;">
+      <p style="font-size:14px; line-height:1.75; color:var(--text); background:#fff; border:1.5px solid rgba(82,183,136,0.45); border-radius:12px; padding:16px 18px;">
+        Before receiving a free beta-family Report update, you must accept the current
+        <a href="/customer-agreement.html" target="_blank" rel="noopener"><strong>Family Service Agreement</strong></a>.
+        Acceptance of the current Agreement will govern the update and your family&#8217;s continued use of the
+        service going forward. All future reports and updates after this beta-family Report update will
+        require additional payment. <strong>This update itself is still free.</strong>
+      </p>
+      <div id="update-fsa-list" style="margin-top:6px;"></div>
+      <div id="update-fsa-msg" style="display:none; font-size:13px; font-weight:600; margin:8px 0;"></div>
+      <button id="update-fsa-accept" class="btn btn-primary" style="margin-top:10px;" disabled>I Agree &mdash; Unlock My Free Update</button>
+    </div>
+
     <p id="update-card-expiry" style="margin-top:12px; font-size:12.5px; color:var(--text-light);"></p>
   </div>
 
@@ -1142,8 +1160,107 @@
           document.getElementById('update-card-expiry').textContent = 'Available until ' + d + '.';
         } catch (e) {}
       }
+      // Gate on the CURRENT Family Service Agreement before the update opens.
+      const hasFSA = await hasCustomerAgreementAck(session);
+      if (!hasFSA) {
+        document.getElementById('update-card-start').style.display = 'none';
+        renderUpdateFsaGate(session);
+        document.getElementById('update-fsa-gate').style.display = '';
+      }
+
       document.getElementById('update-card').style.display = '';
     } catch (e) { /* card stays hidden */ }
+  }
+
+  // ── Family Service Agreement gate for beta-family updates ──
+  // Version lives in the constant below. Bumping it re-gates everyone (S19).
+  // NOTE: BETA_AGREEMENT stays v1.0 — only the customer Agreement moved to v1.1.
+  const CUSTOMER_AGREEMENT = { type: 'customer_agreement', version: 'v1.1', url: '/customer-agreement.html' };
+
+  // Same three acknowledgments used at checkout, on family-dashboard.html and
+  // in the questionnaire. Do not reword one without the others.
+  const FSA_ACK_POINTS = [
+    'I have read and agree to the <strong>Family Service Agreement</strong> ' +
+      '<a href="' + CUSTOMER_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>, ' +
+      'including the parental consent provisions in the Agreement.',
+    'I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person ' +
+      'legally authorized to provide information about the Child for whom I am obtaining a Report.',
+    'I understand that my questionnaire responses and Reports will remain available through my ' +
+      'account for the applicable <strong>12-month Retention Period</strong> described in the Agreement. ' +
+      'After the applicable Retention Period ends, this information will be permanently deleted. ' +
+      'I am responsible for downloading any Reports I wish to retain before deletion and am encouraged ' +
+      'to immediately download and save all Reports.'
+  ];
+
+  // Fails CLOSED: any error means "not accepted", so the gate stays up.
+  async function hasCustomerAgreementAck(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.${session.user_id}` +
+        `&policy_type=eq.${encodeURIComponent(CUSTOMER_AGREEMENT.type)}` +
+        `&policy_version=eq.${encodeURIComponent(CUSTOMER_AGREEMENT.version)}` +
+        `&select=policy_type&limit=1`,
+        { headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Accept': 'application/json'
+          } }
+      );
+      if (!res.ok) return false;
+      const rows = await res.json();
+      return Array.isArray(rows) && rows.length > 0;
+    } catch (e) { return false; }
+  }
+
+  function renderUpdateFsaGate(session) {
+    const list = document.getElementById('update-fsa-list');
+    list.innerHTML = FSA_ACK_POINTS.map(function (pt) {
+      return '<label class="ack-item">' +
+               '<input type="checkbox" class="fsa-box">' +
+               '<span class="ack-item-text">' + pt + '</span>' +
+             '</label>';
+    }).join('');
+
+    const btn = document.getElementById('update-fsa-accept');
+    Array.from(list.querySelectorAll('.fsa-box')).forEach(function (b) {
+      b.addEventListener('change', function () {
+        const all = Array.from(list.querySelectorAll('.fsa-box'));
+        btn.disabled = !all.every(function (x) { return x.checked; });
+      });
+    });
+
+    btn.onclick = async function () {
+      const msg = document.getElementById('update-fsa-msg');
+      msg.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/policy_acknowledgments`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=ignore-duplicates'
+          },
+          body: JSON.stringify([{
+            user_id:        session.user_id,
+            policy_type:    CUSTOMER_AGREEMENT.type,
+            policy_version: CUSTOMER_AGREEMENT.version
+          }])
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        document.getElementById('update-fsa-gate').style.display = 'none';
+        const start = document.getElementById('update-card-start');
+        start.style.display = '';
+      } catch (e) {
+        msg.style.display = 'block';
+        msg.style.color = '#D95B72';
+        msg.textContent = "We couldn't save that. Please try again, or email hello@piecesofperception.com.";
+        btn.disabled = false;
+        btn.textContent = 'I Agree — Unlock My Free Update';
+      }
+    };
   }
 
   async function init() {
