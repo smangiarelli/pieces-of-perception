@@ -706,11 +706,11 @@
       html += '<span style="color:#6B6982;font-size:12px;">' + (it.price != null ? ('$' + it.price) : 'add-on') + '</span>';
       html += '</div>';
     });
-    // Bundle logic: 4+ individual guides auto-price as the $49 all-6 bundle
+    // Bundle logic: 4+ individual guides auto-price as the $49 all-5 bundle
     const guideSum = items.filter(it => it.price === 15).reduce((s, it) => s + it.price, 0);
     const otherSum = items.filter(it => it.price !== 15).reduce((s, it) => s + (it.price || 0), 0);
     if (guideSum > 49) {
-      html += '<div style="padding:4px 0;color:#52B788;font-size:11.5px;font-weight:600;">&#10003; 4+ guides selected &mdash; all-6 bundle price ($49) applied</div>';
+      html += '<div style="padding:4px 0;color:#52B788;font-size:11.5px;font-weight:600;">&#10003; 4+ guides selected &mdash; all-5 bundle price ($49) applied</div>';
     }
     const total = otherSum + Math.min(guideSum, 49);
     html += '<div style="display:flex;justify-content:space-between;border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-weight:700;color:#2C2A4A;"><span>Total</span><span>$' + total + '</span></div>';
@@ -1639,7 +1639,11 @@
       id: 'action_addon_sibling',
       eyebrow: 'Add-on: Sibling Guide',
       title: 'Add a Sibling Guide?',
-      sub: 'Optional — age-tiered (4–7 / 8–11 / 12+). Yes = added to your cart.',
+      sub: function (s) {
+        return s.data.has_siblings === 'No'
+          ? 'You told us there are no siblings at home — so this one is probably a skip. It can still be made for a close cousin or family-friend child if that would help.'
+          : 'Age-tiered (4–7 / 8–11 / 12+).';
+      },
       fields: [
         { key: 'addon_sibling', type: 'radio', required: true, triggersRerender: true,
           label: 'Generate a Sibling Guide?',
@@ -2077,7 +2081,11 @@
       id: 'comp_addon_sibling',
       eyebrow: 'Add-on: Sibling Guide',
       title: 'Add a Sibling Guide?',
-      sub: 'Optional — age-tiered (4–7 / 8–11 / 12+). For an actual sibling OR a close cousin / family-friend child.',
+      sub: function (s) {
+        return s.data.has_siblings === 'No'
+          ? 'You told us there are no siblings at home — so this one is probably a skip. It can still be made for a close cousin or family-friend child if that would help.'
+          : 'Age-tiered (4–7 / 8–11 / 12+). For an actual sibling or a close cousin / family-friend child.';
+      },
       fields: [
         { key: 'addon_sibling', type: 'radio', required: true, triggersRerender: true,
           label: 'Generate a Sibling Guide?',
@@ -2866,7 +2874,8 @@
   function renderStep(card, step) {
     card.appendChild(el('div', { className: 'step-eyebrow' }, step.eyebrow.toUpperCase()));
     card.appendChild(el('h2', { className: 'step-title serif' }, step.title));
-    if (step.sub) card.appendChild(el('p', { className: 'step-sub' }, step.sub));
+    const _sub = (typeof step.sub === 'function') ? step.sub(state) : step.sub;
+    if (_sub) card.appendChild(el('p', { className: 'step-sub' }, _sub));
 
     const errorBox = el('div', { className: 'alert-error', id: 'step-error' });
     card.appendChild(errorBox);
@@ -3215,13 +3224,11 @@
   }
 
   function submitLabel() {
-    const base = state.flow === 'comprehensive' ? 149 : 99;
-    const yes = v => typeof v === 'string' && v.indexOf('Yes') === 0;
-    const guideKeys = ['addon_babysitter','addon_extended_family','addon_sibling','addon_teacher','addon_service_provider'];
-    const guideCount = guideKeys.filter(k => yes(state.data[k])).length;
-    // 4+ guides auto-price as the $49 all-5 bundle
-    const total = base + Math.min(guideCount * 15, 49) + (state.addon_iep ? 49 : 0);
-    return `Submit & Generate Report ($${total})`;
+    // GL-9 (2026-08-30): this used to end with a dollar total. Payment happens
+    // at CHECKOUT, before the questionnaire — showing a price on the submit
+    // button reads as a second charge and is the single most alarming thing
+    // on the page. No figure here.
+    return 'Submit & Generate My Reports';
   }
 
   // ─────────────────────────────────────────────────────────────
