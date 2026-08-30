@@ -555,7 +555,9 @@
   // ─────────────────────────────────────────────────────────────
   const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
-  const DRAFT_KEY = 'pop_questionnaire_draft';
+  const DRAFT_KEY_PREFIX = 'pop_nextchapter_draft_v2_';
+  const LEGACY_DRAFT_KEYS = ['pop_questionnaire_draft', 'pop_update_draft_v1'];
+  let DRAFT_KEY = DRAFT_KEY_PREFIX + 'anon';
 
   // ─────────────────────────────────────────────────────────────
   // SESSION
@@ -636,6 +638,18 @@
     addon_iep: false
   };
 
+  // ⚠ SECURITY (GL-9, 2026-08-30): this key used to be a single global string,
+  // so every account sharing a browser shared one draft. A family who signed
+  // in after another family on the same computer loaded THAT family's answers
+  // about THEIR child. The key is now scoped to the signed-in user id, and any
+  // legacy unscoped draft is discarded rather than migrated — we cannot know
+  // whose answers it holds, and guessing wrong is the bug we are fixing.
+  function setDraftKey(userId) {
+    for (const legacy of LEGACY_DRAFT_KEYS) {
+      try { localStorage.removeItem(legacy); } catch (_) {}
+    }
+    DRAFT_KEY = DRAFT_KEY_PREFIX + String(userId || 'anon');
+  }
   function loadDraft() {
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
@@ -3836,6 +3850,7 @@
     if (!cap.exempt && cap.count >= 2) { renderCapReached(); return; }
     window.__popCap = cap;
 
+    setDraftKey(session && session.user_id);
     loadDraft();
 
     // Unified agreement: skip the acknowledgment screen when this account has
