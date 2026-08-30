@@ -699,21 +699,17 @@
       badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:white;border:1px solid #E8E4DC;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,0.08);padding:14px 18px;font-family:-apple-system,sans-serif;font-size:13px;z-index:8888;max-width:280px;';
       document.body.appendChild(badge);
     }
-    let html = '<div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#6C63FF;margin-bottom:8px;">YOUR CART</div>';
+    // GL-9 (2026-08-30): this was "YOUR CART" with per-item prices and a
+    // running total, shown to a family who paid at checkout before the
+    // questionnaire even opened. It read as a second bill — it is the
+    // reason the submit button's "($198)" was alarming. No figures here.
+    let html = '<div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#6C63FF;margin-bottom:8px;">YOUR REPORT SET</div>';
     items.forEach(it => {
       html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;color:#2C2A4A;">';
       html += '<span>' + it.name + '</span>';
-      html += '<span style="color:#6B6982;font-size:12px;">' + (it.price != null ? ('$' + it.price) : 'add-on') + '</span>';
       html += '</div>';
     });
-    // Bundle logic: 4+ individual guides auto-price as the $49 all-5 bundle
-    const guideSum = items.filter(it => it.price === 15).reduce((s, it) => s + it.price, 0);
-    const otherSum = items.filter(it => it.price !== 15).reduce((s, it) => s + (it.price || 0), 0);
-    if (guideSum > 49) {
-      html += '<div style="padding:4px 0;color:#52B788;font-size:11.5px;font-weight:600;">&#10003; 4+ guides selected &mdash; all-5 bundle price ($49) applied</div>';
-    }
-    const total = otherSum + Math.min(guideSum, 49);
-    html += '<div style="display:flex;justify-content:space-between;border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-weight:700;color:#2C2A4A;"><span>Total</span><span>$' + total + '</span></div>';
+    html += '<div style="border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-size:11.5px;color:#6B6982;">Already paid for at checkout \u2014 nothing more to pay.</div>';
     badge.innerHTML = html;
   }
 
@@ -2603,6 +2599,57 @@
     card.appendChild(grid);
   }
 
+  // ── ENTITLEMENTS (GL-9, 2026-08-30) ────────────────────────────
+  // The flow-choice screen used to be free: state.flow was whatever the
+  // family clicked. Nothing reconciled the MAIN report against what was
+  // paid — purchase_gate.PAID_GATES deliberately excludes it — so a family
+  // who bought the $149 Comprehensive could pick the $99 Action Report and
+  // spend an hour answering the WRONG QUESTIONS, and a family who bought
+  // Action could take Comprehensive for free. Both silently.
+  //
+  // get_my_entitlements() is a SECURITY DEFINER RPC because the browser
+  // cannot read `purchases` (RLS on, zero policies, by design).
+  //
+  // ⚠ FAILS OPEN. Any error, any null flow, and the normal choice screen
+  // is shown. A provider-sponsored family has no purchases row and must
+  // never be blocked from starting.
+  let entitlements = null;
+
+  async function loadEntitlements(session) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_entitlements`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: '{}'
+      });
+      if (!res.ok) return null;
+      const d = await res.json();
+      return (d && d.ok) ? d : null;
+    } catch (_) { return null; }
+  }
+
+  function ownsAddon(key) {
+    if (!entitlements || !Array.isArray(entitlements.addons)) return null; // unknown
+    return entitlements.addons.indexOf(key) !== -1;
+  }
+
+  function renderPurchasedFlowNote(card) {
+    if (!entitlements || !entitlements.flow) return;
+    const LABEL = { comprehensive: 'Comprehensive Plan',
+                    action: 'Action Report',
+                    next_chapter: 'Next Chapter Profile' };
+    const name = LABEL[entitlements.flow];
+    if (!name) return;
+    const note = el('div', { className: 'step-sub',
+      style: 'background:rgba(82,183,136,0.10);border:1px solid rgba(82,183,136,0.35);border-radius:12px;padding:12px 16px;margin-bottom:18px;' });
+    note.textContent = 'You purchased the ' + name + ', so these are the questions we need for it.';
+    card.appendChild(note);
+  }
+
   function chooseFlow(flow) {
     state.flow = flow;
     state.step = 0;
@@ -2618,6 +2665,7 @@
   // ───────────────────────────────────────────────────────────────
   function renderIntro(card) {
     card.appendChild(el('div', { className: 'step-eyebrow' }, 'BEFORE YOU BEGIN'));
+    renderPurchasedFlowNote(card);
     card.appendChild(el('h2', { className: 'step-title serif' }, 'The more you share, the more this report sees your child.'));
 
     const sub = el('p', { className: 'step-sub' });
@@ -3111,9 +3159,13 @@
   function goBack() {
     if (state.step > 0) {
       state.step -= 1;
-    } else {
+    } else if (!(entitlements && entitlements.flow)) {
       // back from step 0 → flow-choice
       state.flow = null;
+    } else {
+      // The flow is fixed by what this family purchased, so there is no
+      // choice screen to go back to. Do nothing rather than un-pin it.
+      return;
     }
     saveDraft();
     render();
@@ -3410,6 +3462,20 @@
 
     setDraftKey(session && session.user_id);
     loadDraft();
+
+    // What did this family actually buy? Fails open (null = show the choice).
+    entitlements = await loadEntitlements(session);
+    if (entitlements && entitlements.flow && state.flow !== entitlements.flow) {
+      // Pin the flow to the purchase. If a draft was started on the wrong
+      // flow, correct it and send them back to the first question rather
+      // than leaving them mid-way through the wrong question set.
+      if (state.flow && state.flow !== entitlements.flow) {
+        state.step = 0;
+        state.intro_shown = false;
+      }
+      state.flow = entitlements.flow;
+      saveDraft();
+    }
 
     // Unified agreement: skip the acknowledgment screen when this account has
     // already accepted it (e.g. on the dashboard). The screen still appears
