@@ -80,7 +80,7 @@ const CONFIG = {
 
   // Optional add-ons
   addons: [
-    { id: "careguides", name: "All 6 Care Guides (bundle)", blurb: "Babysitter, Extended Family, Sibling, Teacher/School, Service Provider, and Parenting in Partnership guides. A $90 value — save $41.", price: 49, paymentLink: "https://buy.stripe.com/eVq8wP2yegxXebvcNd5AQ01" },
+    { id: "careguides", name: "All 5 Care Guides (bundle)", blurb: "Babysitter, Extended Family, Sibling, Teacher/School, and Service Provider guides. A $75 value — save $26.", price: 49, paymentLink: "https://buy.stripe.com/eVq8wP2yegxXebvcNd5AQ01" },
     { id: "iep",        name: "IEP Goal Recommendations",   blurb: "Specific, measurable, IDEA-aligned goal language for your next IEP meeting, plus recommended supports and questions to ask the team.",   price: 49, paymentLink: "https://buy.stripe.com/6oU4gz3Ci4Pf2sN00r5AQ00" }
   ],
 
@@ -90,8 +90,12 @@ const CONFIG = {
     { id: "extfamily",  name: "Extended Family Guide", blurb: "For grandparents, aunts and uncles, and close family friends — warm and jargon-free.", price: 15, paymentLink: "https://buy.stripe.com/eVq00j0q61D38RbfZp5AQ06" },
     { id: "sibling",    name: "Sibling Guide", blurb: "Age-tiered (4–7, 8–11, 12+) — helps siblings understand and feel part of the team.", price: 15, paymentLink: "https://buy.stripe.com/3cI8wPa0G2H78RbcNd5AQ05" },
     { id: "teacher",    name: "Teacher / School Guide", blurb: "Classroom supports, communication approaches, and de-escalation steps for the school team.", price: 15, paymentLink: "https://buy.stripe.com/14A9ATc8OgxX3wRaF55AQ04" },
-    { id: "provider",   name: "Service Provider Guide", blurb: "For therapists, coaches, and providers — what works best in sessions with your child.", price: 15, paymentLink: "https://buy.stripe.com/6oU6oHb4KdlL8Rb3cD5AQ03" },
-    { id: "partnership", name: "Parenting in Partnership Guide", blurb: "A shared playbook for the adults raising your child together — one household or two.", price: 15, paymentLink: "https://buy.stripe.com/cNi28rfl0chH7N7aF55AQ02" }
+    { id: "provider",   name: "Service Provider Guide", blurb: "For therapists, coaches, and providers — what works best in sessions with your child.", price: 15, paymentLink: "https://buy.stripe.com/6oU6oHb4KdlL8Rb3cD5AQ03" }
+    // Parenting in Partnership Guide removed 2026-08-30: it is FREE for every
+    // family (Sarah's decision), and render_family._requested_reports() has
+    // always delivered it to everyone. Selling it would charge for something
+    // every family already receives. Its Stripe payment link still exists but
+    // is no longer surfaced anywhere.
   ],
 
   // ---- Report Refresh (annual subscription) ----

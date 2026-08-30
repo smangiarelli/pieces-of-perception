@@ -281,11 +281,20 @@
     /* flow-choice cards (entry step) */
     .flow-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 18px;
       margin-top: 8px;
     }
     @media (max-width: 700px) { .flow-grid { grid-template-columns: 1fr; } }
+
+    /* Third flow card — Next Chapter Profile (transition years, 16+) */
+    @media (min-width: 701px) and (max-width: 1040px) {
+      .flow-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .flow-card.transition { border-color: #3FA8CC; background: linear-gradient(145deg, rgba(63,168,204,0.05), white); }
+    .flow-card.transition:hover { border-color: #3FA8CC; }
+    .btn-sky { background: #3FA8CC; color: #fff; border: 1px solid #3FA8CC; }
+    .btn-sky:hover { background: #3796b8; border-color: #3796b8; }
 
     .flow-card {
       border: 2px solid var(--border);
@@ -628,7 +637,7 @@
   // ─────────────────────────────────────────────────────────────
   // answers shape: { flow: 'action'|'comprehensive', step: number, data: {...}, addon_iep: bool }
   let state = {
-    flow: null,        // 'action' | 'comprehensive' — null until chosen
+    flow: null,        // 'action' | 'comprehensive' | 'next_chapter' — null until chosen
     acks_confirmed: false, // Phase 3.5: policy acknowledgments required before each questionnaire
     intro_shown: false, // pre-questionnaire encouragement screen — show once after flow choice
     step: 0,           // 0 = flow-choice; 1..N = question steps; N+1 = review; N+2 = addon
@@ -666,7 +675,9 @@
     const items = [];
     const flow = state.flow;
     if (!flow) return items;
-    const base = flow === 'comprehensive'
+    const base = flow === 'next_chapter'
+      ? { name: 'Next Chapter Profile', price: 149 }
+      : flow === 'comprehensive'
       ? { name: 'Comprehensive Plan', price: 149 }
       : { name: 'Action Report',      price: 99 };
     items.push(base);
@@ -2448,6 +2459,417 @@
   ];
 
 
+
+  // ─────────────────────────────────────────────────────────────
+  // TRANSITION_STEPS — the Next Chapter Profile block (16+).
+  // CONDITIONAL: referenced ONLY from the state.flow === 'next_chapter'
+  // branch of getQuestionSteps(). Never reachable from the Action or
+  // Comprehensive paths. Added 2026-08-17.
+  // ─────────────────────────────────────────────────────────────
+  const TR_LEVELS = [
+    "Does this independently",
+    "Does it with a reminder or a prompt",
+    "Needs someone alongside every time",
+    "Someone else does this for them",
+    "Haven't tried this yet"
+  ];
+
+  const TRANSITION_STEPS = [
+    {
+      id: 'tr_where',
+      eyebrow: 'The transition years',
+      title: 'Where are they right now?',
+      sub: 'Everything in this report is written against the clock these answers describe.',
+      fields: [
+        { key: 'tr_current_setting', type: 'radio', required: true, triggersRerender: true,
+          label: 'Where is your young adult right now?',
+          options: [
+            'Still in high school, receiving special education services',
+            'Still in high school, no special education services',
+            'In an 18-21 transition program',
+            'Graduated and in an adult day program',
+            'Graduated and working or in job training',
+            'Graduated or aged out, no program right now',
+            'Homeschooled',
+            'Other'
+          ] },
+        { key: 'tr_current_setting_other', type: 'text', required: false,
+          label: 'If "Other" — describe the current setting.',
+          showIf: function(s) { return s.data.tr_current_setting === 'Other'; },
+          placeholder: '' },
+        { key: 'tr_school_services_status', type: 'radio', required: true,
+          label: 'Status of school-based services',
+          options: [
+            'Still receiving services',
+            'Services end within the next year',
+            'Services have ended',
+            'Never had an IEP or 504 plan',
+            'Not sure'
+          ] },
+        { key: 'tr_expected_exit_date', type: 'text', required: false,
+          label: 'When do — or did — school services end?',
+          help: 'A month and year is plenty. "June 2027", or "ended in 2025".',
+          placeholder: '' },
+        { key: 'tr_diploma_track', type: 'radio', required: false,
+          label: 'Diploma track',
+          help: 'This matters more than most families are told. Accepting a regular diploma usually ends eligibility for school services.',
+          options: [
+            'Working toward a regular diploma',
+            'Certificate of completion',
+            'Already graduated with a diploma',
+            'Already left with a certificate',
+            'Not sure'
+          ] },
+        { key: 'tr_transition_plan_exists', type: 'radio', required: false,
+          label: 'Is there a transition plan in the current IEP?',
+          options: [
+            'Yes, and we have seen it',
+            'Yes, but we have never really read it',
+            'There was one; we have not seen it since',
+            'No',
+            'Not sure'
+          ] },
+      ]
+    },
+    {
+      id: 'tr_vision',
+      eyebrow: 'The vision',
+      title: 'What does a good adult life look like?',
+      sub: 'Be specific and be honest. A vague answer here produces a vague plan, and a vague plan is what everybody already has.',
+      fields: [
+        { key: 'tr_vision_adult_life', type: 'textarea', required: true,
+          label: 'Describe what a good adult life looks like for them five years from now.',
+          help: 'Where are they living, what are they doing on a Tuesday, who is around them?',
+          placeholder: '' },
+        { key: 'tr_young_adult_own_vision', type: 'textarea', required: false,
+          label: 'In THEIR words: what do they say they want their life to look like?',
+          help: 'If it is different from your answer above, say so. Both belong in the report — a plan that ignores the person tends not to survive contact with the person.',
+          placeholder: '' },
+        { key: 'tr_postsecondary_interest', type: 'multi_with_text', required: false,
+          label: 'Which post-school paths are on the table? (check all that apply)',
+          options: [
+            'College or university',
+            'Community college',
+            'Certificate or trade program',
+            'Job training program',
+            'Supported employment',
+            'Competitive employment',
+            'Volunteering to start',
+            'Adult day program',
+            'Community-based program',
+            'Nothing lined up yet',
+            'Not sure'
+          ], extraPlaceholder: 'Anything specific you are looking at?' },
+        { key: 'tr_living_goal', type: 'radio', required: false,
+          label: 'Living situation you are working toward',
+          options: [
+            'Family home, indefinitely',
+            'Family home with supports coming in',
+            'Family home for now, shared living later',
+            'Shared living with a host family or roommate',
+            'Supported apartment',
+            'Fully independent',
+            'Group home or residential',
+            'Not sure'
+          ] },
+        { key: 'tr_living_goal_details', type: 'textarea', required: false,
+          label: 'Anything specific about the living situation?',
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'tr_work',
+      eyebrow: 'Work',
+      title: 'What kind of work fits them?',
+      sub: 'Employers say no to vague requests and yes to specific ones. This is where the specifics come from.',
+      fields: [
+        { key: 'tr_work_experience', type: 'textarea', required: false,
+          label: 'What work, volunteering, chores, or internships have they done so far — and how did each go?',
+          help: 'Including the ones that did not work out. Especially those.',
+          placeholder: '' },
+        { key: 'tr_work_interests', type: 'textarea', required: false,
+          label: 'What kinds of tasks do they gravitate toward or ask to do?',
+          help: 'Sorting, fixing, organizing, caring for animals, being outside, working alone, working near people but not with them.',
+          placeholder: '' },
+        { key: 'tr_work_environment_fit', type: 'multi_with_text', required: false,
+          label: 'What kind of environment brings out their best? (check all that apply)',
+          options: [
+            'Predictable routine',
+            'Same small team every shift',
+            'Clear start and finish to each task',
+            'Written instructions',
+            'Working mostly alone',
+            'Quiet space',
+            'Physical or active work',
+            'Structured repetition',
+            'One named person to check in with'
+          ], extraPlaceholder: 'Anything else that brings out their best?' },
+        { key: 'tr_work_dealbreakers', type: 'multi_with_text', required: false,
+          label: 'What kind of environment will NOT work? (check all that apply)',
+          options: [
+            'Loud open rooms',
+            'Customer-facing all shift',
+            'Schedule that changes without notice',
+            'Rotating supervisors',
+            'Fast pace with no breaks',
+            'Fluorescent lighting',
+            'Strong smells',
+            'Crowds',
+            'Being timed or rushed',
+            'Unwritten social rules'
+          ], extraPlaceholder: 'Anything else that rules a placement out?' },
+      ]
+    },
+    {
+      id: 'tr_day',
+      eyebrow: 'The program day',
+      title: 'How long a day can they actually do?',
+      sub: 'This single number decides whether a placement holds. Programs will build past it unless you tell them not to.',
+      fields: [
+        { key: 'tr_stamina', type: 'radio', required: true,
+          label: 'How long a work or program day can they currently sustain?',
+          options: [
+            'About an hour',
+            'About two hours',
+            'About four hours before the day falls apart',
+            'A full six-hour day',
+            'A full working day',
+            'It depends entirely on the day',
+            'We have not tested this'
+          ] },
+        { key: 'tr_pace_pattern', type: 'textarea', required: false,
+          label: 'Their pace: best time of day, how long before they need a break, what a fading day looks like.',
+          help: 'The fading is the useful part. What do you see in the last hour that you do not see in the first?',
+          placeholder: '' },
+        { key: 'tr_transportation', type: 'multi_with_text', required: false,
+          label: 'How do they get places? (check all that apply)',
+          options: [
+            'Drives independently',
+            'Learning to drive',
+            'Public transit independently',
+            'Learning a fixed bus route with someone alongside',
+            'Rides with a family member',
+            'Paratransit or door-to-door service',
+            'Walks or bikes locally',
+            'Program transport',
+            'No transportation option right now'
+          ], extraPlaceholder: 'Anything else about getting places?' },
+      ]
+    },
+    {
+      id: 'tr_independence_a',
+      eyebrow: 'Independence snapshot  ·  1 of 2',
+      title: 'What can they do on their own today?',
+      sub: 'Answer for a typical day, not their best day. This table is what stops an adult program from over-helping — which takes a skill away every single time it happens.',
+      fields: [
+        { key: 'tr_ind_personal_care', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Personal care — showering, grooming, dressing for the weather and the setting' },
+        { key: 'tr_ind_meals', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Food — preparing a meal, packing a lunch, using the stove or microwave safely' },
+        { key: 'tr_ind_household', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Household — laundry, dishes, keeping their own space livable' },
+        { key: 'tr_ind_money', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Money — paying for something, knowing what they have, recognizing a bad deal' },
+        { key: 'tr_ind_time_management', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Time — waking on time, being ready, tracking a schedule' },
+        { key: 'tr_ind_medication', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Health routines — medication, hygiene routines, noticing they are unwell' },
+      ]
+    },
+    {
+      id: 'tr_independence_b',
+      eyebrow: 'Independence snapshot  ·  2 of 2',
+      title: 'And out in the world?',
+      sub: 'Same scale. The last three carry the most weight in an adult setting.',
+      fields: [
+        { key: 'tr_ind_appointments', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Appointments — making a call, checking in, answering a provider\'s questions' },
+        { key: 'tr_ind_transportation_skill', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Getting places — route, timing, what to do if the plan falls apart' },
+        { key: 'tr_ind_technology', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Technology — phone, email, apps a job or program requires' },
+        { key: 'tr_ind_community_safety', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Community safety — reading a situation, leaving one that feels wrong, asking a stranger for help' },
+        { key: 'tr_ind_emergencies', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Emergencies — calling for help, describing what happened, following instructions under stress' },
+        { key: 'tr_ind_self_advocacy', type: 'radio', required: true, options: TR_LEVELS,
+          label: 'Self-advocacy — saying they need a break, correcting a wrong assumption, asking for an accommodation' },
+        { key: 'tr_independence_details', type: 'textarea', required: false,
+          label: 'For any area above: what does the support actually look like in real life?',
+          help: 'The concrete version. "Will hand over a twenty for a two-dollar item and not wait for change" is worth more than any rating.',
+          placeholder: '' },
+        { key: 'tr_independence_priorities', type: 'textarea', required: false,
+          label: 'Which two or three of those areas matter most to work on first — and why those?',
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'tr_new_adults',
+      eyebrow: 'New adults',
+      title: 'How do they land with someone who does not know them?',
+      sub: 'For years the adults around them had learned them. That knowledge does not transfer automatically.',
+      fields: [
+        { key: 'tr_self_report_accuracy', type: 'radio', required: true,
+          label: 'How accurately do they report pain, illness, or distress to someone who does not know them?',
+          options: [
+            'Reports clearly and accurately',
+            'Reports, but downplays it',
+            'Only reports when directly asked the right question',
+            'Will say nothing is wrong right up until it is a crisis',
+            'Cannot reliably report at all'
+          ] },
+        { key: 'tr_masking', type: 'radio', required: true, triggersRerender: true,
+          label: 'Do they mask — hold it together in public and fall apart later?',
+          options: [
+            'Yes — holds it together in public and falls apart after',
+            'Sometimes, depending on the setting',
+            'No — what you see is what is happening',
+            'Not sure'
+          ] },
+        { key: 'tr_masking_details', type: 'textarea', required: false,
+          label: 'What does the after look like, and how long does it last?',
+          showIf: function(s) { return typeof s.data.tr_masking === 'string' && (s.data.tr_masking.indexOf('Yes') === 0 || s.data.tr_masking.indexOf('Sometimes') === 0); },
+          placeholder: '' },
+        { key: 'tr_disclosure_preference', type: 'radio', required: true,
+          label: 'How do they want their diagnosis handled with new adults?',
+          help: 'This is honored throughout the report. If it is anything other than fully open, no page written for outside eyes will name a diagnosis.',
+          options: [
+            'Open — happy for people to know',
+            'On a need-to-know basis — describe the need, not the label',
+            'Private — prefer it is not disclosed',
+            'Depends on the person and the setting',
+            'They have not been asked / cannot say'
+          ] },
+        { key: 'tr_new_adult_first_meeting', type: 'textarea', required: false,
+          label: 'What should a brand-new adult do in the first ten minutes to get this right?',
+          help: 'This becomes the first block of the one-page profile.',
+          placeholder: '' },
+        { key: 'tr_words_that_shut_down', type: 'textarea', required: false,
+          label: 'What do adults say — with good intentions — that shuts them down?',
+          help: '"Look at me when I am talking to you." "Everyone finds this hard." "How does that make you feel?"',
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'tr_health_legal',
+      eyebrow: 'Health, benefits, decisions',
+      title: 'The decisions that come with a deadline.',
+      sub: 'We do not advise on any of this. We name it so nobody discovers it late, and so the report can tell you what to ask.',
+      fields: [
+        { key: 'tr_medical_transition_status', type: 'radio', required: false,
+          label: 'Medical care: pediatric or adult providers?',
+          options: [
+            'Still with the pediatric practice',
+            'In the middle of moving to adult providers',
+            'Moved to adult providers already',
+            'No regular provider right now'
+          ] },
+        { key: 'tr_health_notes_for_adult_providers', type: 'textarea', required: false,
+          label: 'What would you want an adult doctor to know that a pediatrician already knew?',
+          placeholder: '' },
+        { key: 'tr_decision_making_status', type: 'radio', required: true,
+          label: 'Decision-making arrangement at 18',
+          help: 'Informational only. These options are very different from one another and this report will not tell you which to choose.',
+          options: [
+            'Nothing formal in place',
+            'Nothing formal yet, but we are reading about supported decision-making',
+            'A supported decision-making agreement is in place',
+            'Power of attorney or health care proxy in place',
+            'Guardianship in progress',
+            'Guardianship in place',
+            'Not sure what the options are'
+          ] },
+        { key: 'tr_benefits_status', type: 'multi_with_text', required: false,
+          label: 'Which benefits or agency programs are in place, applied for, or waitlisted? (check all that apply)',
+          options: [
+            'Income support in place',
+            'Applied for income support',
+            'Public health coverage in place',
+            'On a waitlist for adult services',
+            'Approved for adult services',
+            'Vocational rehabilitation file open',
+            'A savings account for people with disabilities is set up',
+            'No savings account set up yet',
+            'Nothing applied for yet',
+            'Not sure'
+          ], extraPlaceholder: 'Anything specific about where the paperwork stands?' },
+        { key: 'tr_agencies_involved', type: 'textarea', required: false,
+          label: 'Which adult agencies, case managers, or programs are already involved?',
+          help: 'Names and roles if you have them, or "one intake meeting last spring and nothing since" — that is useful too.',
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'tr_safety',
+      eyebrow: 'Safety',
+      title: 'The part nobody wants to write down.',
+      sub: 'Adult life has less supervision and more strangers. Naming the risk is what makes it plannable instead of just frightening.',
+      fields: [
+        { key: 'tr_vulnerability_concerns', type: 'multi_with_text', required: false,
+          label: 'Which vulnerabilities worry you most as they move into adult settings? (check all that apply)',
+          options: [
+            'Financial exploitation',
+            'Being agreeable with strangers',
+            'Online contacts',
+            'Relationships and consent',
+            'Not recognizing an unsafe situation',
+            'Interactions with police',
+            'Wandering or getting lost',
+            'Substance use',
+            'Being taken advantage of at work',
+            'None of these worry me right now'
+          ], extraPlaceholder: 'Anything else?' },
+        { key: 'tr_safety_community_concerns', type: 'textarea', required: false,
+          label: 'Describe the safety concern that keeps you up at night.',
+          placeholder: '' },
+        { key: 'tr_first_responder_notes', type: 'textarea', required: false,
+          label: 'What should a police officer, EMT, or emergency-room nurse know before interacting with them?',
+          help: 'This prints on the one-page profile as its own emergency block.',
+          placeholder: '' },
+      ]
+    },
+    {
+      id: 'tr_team_goals',
+      eyebrow: 'The team and the ask',
+      title: 'Who is around them, and what are you aiming at?',
+      sub: 'Last block. These answers shape the questions the report hands you to take into meetings.',
+      fields: [
+        { key: 'tr_placement_history', type: 'textarea', required: false,
+          label: 'Has a job, program, or placement ended badly? What happened, in your view?',
+          help: 'Naming the pattern is the fastest way to keep it from repeating in the next placement.',
+          placeholder: '' },
+        { key: 'tr_placement_supports_that_worked', type: 'textarea', required: false,
+          label: 'In any setting outside your home, what support actually worked?',
+          placeholder: '' },
+        { key: 'tr_transition_team_members', type: 'textarea', required: false,
+          label: 'Who is on the transition team right now — names and roles?',
+          placeholder: '' },
+        { key: 'tr_top_3_transition_goals', type: 'textarea', required: true,
+          label: 'Top 3 transition goals for the next 12 months',
+          help: 'One per line.',
+          placeholder: '' },
+        { key: 'tr_family_biggest_fear', type: 'textarea', required: false,
+          label: 'What is your biggest fear about this next chapter?',
+          help: 'Written into the report as you say it. Every section is built with it in view.',
+          placeholder: '' },
+        { key: 'tr_young_adult_involvement', type: 'radio', required: true,
+          label: 'How involved was your young adult in answering these questions?',
+          options: [
+            'They answered most of it themselves',
+            'Answered some of it with me, sitting right here',
+            'I asked them about a few of these',
+            'I answered on their behalf',
+            'They are not able to participate in this kind of questionnaire'
+          ] },
+        { key: 'tr_young_adult_own_words', type: 'textarea', required: false,
+          label: 'Anything they want said in their own words — printed as theirs, not yours.',
+          help: 'This is quoted in the report and shapes the whole self-advocacy section. Even one sentence changes it.',
+          placeholder: '' },
+      ]
+    },
+  ];
+
+
   function getQuestionSteps() {
     let steps = [];
     if (state.flow === 'action') {
@@ -2463,6 +2885,17 @@
       steps = SHARED_STEPS
         .concat(COMPREHENSIVE_STEPS)
         .concat(FOCUSED_ISSUE_STEPS)
+        .concat(HOUSEHOLD_STEPS)
+        .concat(SIBLING_STEPS)
+        .concat(COMPREHENSIVE_ADDON_STEPS)
+        .concat(FINAL_STEPS);
+    } else if (state.flow === 'next_chapter') {
+      // Next Chapter Profile (16+). The full comprehensive core, then
+      // the transition block. FOCUSED_ISSUE_STEPS is deliberately left
+      // out: this flow is not about one presenting issue.
+      steps = SHARED_STEPS
+        .concat(COMPREHENSIVE_STEPS)
+        .concat(TRANSITION_STEPS)
         .concat(HOUSEHOLD_STEPS)
         .concat(SIBLING_STEPS)
         .concat(COMPREHENSIVE_ADDON_STEPS)
@@ -2563,7 +2996,7 @@
   function renderFlowChoice(card) {
     card.appendChild(el('div', { className: 'step-eyebrow' }, 'CHOOSE YOUR REPORT'));
     card.appendChild(el('h2', { className: 'step-title serif' }, 'How deep do you want to go?'));
-    card.appendChild(el('p', { className: 'step-sub' }, 'You can come back later for the deeper plan — but if you\'re ready, the Comprehensive Plan is the one most families say changed how they parent.'));
+    card.appendChild(el('p', { className: 'step-sub' }, 'You can come back later for a deeper plan. If your young adult is 16 or older and school supports are winding down, start with the Next Chapter Profile.'));
 
     const grid = el('div', { className: 'flow-grid' });
 
@@ -2587,10 +3020,35 @@
     compCard.appendChild(el('button', { className: 'btn btn-primary', onclick: (e) => { e.stopPropagation(); chooseFlow('comprehensive'); } }, 'Choose Comprehensive Plan →'));
     grid.appendChild(compCard);
 
+
+    // Next Chapter card (transition years, 16+). Added 2026-08-17.
+    const nextCard = el('div', { className: 'flow-card transition', onclick: () => chooseFlow('next_chapter') });
+    nextCard.appendChild(el('div', { className: 'flow-icon' }, '🧭'));
+    nextCard.appendChild(el('h3', null, 'Next Chapter Profile'));
+    nextCard.appendChild(el('div', { className: 'flow-tagline' }, 'For ages 16+. When school ends and adult life begins.'));
+    nextCard.appendChild(el('div', { className: 'flow-price', html: '<span class="currency">$</span>149' }));
+    nextCard.appendChild(el('div', { className: 'flow-desc' }, 'Everything in the Comprehensive Plan, plus the transition years: independence, work, benefits and decisions at 18, and a Handoff Pack built to give an adult program, an employer, or a job coach.'));
+    nextCard.appendChild(el('button', { className: 'btn btn-sky', onclick: (e) => { e.stopPropagation(); chooseFlow('next_chapter'); } }, 'Choose Next Chapter →'));
+    grid.appendChild(nextCard);
+
     card.appendChild(grid);
   }
 
   function chooseFlow(flow) {
+    // Age advisory for the transition flow. Advisory, never a hard block —
+    // a 15-year-old a year from an 18-21 program is a legitimate buyer, and
+    // age is collected later in the questionnaire anyway.
+    if (flow === 'next_chapter') {
+      const a = Number(state.data.child_age);
+      if (a && a < 16) {
+        const ok = window.confirm(
+          'The Next Chapter Profile is written for ages 16 and up — school ' +
+          'transition, work, and the decisions that arrive at 18.\n\n' +
+          'You entered age ' + a + '. The Comprehensive Plan is usually the ' +
+          'better fit below 16.\n\nContinue with Next Chapter anyway?');
+        if (!ok) return;
+      }
+    }
     state.flow = flow;
     state.step = 0;
     state.intro_shown = false; // re-show intro if flow is re-chosen
@@ -3210,7 +3668,8 @@
   }
 
   function submitLabel() {
-    const base = state.flow === 'comprehensive' ? 149 : 99;
+    const base = (state.flow === 'comprehensive'
+                  || state.flow === 'next_chapter') ? 149 : 99;
     const yes = v => typeof v === 'string' && v.indexOf('Yes') === 0;
     const guideKeys = ['addon_babysitter','addon_extended_family','addon_sibling','addon_teacher','addon_service_provider'];
     const guideCount = guideKeys.filter(k => yes(state.data[k])).length;
@@ -3438,7 +3897,7 @@
     try {
       const url = new URL(window.location.href);
       const f = url.searchParams.get('flow');
-      if ((f === 'action' || f === 'comprehensive') && !state.flow) {
+      if ((f === 'action' || f === 'comprehensive' || f === 'next_chapter') && !state.flow) {
         state.flow = f;
         state.step = 0;
         saveDraft();
