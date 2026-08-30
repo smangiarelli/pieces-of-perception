@@ -485,6 +485,14 @@
   // to a quote character turned "e.g. &ldquo;— Dana&rdquo;" into garbage —
   // and this string is the legal record of what the family agreed to, so it
   // has to be exactly the words that were on their screen.
+  // Escape any value that came from a family's own record before it reaches
+  // innerHTML. Added 2026-08-30 — child_first_name was being interpolated raw.
+  function escapeText(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   function decodeHtml(html) {
     const d = document.createElement('div');
     d.innerHTML = String(html == null ? '' : html);
@@ -606,8 +614,8 @@
       const line = document.getElementById('context-line');
       const label = REPORT_LABEL[state.report_kind] || REPORT_LABEL.other;
       line.innerHTML = state.child_first_name
-        ? 'You’re reviewing <strong>' + state.child_first_name + '’s ' + label + '</strong>.'
-        : 'You’re reviewing your <strong>' + label + '</strong>.';
+        ? 'You’re reviewing <strong>' + escapeText(state.child_first_name) + '’s ' + escapeText(label) + '</strong>.'
+        : 'You’re reviewing your <strong>' + escapeText(label) + '</strong>.';
       line.style.display = 'flex';
     } else {
       state.report_kind = 'other';

@@ -1,14 +1,40 @@
 # Pieces of Perception — robots.txt
 # https://piecesofperception.com/
+# Reviewed 2026-08-30: the disallow list below covers every account, flow and
+# staging page in the deploy root. If you add an .html file here, add it here too.
 
 User-agent: *
 Allow: /
+
+# Sign-in and account
 Disallow: /auth.html
-Disallow: /dashboard.html
+Disallow: /portal.html
 Disallow: /beta-portal.html
+Disallow: /reset-password.html
+
+# Family dashboards
+Disallow: /dashboard.html
+Disallow: /family-dashboard.html
 Disallow: /beta-dashboard.html
+
+# Questionnaire and delivery flow
 Disallow: /questionnaire.html
+Disallow: /questionnaire_nextchapter_20260817.html
+Disallow: /questionnaire_nextchapter_20260818.html
 Disallow: /generating.html
+Disallow: /update.html
+
+# Checkout and post-purchase
+Disallow: /checkout.html
+Disallow: /thankyou.html
+
+# Surveys
+Disallow: /review.html
+Disallow: /feedback.html
+
+# Staging and internal artifacts
+Disallow: /index_GOLIVE_STAGED_20260730.html
+Disallow: /wave2_comprehensive_ready_email.html
 
 # Block AI crawlers from training on family / child data
 User-agent: GPTBot
@@ -27,6 +53,15 @@ User-agent: anthropic-ai
 Disallow: /
 
 User-agent: PerplexityBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: meta-externalagent
 Disallow: /
 
 Sitemap: https://piecesofperception.com/sitemap.xml

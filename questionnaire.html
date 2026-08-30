@@ -552,14 +552,10 @@
   // SESSION
   // ─────────────────────────────────────────────────────────────
   function getSession() {
-    // Phase 2A preview bypass: ?preview=foundation skips auth so the
-    // staged file can be opened directly from the file system.
-    try {
-      const url = new URL(window.location.href);
-      if (url.searchParams.get('preview') === 'foundation') {
-        return { access_token: 'preview', user_id: 'preview-user', email: 'preview@local', name: 'Preview', expires_at: Date.now() + 3600000 };
-      }
-    } catch (_) {}
+    // NOTE: the Phase 2A ?preview=foundation auth bypass was REMOVED 2026-08-30.
+    // It shipped to production and allowed the questionnaire to be opened
+    // without signing in. Do not reintroduce it — preview the staged file by
+    // signing in with a test account instead.
     try {
       const raw = localStorage.getItem('pop_session');
       if (!raw) return null;
@@ -576,10 +572,6 @@
     // Returns a valid session, refreshing the access token if it is expired
     // or about to expire — so a long questionnaire never logs the user out
     // mid-flow. Returns null only if there is no usable session at all.
-    try {
-      const url = new URL(window.location.href);
-      if (url.searchParams.get('preview') === 'foundation') return getSession();
-    } catch (e) {}
     let s = null;
     try { s = JSON.parse(localStorage.getItem('pop_session') || 'null'); } catch (e) {}
     if (!s || !s.access_token || !s.user_id) return getSession();
@@ -3432,8 +3424,6 @@
     }
 
     // Pre-fill flow from URL ?flow=action|comprehensive
-    // Phase 2A preview: ?preview=foundation pins a banner to the top so
-    // it's obvious you're not on the live form.
     try {
       const url = new URL(window.location.href);
       const f = url.searchParams.get('flow');
@@ -3441,14 +3431,6 @@
         state.flow = f;
         state.step = 0;
         saveDraft();
-      }
-      const p = url.searchParams.get('preview');
-      if (p === 'foundation') {
-        const banner = document.createElement('div');
-        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#FFB100;color:#000;font-family:sans-serif;font-size:12.5px;font-weight:700;text-align:center;padding:6px 10px;z-index:9999;letter-spacing:0.4px;';
-        banner.textContent = 'PREVIEW MODE — Phase 2A staging copy. Submission disabled. Not in production.';
-        document.body.appendChild(banner);
-        document.body.style.paddingTop = '32px';
       }
     } catch (_) {}
 

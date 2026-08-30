@@ -29,5 +29,27 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/index_GOLIVE_STAGED_20260730.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/wave2_comprehensive_ready_email.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/questionnaire_nextchapter_20260817.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/questionnaire_nextchapter_20260818.html",
+      "destination": "/",
+      "permanent": false
+    }
   ]
 }
