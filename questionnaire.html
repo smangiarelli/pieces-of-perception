@@ -568,7 +568,7 @@
     } catch (e) { return null; }
   }
   function clearSession() { try { localStorage.removeItem('pop_session'); } catch (_) {} }
-  function redirectToAuth() { window.location.href = '/beta-portal.html'; }
+  function redirectToAuth() { window.location.href = '/portal.html'; }
 
   async function ensureFreshSession() {
     // Returns a valid session, refreshing the access token if it is expired
