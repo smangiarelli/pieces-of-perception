@@ -761,6 +761,31 @@
     } catch (e) { return false; }
   }
 
+  // LC-3 (2026-08-30): which dashboard does this user belong to? A beta
+  // family goes to beta-dashboard.html; everyone else goes to the live
+  // family dashboard. Defaults to family-dashboard.html, which is the
+  // correct default once beta ends — a live customer must never be sent
+  // to the beta portal.
+  async function dashboardPath(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.${session.user_id}` +
+        `&policy_type=eq.beta_agreement` +
+        `&select=policy_type&limit=1`,
+        { headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Accept': 'application/json'
+          } }
+      );
+      if (!res.ok) return '/family-dashboard.html';
+      const rows = await res.json();
+      return (Array.isArray(rows) && rows.length > 0)
+        ? '/beta-dashboard.html'
+        : '/family-dashboard.html';
+    } catch (e) { return '/family-dashboard.html'; }
+  }
+
   async function init() {
     const session = await ensureFreshSession();
     if (!session) { redirectToAuth(); return; }
@@ -811,13 +836,14 @@
     // than going through the dashboard card. Fails CLOSED.
     const hasFSA = await hasCustomerAgreementAck(session);
     if (!hasFSA) {
+      const dashHref = await dashboardPath(session);
       showGate('&#128220;', 'One quick step first',
         'Before receiving a Report update, you need to accept the current ' +
         '<a href="/customer-agreement.html" target="_blank" rel="noopener"><strong>Family Service Agreement</strong></a>. ' +
         'Acceptance governs this update and your family’s continued use of the service going forward.' +
         '<span class="gate-note" style="display:block;">Head back to your dashboard — the update card there walks you through it. ' +
         'If this is your free beta-family update, accepting does <strong>not</strong> mean paying: that update is still free.<br><br>' +
-        '<a href="/beta-dashboard.html" style="font-weight:700">Back to your dashboard &rarr;</a></span>');
+        '<a href="' + dashHref + '" style="font-weight:700">Back to your dashboard &rarr;</a></span>');
       return;
     }
 
