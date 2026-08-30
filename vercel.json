@@ -50,6 +50,16 @@
       "source": "/questionnaire_nextchapter_20260818.html",
       "destination": "/",
       "permanent": false
+    },
+    {
+      "source": "/auth.html",
+      "destination": "/portal.html",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard.html",
+      "destination": "/family-dashboard.html",
+      "permanent": false
     }
   ]
 }
