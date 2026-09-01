@@ -32,6 +32,11 @@
   ],
   "redirects": [
     {
+      "source": "/partner-sample-report.pdf",
+      "destination": "/partnerships.html",
+      "permanent": false
+    },
+    {
       "source": "/Pieces_of_Perception_Demo.html",
       "destination": "/",
       "permanent": false

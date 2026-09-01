@@ -730,7 +730,7 @@
       sub: 'These basics help us tune the tone and developmental lens of your report.',
       fields: [
         { key: 'child_first_name', type: 'text', required: true, label: "Child's first name as it should appear in the report", placeholder: 'e.g., Sam' },
-        { key: 'child_last_initial', type: 'text', required: true, label: 'Last initial (e.g., "Sam R.")', placeholder: 'M' },
+        { key: 'child_last_initial', type: 'text', required: true, naOption: true, label: 'Last initial (e.g., "Sam R.")', placeholder: 'M' },
         { key: 'child_age', type: 'number', required: true, min: 1, max: 25, label: 'Age today', placeholder: '7' },
         { key: 'child_pronouns', type: 'text', required: true, label: 'Pronouns', help: 'he/him, she/her, they/them, etc.', placeholder: 'he/him' },
         { key: 'grade_level', type: 'radio', required: true, label: 'Grade level (or developmental equivalent)',
@@ -743,9 +743,9 @@
       title: 'What\'s the diagnostic picture?',
       sub: "We'll tune the framing of the report based on what you share. There's no wrong answer — even \"in evaluation\" or \"unsure\" is useful.",
       fields: [
-        { key: 'diagnoses', type: 'checkbox', required: true, triggersRerender: true,
+        { key: 'diagnoses', type: 'checkbox', required: true, naOption: true, triggersRerender: true,
           label: 'Primary diagnosis or diagnoses (check all that apply)',
-          options: ['Autism / ASD','ADHD','Anxiety','Sensory Processing Disorder','Dyslexia','PTSD','OCD','Other (specify below)'] },
+          options: ['Autism / ASD','ADHD','Anxiety','Sensory Processing Disorder','Dyslexia','PTSD','OCD','No diagnosis yet / in the evaluation process','No formal diagnosis \u2014 and that is fine','Other (specify below)'] },
         { key: 'diagnoses_other', type: 'textarea', required: false,
           label: 'If "Other" — what?  And: when was each diagnosis received?',
           help: 'Approximate dates / ages are fine. Helps frame how new the language is for your child and the family.',
@@ -785,7 +785,7 @@
       title: 'How does your child communicate?',
       sub: 'Be specific — this tunes the tone of the focused report.',
       fields: [
-        { key: 'communication_style_freetext', type: 'textarea', required: true,
+        { key: 'communication_style_freetext', type: 'textarea', required: true, naOption: true,
           label: 'Communication style',
           help: 'Verbal? Mostly verbal but loses words under stress? Uses an AAC device? Limited verbal? Non-speaking? Be specific.',
           placeholder: '' },
@@ -801,11 +801,11 @@
           label: "What's the one specific issue, trigger, trauma, or pattern this report should focus on?",
           help: "Examples: 'Bedtime regression in the last 6 weeks — won't sleep alone after a thunderstorm.' 'New trigger word from a coach that produces shutdowns.' 'Sibling-dynamic spike since the baby was born.'",
           placeholder: '' },
-        { key: 'focused_issue_start_date', type: 'text', required: true,
+        { key: 'focused_issue_start_date', type: 'text', required: true, naOption: true,
           label: 'When did this start?',
           help: 'Date or rough timeframe. Was there a clear precipitating event? Or did it creep in?',
           placeholder: 'e.g., About 6 weeks ago, after the back-to-school transition' },
-        { key: 'focused_issue_frequency', type: 'multi_with_text', required: true,
+        { key: 'focused_issue_frequency', type: 'multi_with_text', required: true, naOption: true,
           label: 'How often is it happening?',
           help: 'Daily? Multiple times a day? Weekly? In specific settings only?',
           placeholder: '' , options: [
@@ -825,7 +825,7 @@
       title: "What does the issue look like, inside and out?",
       sub: 'The more concrete, the better the report.',
       fields: [
-        { key: 'focused_issue_physical_appearance', type: 'multi_with_text', required: true,
+        { key: 'focused_issue_physical_appearance', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What does it look like physically — what do you actually SEE happening?',
           help: 'Be concrete. Body language, facial expression, vocalizations, things they say, things they do.',
           placeholder: '' , options: [
@@ -840,7 +840,7 @@
           "Repetitive motion (rocking, flapping)",
           "Stomach pain or other physical symptoms"
         ], extraPlaceholder: "Other physical signs during the focused issue?"},
-        { key: 'focused_issue_emotional_appearance', type: 'multi_with_text', required: true,
+        { key: 'focused_issue_emotional_appearance', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What does it look like emotionally — what do you sense is going on internally for them?',
           help: "Even if it's a guess. 'I think he's afraid.' 'It feels like shame.' 'I think she's overstimulated and embarrassed at the same time.'",
           placeholder: '' , options: [
@@ -854,7 +854,7 @@
           "Confusion",
           "Numbness / disconnection"
         ], extraPlaceholder: "Other emotional patterns during the focused issue?"},
-        { key: 'focused_issue_struggling_direction', type: 'checkbox', required: true,
+        { key: 'focused_issue_struggling_direction', type: 'checkbox', required: true, naOption: true,
           label: 'When this issue is active, your child tends to (check all that apply):',
           help: 'The direction of struggling shapes what responses will land.',
           options: [
@@ -873,11 +873,11 @@
       title: 'What sets it off — and when does it NOT happen?',
       sub: 'Both halves matter. The negative space tells us what\'s protective.',
       fields: [
-        { key: 'focused_issue_trigger_theory', type: 'textarea', required: true,
+        { key: 'focused_issue_trigger_theory', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: "What's the trigger — or your best theory of the trigger?",
           help: "A specific person? A word? A place? A type of transition? A sensory input? Something that happened earlier? Even 'I don't know — that's part of why I'm here' is a useful answer.",
           placeholder: '' },
-        { key: 'focused_issue_when_not_happening', type: 'multi_with_text', required: true,
+        { key: 'focused_issue_when_not_happening', type: 'multi_with_text', required: true, naOption: true,
           label: 'When does this NOT happen?',
           help: 'When is your child OK? What contexts seem protective?',
           placeholder: '' , options: [
@@ -918,7 +918,7 @@
           "Witnessed difficult events",
           "Unsure or do not want to specify"
         ], extraPlaceholder: "Anything else about trauma context we should know?"},
-        { key: 'regulation_profile_in_general', type: 'multi_with_text', required: true,
+        { key: 'regulation_profile_in_general', type: 'multi_with_text', required: true, naOption: true,
           label: "What is your child's regulation profile in general?",
           help: "What ALREADY helps them regulate, even when this issue isn't active? Hugs? Pressure? Music? Movement? Quiet space? Specific people?",
           placeholder: '' , options: [
@@ -939,7 +939,7 @@
       title: "What have you already tried with this specific issue?",
       sub: "Even things that didn't work are useful — we'll suggest what to try next.",
       fields: [
-        { key: 'strategies_already_tried', type: 'textarea', required: true,
+        { key: 'strategies_already_tried', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: "List every strategy, intervention, or accommodation you've tried with this specific issue.",
           help: "Be honest about how each fared. e.g., 'Reward chart — worked 3 days, then stopped. Visual schedule — helped a little. Removing screens before bed — no change.'",
           placeholder: '' },
@@ -963,11 +963,11 @@
       title: 'What does Day 28 look like if this works?',
       sub: 'Specific, observable, honest.',
       fields: [
-        { key: 'success_day_28_vision', type: 'textarea', required: true,
+        { key: 'success_day_28_vision', type: 'textarea', required: true, naOption: true,
           label: 'If this report works perfectly, what does Day 28 look like?',
           help: "Paint the picture. 'Three smooth bedtimes a week. He sleeps in his own bed. He asks for a hug instead of a meltdown.'",
           placeholder: '' },
-        { key: 'family_bandwidth_for_implementation', type: 'multi_with_text', required: true,
+        { key: 'family_bandwidth_for_implementation', type: 'multi_with_text', required: true, naOption: true,
           label: "What is the FAMILY's bandwidth for implementation right now?",
           help: "Are you in a good window to adopt new routines, or surviving? Be honest. 'We have 15 minutes a day at most' is a real answer that shapes the report.",
           placeholder: '', options: [
@@ -980,7 +980,7 @@
           "Have support from a partner or family",
           "Doing this mostly on my own"
         ], extraPlaceholder: "Anything else about your bandwidth right now?" },
-        { key: 'implementer_of_plan', type: 'multi_with_text', required: true,
+        { key: 'implementer_of_plan', type: 'multi_with_text', required: true, naOption: true,
           label: 'Who in the family is in charge of implementing this?',
           help: 'One parent? Both? Co-parents in different households? A grandparent? Will the implementer have support?',
           placeholder: '', options: [
@@ -1026,7 +1026,7 @@
       title: 'How does your child communicate?',
       sub: 'Pick the option that fits most days. We know it can change from moment to moment.',
       fields: [
-        { key: 'communication_style', type: 'radio', required: true, triggersRerender: true,
+        { key: 'communication_style', type: 'radio', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result', triggersRerender: true,
           label: "Primary communication style",
           options: ['Verbal','Mostly verbal with support','AAC device (specify below)','Limited verbal','Non-speaking'] },
         { key: 'communication_aac_device_details', type: 'textarea', required: false,
@@ -1034,7 +1034,7 @@
           help: 'Brand/model if you remember; how often they use it; anything quirky about how it shows up in their day.',
           placeholder: '',
           showIf: function(s) { return s.data.communication_style === 'AAC device (specify below)'; } },
-        { key: 'communication_when_overwhelmed', type: 'multi_with_text', required: true,
+        { key: 'communication_when_overwhelmed', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: "How do they communicate when they're stretched or overwhelmed?",
           help: 'Does they go quiet? Repeat phrases? Shut down? Use their device differently? Hit walls? Be specific.',
           placeholder: '' , options: [
@@ -1056,10 +1056,10 @@
       title: 'Meltdowns, shutdowns, and recovery.',
       sub: 'No need to soften — the more accurate, the better the plan.',
       fields: [
-        { key: 'meltdown_frequency', type: 'radio', required: true,
+        { key: 'meltdown_frequency', type: 'radio', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'How often do meltdowns or shutdowns happen?',
           options: ['Rarely','Weekly','Daily','Multiple times per day'] },
-        { key: 'dysregulation_physical_signs', type: 'multi_with_text', required: true,
+        { key: 'dysregulation_physical_signs', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What does it look like — physically — when they are starting to dysregulate?',
           help: 'Hands over ears? Pacing? Going quiet? Verbal stim-loops? Specific phrases they repeat?',
           placeholder: '' , options: [
@@ -1079,7 +1079,7 @@
           "Loss of appetite",
           "Repetitive movements (rocking, flapping)"
         ], extraPlaceholder: "Other physical signs we should know about?"},
-        { key: 'full_meltdown_appearance', type: 'multi_with_text', required: true,
+        { key: 'full_meltdown_appearance', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What does a full meltdown / shutdown look like for them?',
           placeholder: '', options: [
           "Crying or sobbing",
@@ -1094,7 +1094,7 @@
           "Dropping to the floor",
           "Unresponsive to voice or touch"
         ], extraPlaceholder: "Describe what a full meltdown / shutdown looks like for them." },
-        { key: 'recovery_time_after_hard_moment', type: 'multi_with_text', required: true,
+        { key: 'recovery_time_after_hard_moment', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'How long does recovery typically take after a hard moment?',
           help: 'Minutes? Hour? Half a day? Be specific.',
           placeholder: '' , options: [
@@ -1105,7 +1105,7 @@
           "2 to 4 hours",
           "4+ hours or rest of the day"
         ], extraPlaceholder: "Any patterns in what speeds or slows recovery?"},
-        { key: 'struggling_direction', type: 'checkbox', required: true,
+        { key: 'struggling_direction', type: 'checkbox', required: true, naOption: true,
           label: 'When your child is struggling, do they tend to (check all that apply):',
           help: 'The DIRECTION of their struggling shapes what kind of supports will land — internalizing (quiet, withdrawn) and externalizing (loud, physical) need different responses.',
           options: [
@@ -1124,18 +1124,18 @@
       title: 'Sensory sensitivities, in detail.',
       sub: "Select every category that often impacts your child's day.",
       fields: [
-        { key: 'sensory_sensitivities', type: 'checkbox', required: true,
+        { key: 'sensory_sensitivities', type: 'checkbox', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'Sensory areas of significant sensitivity (check all that apply)',
           options: [
             'Sound (auditory)','Light (visual)','Touch (tactile)','Food / taste (gustatory)',
             'Smell (olfactory)','Proprioceptive / movement','Vestibular (balance / spinning)',
             'Interoceptive (body awareness — hunger, fullness, bathroom)','None significant'
           ] },
-        { key: 'sensory_trigger_examples', type: 'textarea', required: true,
+        { key: 'sensory_trigger_examples', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'For each sensory area you checked, give one or two concrete examples of triggers.',
           help: "e.g., 'Sound: vacuum, blender, more than 2 voices talking at once. Light: fluorescent overhead at the store.'",
           placeholder: '' },
-        { key: 'sensory_regulation_inputs', type: 'multi_with_text', required: true,
+        { key: 'sensory_regulation_inputs', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What sensory inputs REGULATE them? (deep pressure, movement, music, etc.)',
           help: "Be specific — exact tools or types. 'Weighted blanket,' 'trampoline 10 minutes,' 'audiobook with single narrator,' etc.",
           placeholder: '' , options: [
@@ -1150,7 +1150,7 @@
           "Texture seeking (fidgets, soft fabrics)",
           "Visual focus items (lava lamps, kaleidoscope)"
         ], extraPlaceholder: "Other sensory inputs that help regulate?"},
-        { key: 'sensory_seeking', type: 'radio', required: true, triggersRerender: true,
+        { key: 'sensory_seeking', type: 'radio', required: true, naOption: true, triggersRerender: true,
           label: 'Does your child SEEK certain sensory experiences in ways that feel unusual or intense?',
           help: 'Examples: crashes into furniture, chews non-food items, needs constant movement, spins, sniffs everything, needs background sound/music to focus.',
           options: ['Yes — seeks intensely', 'Sometimes seeks', 'Rarely seeks', 'Not applicable'] },
@@ -1169,7 +1169,7 @@
           "Touching textures"
         ], extraPlaceholder: "Other inputs they seek?",
           showIf: function(s) { return s.data.sensory_seeking === 'Yes — seeks intensely' || s.data.sensory_seeking === 'Sometimes seeks'; } },
-        { key: 'sensory_under_registration', type: 'radio', required: true, triggersRerender: true,
+        { key: 'sensory_under_registration', type: 'radio', required: true, naOption: true, triggersRerender: true,
           label: 'Does your child sometimes UNDER-register sensory input?',
           help: "Examples: not noticing they're hungry, tired, hurt, hot, cold, or need the bathroom until it's urgent.",
           options: ['Yes — often misses internal cues', 'Sometimes', 'Rarely', 'Not applicable'] },
@@ -1186,14 +1186,14 @@
       title: "What's the school setting?",
       sub: "This helps us frame strategies that will actually fit their day.",
       fields: [
-        { key: 'school_setting', type: 'radio', required: true, triggersRerender: true,
+        { key: 'school_setting', type: 'radio', required: true, naOption: true, triggersRerender: true,
           label: 'Current setting',
           options: ['General ed','Inclusion','Self-contained','Homeschool','Hybrid (specify below)','Not in school'] },
         { key: 'school_setting_hybrid_other', type: 'textarea', required: false,
           label: 'If "Hybrid" — describe the mix.',
           placeholder: '',
           showIf: function(s) { return s.data.school_setting === 'Hybrid (specify below)'; } },
-        { key: 'iep_504_status', type: 'radio', required: true, triggersRerender: true,
+        { key: 'iep_504_status', type: 'radio', required: true, naOption: true, triggersRerender: true,
           label: 'Does they have an IEP or 504 plan?',
           options: ['IEP','504','Neither','In evaluation'] },
         { key: 'anticipate_needing_iep_504', type: 'textarea', required: false,
@@ -1209,11 +1209,11 @@
       title: 'Tell us what they do beautifully.',
       sub: 'We anchor every plan in strengths first.',
       fields: [
-        { key: 'strengths_list', type: 'textarea', required: true,
+        { key: 'strengths_list', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'Tell us what they do beautifully — list at least 3-5 things.',
           help: 'Pattern recognition, gentleness with animals, deep memory, art, humor, observational ability — whatever lights them up.',
           placeholder: '' },
-        { key: 'special_interests', type: 'textarea', required: true,
+        { key: 'special_interests', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'Their special interests (the things they could talk about for an hour).',
           help: "These become on-ramps into therapy, school, regulation. Be specific — 'weather,' 'dinosaurs,' 'a specific book series,' 'trains.'",
           placeholder: '' },
@@ -1225,7 +1225,7 @@
       title: 'Top 3 goals right now.',
       sub: 'Can be social, academic, daily-living, regulation, self-advocacy — anything.',
       fields: [
-        { key: 'top_3_goals', type: 'textarea', required: true,
+        { key: 'top_3_goals', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'Your top 3 current goals.',
           placeholder: '1.\n2.\n3.' },
       ]
@@ -1236,7 +1236,7 @@
       title: 'Sleep and eating.',
       sub: 'These two anchors shape almost every other behavior.',
       fields: [
-        { key: 'sleep_patterns', type: 'radio', required: true,
+        { key: 'sleep_patterns', type: 'radio', required: true, naOption: true,
           label: 'Sleep patterns',
           options: ['Good','Some difficulty','Significant difficulty'] },
         { key: 'sleep_details', type: 'multi_with_text', required: false,
@@ -1253,7 +1253,7 @@
           "Sleep duration varies widely",
           "Sleeps fine — no concerns"
         ], extraPlaceholder: "Anything else about sleep we should know?"},
-        { key: 'eating_profile', type: 'radio', required: true,
+        { key: 'eating_profile', type: 'radio', required: true, naOption: true,
           label: 'Eating / food',
           options: ['No issues','Some selective eating','Significant feeding challenges'] },
         { key: 'eating_details', type: 'multi_with_text', required: false,
@@ -1279,10 +1279,10 @@
       title: 'Social style and what helps.',
       sub: 'How they connect, and what helps them recover.',
       fields: [
-        { key: 'social_style', type: 'radio', required: true,
+        { key: 'social_style', type: 'radio', required: true, naOption: true,
           label: 'Their social style',
           options: ['Makes friends easily','Has a few friends','Struggles socially','Prefers to be alone'] },
-        { key: 'emotional_regulation_tools', type: 'checkbox', required: true, triggersRerender: true,
+        { key: 'emotional_regulation_tools', type: 'checkbox', required: true, naOption: true, triggersRerender: true,
           label: 'Emotional regulation tools that currently help (check all that apply)',
           options: [
             'Deep pressure','Movement breaks','Quiet space','Music / audiobooks','Fidgets',
@@ -1301,7 +1301,7 @@
       title: 'Real-world functioning — where are they ABLE, and where do they need support?',
       sub: 'One of the most useful sections for IEP teams, therapists, and service providers. Kids are often advanced in some areas and behind in others — that mismatch is the point.',
       fields: [
-        { key: 'adaptive_self_care', type: 'radio', required: true,
+        { key: 'adaptive_self_care', type: 'radio', required: true, naOption: true,
           label: 'Self-care: dressing, toileting / hygiene, feeding themselves',
           options: [
             'Independent for their age',
@@ -1309,7 +1309,7 @@
             'Significant support needed',
             'Not yet — fully dependent'
           ] },
-        { key: 'adaptive_home_routines', type: 'radio', required: true,
+        { key: 'adaptive_home_routines', type: 'radio', required: true, naOption: true,
           label: 'Home routines: morning, bedtime, multi-step household tasks',
           options: [
             'Independent for their age',
@@ -1317,7 +1317,7 @@
             'Significant support needed',
             'Not yet — fully dependent'
           ] },
-        { key: 'adaptive_community', type: 'radio', required: true,
+        { key: 'adaptive_community', type: 'radio', required: true, naOption: true,
           label: 'Community: stores, restaurants, appointments, asking a stranger for help',
           options: [
             'Independent for their age',
@@ -1325,7 +1325,7 @@
             'Significant support needed',
             'Not yet — fully dependent'
           ] },
-        { key: 'adaptive_safety', type: 'radio', required: true, triggersRerender: true,
+        { key: 'adaptive_safety', type: 'radio', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result', triggersRerender: true,
           label: 'Safety awareness: street safety, recognizing danger, asking for help in an emergency',
           options: [
             'Independent for their age',
@@ -1363,11 +1363,11 @@
       title: 'A good day vs. a hard day.',
       sub: 'The shape of each tells us what\'s working and what\'s not.',
       fields: [
-        { key: 'good_day_description', type: 'textarea', required: true,
+        { key: 'good_day_description', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What does a GOOD day look like?',
           help: 'Concrete — when they wake up, what they do, what they eat, who\'s around, what they say, how it ends.',
           placeholder: '' },
-        { key: 'hard_day_description', type: 'textarea', required: true,
+        { key: 'hard_day_description', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What does a HARD day look like?',
           help: 'No need to soften.',
           placeholder: '' },
@@ -1379,7 +1379,7 @@
       title: 'Predictable triggers.',
       sub: 'List the things you can brace for.',
       fields: [
-        { key: 'predictable_dysregulation_triggers', type: 'multi_with_text', required: true,
+        { key: 'predictable_dysregulation_triggers', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'List the situations / words / events that you can predict will dysregulate them.',
           help: "e.g., 'Fluorescent lights at the doctor.' 'Surprise touch.' 'The word stop.' 'Plans changing without warning.' Anything you brace for.",
           placeholder: '' , options: [
@@ -1425,7 +1425,7 @@
             'Three or more (specify below)',
             'It varies — describe below'
           ] },
-        { key: 'household_primary_people', type: 'textarea', required: true,
+        { key: 'household_primary_people', type: 'textarea', required: true, naOption: true,
           label: 'Who lives in the primary household?',
           help: 'List each person: name (or relationship), role, age range. e.g., "Maria (Parent 1), 42; Emma, sister, 14; the dog Buddy."',
           placeholder: '' },
@@ -2007,10 +2007,10 @@
       sub: 'These populate the Babysitter Care Guide. Each line goes onto the printed contact card.',
       showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; },
       fields: [
-        { key: 'sitter_mom_name_number', type: 'text', required: true,
+        { key: 'sitter_mom_name_number', type: 'text', required: true, naOption: true,
           label: 'PARENT 1 · Name + Number', placeholder: 'Maria, 401-555-0100',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_dad_partner_name_number', type: 'text', required: true,
+        { key: 'sitter_dad_partner_name_number', type: 'text', required: true, naOption: true,
           label: 'PARENT 2 · Name + Number', placeholder: '',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_close_neighbor_name_number', type: 'text', required: true, naOption: true,
@@ -2019,35 +2019,35 @@
         { key: 'sitter_backup_family_name_number', type: 'text', required: true, naOption: true,
           label: 'BACKUP FAMILY MEMBER · Name + Number',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_pediatrician_name_number', type: 'text', required: true,
+        { key: 'sitter_pediatrician_name_number', type: 'text', required: true, naOption: true,
           label: 'PEDIATRICIAN · Name + Number',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_after_hours_care_name_number', type: 'text', required: true, naOption: true,
           label: 'AFTER-HOURS CARE · Name + Number',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_home_address', type: 'text', required: true,
+        { key: 'sitter_home_address', type: 'text', required: true, naOption: true,
           label: 'HOME ADDRESS · Street, City, State, Zip',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_cross_streets_gate_code', type: 'text', required: true, naOption: true,
           label: 'CROSS-STREETS / GATE CODE · If relevant',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_allergies_medications', type: 'text', required: true,
+        { key: 'sitter_allergies_medications', type: 'text', required: true, naOption: true,
           label: 'ALLERGIES / MEDICATIONS · List clearly',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_insurance_info', type: 'text', required: true,
+        { key: 'sitter_insurance_info', type: 'text', required: true, naOption: true,
           label: 'INSURANCE INFO · Carrier + ID',
           help: "This goes only on the Babysitter Guide as an emergency-contact reference (so a sitter has it if your child needs urgent care). Pieces of Perception does not use, share, or process this for any other purpose.",
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_local_er', type: 'text', required: true,
+        { key: 'sitter_local_er', type: 'text', required: true, naOption: true,
           label: 'LOCAL ER · Name + Address',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_foods_loved', type: 'textarea', required: true,
+        { key: 'sitter_foods_loved', type: 'textarea', required: true, naOption: true,
           label: "Foods they love (sitter can't go wrong with these)",
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
         { key: 'sitter_foods_to_skip', type: 'textarea', required: true, naOption: true,
           label: "Foods to skip on a sitter's watch",
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_bedtime_routine', type: 'textarea', required: true,
+        { key: 'sitter_bedtime_routine', type: 'textarea', required: true, naOption: true,
           label: 'Bedtime routine — exact steps a sitter should follow',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
       ]
@@ -2832,7 +2832,7 @@
         // access): the Provider PAYS for access, but the family is the
         // customer, Reports go to the family, and NOTHING reaches the Provider
         // unless the family authorizes it here. No branding claim — the
-        // "white label" framing was retired on 2026-08-05.
+        // The provider co-branding framing was retired on 2026-08-05 (Sponsored Access).
         item.appendChild(el('span', { className: 'ack-item-text', html:
           '<strong>Sharing with your provider (optional).</strong> My access to Pieces of Perception is sponsored by <strong>' + provName + '</strong>. ' +
           'I understand that their payment does <strong>not</strong> by itself authorize Pieces of Perception to share anything with them, and that ' +
