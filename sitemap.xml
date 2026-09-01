@@ -4,7 +4,7 @@
 
   <url>
     <loc>https://piecesofperception.com/</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -15,29 +15,57 @@
   </url>
 
   <url>
+    <loc>https://piecesofperception.com/partnerships.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://piecesofperception.com/brochure.html</loc>
+    <lastmod>2026-08-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://piecesofperception.com/Pieces_of_Perception_Walkthrough.html</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://piecesofperception.com/customer-agreement.html</loc>
+    <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <url>
     <loc>https://piecesofperception.com/privacy.html</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://piecesofperception.com/terms.html</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://piecesofperception.com/disclaimer.html</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
 
   <url>
     <loc>https://piecesofperception.com/refund.html</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
