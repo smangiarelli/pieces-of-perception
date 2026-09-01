@@ -33,6 +33,7 @@ Disallow: /review.html
 Disallow: /feedback.html
 
 # Staging and internal artifacts
+Disallow: /Pieces_of_Perception_Demo.html
 Disallow: /index_GOLIVE_STAGED_20260730.html
 Disallow: /wave2_comprehensive_ready_email.html
 

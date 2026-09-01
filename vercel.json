@@ -32,6 +32,11 @@
   ],
   "redirects": [
     {
+      "source": "/Pieces_of_Perception_Demo.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/index_GOLIVE_STAGED_20260730.html",
       "destination": "/",
       "permanent": false
