@@ -455,12 +455,26 @@ const CONFIG = {
   // ---------------------------------------------------------------
   // Acceptance record
   // ---------------------------------------------------------------
+  // Accepting the Agreement is a per-person legal act, so this local convenience
+  // copy expires. On a shared family computer that stops the next person
+  // inheriting someone else's satisfied gate and having their email prefilled
+  // into Stripe by decorate(). A real purchase takes minutes; anything older
+  // simply re-shows the gate. Note the direction of failure: every branch here
+  // can only ADD the gate back, never skip it.
+  const ACCEPTANCE_TTL_MS = 12 * 60 * 60 * 1000;  // 12 hours
+
   function loadStoredAcceptance() {
     try {
       const raw = window.localStorage.getItem(LS_KEY);
       if (!raw) return null;
       const o = JSON.parse(raw);
-      if (o && o.email && o.version === CONFIG.agreementVersion) return o;
+      if (!o || !o.email || o.version !== CONFIG.agreementVersion) return null;
+      const at = Date.parse(o.at);            // records with no/bad `at` are stale by design
+      if (!at || (Date.now() - at) > ACCEPTANCE_TTL_MS) {
+        clearStoredAcceptance();
+        return null;
+      }
+      return o;
     } catch (e) { /* private mode / storage disabled — gate simply re-shows */ }
     return null;
   }
