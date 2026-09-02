@@ -1633,12 +1633,30 @@
     },
     {
       id: 'action_addon_sibling',
+      // SIBLING GUIDE SKIP (2026-09-01, Sarah). "No siblings" used to
+      // soften this step's sub-copy but still show it, so a family with an
+      // only child was asked to decline a Sibling Guide. Now the step is
+      // dropped from the flow outright.
+      //
+      // The one exception is a family who ALREADY PAID for the Sibling
+      // Guide at checkout and then answers "No" -- hiding it there would
+      // take $15 and deliver nothing. They still get the step, and the
+      // cousin / family-friend option is how they use what they bought.
+      //
+      // ownsAddon() returns null when entitlements are unknown (RPC error,
+      // provider-sponsored family). null is NOT true, so an unknown falls
+      // through to the has_siblings test -- correct: an unknown family who
+      // says "No siblings" almost certainly did not buy a Sibling Guide.
+      showIfStep: function (s) {
+        if (ownsAddon('sibling') === true) return true;
+        return s.data.has_siblings !== 'No';
+      },
       eyebrow: 'Add-on: Sibling Guide',
       title: 'Add a Sibling Guide?',
       sub: function (s) {
         return s.data.has_siblings === 'No'
-          ? 'You told us there are no siblings at home — so this one is probably a skip. It can still be made for a close cousin or family-friend child if that would help.'
-          : 'Age-tiered (4–7 / 8–11 / 12+).';
+          ? 'You told us there are no siblings at home, and you purchased this guide — so it can be made for a close cousin or family-friend child instead.'
+          : 'Age-tiered (4–7 / 8–11 / 12+). For an actual sibling or a close cousin / family-friend child.';
       },
       fields: [
         { key: 'addon_sibling', type: 'radio', required: true, triggersRerender: true,
@@ -2075,11 +2093,29 @@
     },
     {
       id: 'comp_addon_sibling',
+      // SIBLING GUIDE SKIP (2026-09-01, Sarah). "No siblings" used to
+      // soften this step's sub-copy but still show it, so a family with an
+      // only child was asked to decline a Sibling Guide. Now the step is
+      // dropped from the flow outright.
+      //
+      // The one exception is a family who ALREADY PAID for the Sibling
+      // Guide at checkout and then answers "No" -- hiding it there would
+      // take $15 and deliver nothing. They still get the step, and the
+      // cousin / family-friend option is how they use what they bought.
+      //
+      // ownsAddon() returns null when entitlements are unknown (RPC error,
+      // provider-sponsored family). null is NOT true, so an unknown falls
+      // through to the has_siblings test -- correct: an unknown family who
+      // says "No siblings" almost certainly did not buy a Sibling Guide.
+      showIfStep: function (s) {
+        if (ownsAddon('sibling') === true) return true;
+        return s.data.has_siblings !== 'No';
+      },
       eyebrow: 'Add-on: Sibling Guide',
       title: 'Add a Sibling Guide?',
       sub: function (s) {
         return s.data.has_siblings === 'No'
-          ? 'You told us there are no siblings at home — so this one is probably a skip. It can still be made for a close cousin or family-friend child if that would help.'
+          ? 'You told us there are no siblings at home, and you purchased this guide — so it can be made for a close cousin or family-friend child instead.'
           : 'Age-tiered (4–7 / 8–11 / 12+). For an actual sibling or a close cousin / family-friend child.';
       },
       fields: [
@@ -2479,7 +2515,26 @@
     } else {
       return [];
     }
-    return steps;
+
+    // STEP-LEVEL SKIP (2026-09-01). A step may declare
+    //   showIfStep: function (state) { return true|false; }
+    // and is dropped from the flow entirely when it returns false --
+    // it never renders, never validates, never appears in the review
+    // list, and does not count toward the progress bar (totalSteps()
+    // calls this same function).
+    //
+    // FAILS OPEN, on purpose and for the same reason loadEntitlements()
+    // does: a thrown predicate must never be able to hide a step a
+    // family paid for. An exception means "show it".
+    //
+    // Safe to recompute on every render: state.step is an index into
+    // THIS array, and every predicate below keys off an answer that is
+    // collected on an EARLIER step, so the array never shrinks behind
+    // the position the family is currently standing on.
+    return steps.filter(function (st) {
+      if (typeof st.showIfStep !== 'function') return true;
+      try { return !!st.showIfStep(state); } catch (e) { return true; }
+    });
   }
 
   // showIf: a field can declare `showIf: function(state) { return ... }`.
@@ -2632,9 +2687,38 @@
     } catch (_) { return null; }
   }
 
-  function ownsAddon(key) {
-    if (!entitlements || !Array.isArray(entitlements.addons)) return null; // unknown
-    return entitlements.addons.indexOf(key) !== -1;
+  // ── ADDON KEYS ─────────────────────────────────────────────────
+  // ✅ VERIFIED 2026-09-02 against the live get_my_entitlements() prosrc
+  // (read out of pg_proc). The RPC emits EXACTLY these six strings in its
+  // `addons` array and nothing else:
+  //
+  //     babysitter · sibling · extended_family · teacher ·
+  //     service_provider · iep
+  //
+  // They are identical to purchase_gate.PAID_GATES in the render pipeline
+  // (minus next_chapter, which the RPC reports as a `flow`, not an add-on).
+  // ⚠ If one list changes, the other must change with it.
+  //
+  // ★★ THE $49 FIVE-GUIDE BUNDLE IS EXPANDED INSIDE THE RPC. On any of
+  //    'all 5 care guides bundle' / 'all 5 care guides (bundle)' /
+  //    'all 6 care guides (bundle)' it sets all five guide keys directly.
+  //    So NO 'careguides' key is ever returned, and the client must not try
+  //    to expand a bundle itself -- doing so would be dead code implying a
+  //    key that cannot occur.
+  //
+  // ownsAddon(name) -> true | false | null
+  //   true  = this family paid for it
+  //   false = they did not
+  //   null  = UNKNOWN. The RPC returned ok:false (no session) or the fetch
+  //           failed, or this is a provider-sponsored family with no
+  //           purchases row.
+  //
+  // ⚠ Callers MUST treat null as "do not charge and do not hide" -- never
+  //   as false. Charging on an unknown double-bills a family for something
+  //   they already own; hiding on an unknown buries a step they paid for.
+  function ownsAddon(name) {
+    if (!entitlements || !Array.isArray(entitlements.addons)) return null;
+    return entitlements.addons.indexOf(name) !== -1;
   }
 
   function renderPurchasedFlowNote(card) {
@@ -3283,7 +3367,9 @@
     const addon = el('div', { className: 'addon-card' });
     addon.appendChild(el('div', { className: 'addon-flag' }, 'POPULAR ADD-ON'));
     addon.appendChild(el('h3', null, 'IEP Goal Recommendations'));
-    addon.appendChild(el('div', { className: 'addon-price', html: '<span style="font-size:14px;vertical-align:super;">$</span>99' }));
+    // 2026-09-01: this read 99 while the toggle below said "+$49" and
+    // checkout.html sells IEP Goal Recommendations at $49. 49 is correct.
+    addon.appendChild(el('div', { className: 'addon-price', html: '<span style="font-size:14px;vertical-align:super;">$</span>49' }));
     const ul = el('ul', { className: 'addon-features' });
     [
       'Measurable, IEP-ready goal language',
