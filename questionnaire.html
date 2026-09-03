@@ -665,31 +665,124 @@
   function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (_) {} }
 
   // ─────────────────────────────────────────────────────────────
-  // CART SUMMARY — surfaces opted-in Care Guides as "added to cart"
+  // ADD-ON CATALOGUE + ENTITLEMENT HELPERS  (2026-09-02)
+  //
+  // `key` matches get_my_entitlements() EXACTLY. Verified against the live
+  // prosrc: the RPC returns only babysitter / sibling / extended_family /
+  // teacher / service_provider / iep, and it expands the $49 bundle itself.
+  // The same six strings are purchase_gate.PAID_GATES in the render
+  // pipeline (minus next_chapter, which the RPC reports as a `flow`).
+  // ⚠ Change one list and you must change the other.
+  //
+  // Prices are shown ONLY for an add-on this family has NOT bought — see
+  // the pricing-copy rule: a family who already paid must never be shown a
+  // figure that reads as a second bill.
+  // ─────────────────────────────────────────────────────────────
+  const ADDON_CATALOGUE = [
+    { key: 'babysitter',       name: 'Babysitter Care Guide',    price: 15 },
+    { key: 'extended_family',  name: 'Extended Family Guide',    price: 15 },
+    { key: 'sibling',          name: 'Sibling Guide',            price: 15 },
+    { key: 'teacher',          name: 'Teacher / School Guide',   price: 15 },
+    { key: 'service_provider', name: 'Service Provider Guide',   price: 15 },
+    { key: 'iep',              name: 'IEP Goal Recommendations', price: 49 }
+  ];
+
+  function addonByKey(k) {
+    for (let i = 0; i < ADDON_CATALOGUE.length; i++) {
+      if (ADDON_CATALOGUE[i].key === k) return ADDON_CATALOGUE[i];
+    }
+    return null;
+  }
+
+  // Did the family tick "Yes" for this add-on in the questionnaire?
+  // Every guide's radio lives at state.data['addon_' + key]; IEP is the odd
+  // one out, selectable on its own step OR on the final add-on screen.
+  function addonSelected(key) {
+    function yes(v) { return typeof v === 'string' && v.indexOf('Yes') === 0; }
+    if (key === 'iep') return !!state.addon_iep || yes(state.data.iep_addon_choice);
+    return yes(state.data['addon_' + key]);
+  }
+
+  // ★★ THE RULE THAT KEEPS SARAH'S RENDER UNBLOCKED.
+  //
+  // A submitted addon_* boolean is what purchase_gate.py reconciles against
+  // `purchases`. If we sent TRUE for an add-on the family has not paid for,
+  // render_family.py would REFUSE THE ENTIRE RUN -- turning a nuisance
+  // prompt into a hard stop needing a hand --override, per family.
+  //
+  // So an add-on is granted only when it is selected AND NOT KNOWN-UNPAID.
+  //
+  // ⚠ `ownsAddon() !== false` is deliberate, not `=== true`. null means
+  // UNKNOWN -- the RPC failed, or this is a provider-sponsored family with
+  // no purchases row -- and on unknown we grant. That matches purchase_gate,
+  // which steps aside entirely for a family with no purchase rows. Treating
+  // unknown as unpaid would silently strip add-ons from sponsored families.
+  function addonGranted(key) {
+    return addonSelected(key) && ownsAddon(key) !== false;
+  }
+
+  // Selected, and we KNOW it was not bought -> owed after submit.
+  function addonPending(key) {
+    return addonSelected(key) && ownsAddon(key) === false;
+  }
+
+  function pendingAddons() {
+    return ADDON_CATALOGUE.filter(function (a) { return addonPending(a.key); });
+  }
+
+  function pendingTotal() {
+    return pendingAddons().reduce(function (t, a) { return t + a.price; }, 0);
+  }
+
+  // The per-step banner. Renders nothing when entitlements are UNKNOWN --
+  // saying nothing is always safe; guessing about someone's money is not.
+  function renderAddonEntitlementNote(key) {
+    const a = addonByKey(key);
+    if (!a) return null;
+    const owned = ownsAddon(key);
+    if (owned === null) return null;
+
+    const note = el('div', { className: 'step-sub' });
+    if (owned) {
+      note.style.cssText = 'background:rgba(82,183,136,0.10);border:1px solid rgba(82,183,136,0.35);' +
+                           'border-radius:12px;padding:12px 16px;margin-bottom:18px;';
+      note.textContent = 'You bought the ' + a.name + ' at checkout. Say yes and we\u2019ll build it \u2014 ' +
+                         'there is nothing more to pay.';
+    } else {
+      note.style.cssText = 'background:rgba(232,132,90,0.10);border:1px solid rgba(232,132,90,0.35);' +
+                           'border-radius:12px;padding:12px 16px;margin-bottom:18px;';
+      note.textContent = 'This one isn\u2019t part of what you bought. You can still add it \u2014 answer the ' +
+                         'questions now and we\u2019ll show you how to complete it ($' + a.price + ') after you ' +
+                         'submit. Your main reports are never held up waiting for it.';
+    }
+    return note;
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // REPORT-SET BADGE
+  // GL-9 (2026-08-30): this was "YOUR CART" with per-item prices and a
+  // running total, shown to a family who had already paid at checkout. It
+  // read as a second bill. No figures for anything already owned.
+  //
+  // 2026-09-02: it also flatly asserted "Already paid for at checkout --
+  // nothing more to pay", which stopped being true the moment a family
+  // could add an unpurchased guide. Now split into two lists.
   // ─────────────────────────────────────────────────────────────
   function getCartItems() {
     const items = [];
-    const flow = state.flow;
-    if (!flow) return items;
-    const base = flow === 'comprehensive'
-      ? { name: 'Comprehensive Plan', price: 149 }
-      : { name: 'Action Report',      price: 99 };
-    items.push(base);
-    function isYes(v) { return typeof v === 'string' && v.indexOf('Yes') === 0; }
-    if (isYes(state.data.addon_babysitter))       items.push({ name: 'Babysitter Care Guide',       price: 15 });
-    if (isYes(state.data.addon_extended_family))  items.push({ name: 'Extended Family Guide',       price: 15 });
-    if (isYes(state.data.addon_sibling))          items.push({ name: 'Sibling Guide',               price: 15 });
-    if (isYes(state.data.addon_teacher))          items.push({ name: 'Teacher / School Guide',      price: 15 });
-    if (isYes(state.data.addon_service_provider)) items.push({ name: 'Service Provider Guide',      price: 15 });
-    // Parenting in Partnership Guide: FREE for every family (2026-08-30) —
-    // delivered to everyone by render_family, so it is never a cart item.
-    if (state.addon_iep)                          items.push({ name: 'IEP Goal Recommendations',    price: 49 });
+    if (!state.flow) return items;
+    items.push({ name: state.flow === 'comprehensive' ? 'Comprehensive Plan' : 'Action Report' });
+    ADDON_CATALOGUE.forEach(function (a) {
+      if (addonGranted(a.key)) items.push({ name: a.name });
+    });
     return items;
   }
+
   function renderCartBadge() {
     let badge = document.getElementById('cart-badge');
-    const items = getCartItems();
-    if (!state.flow || items.length === 0) {
+    const items   = getCartItems();
+    const pending = pendingAddons();
+    if (!state.flow || (items.length === 0 && pending.length === 0)) {
       if (badge) badge.remove();
       return;
     }
@@ -699,17 +792,20 @@
       badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:white;border:1px solid #E8E4DC;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,0.08);padding:14px 18px;font-family:-apple-system,sans-serif;font-size:13px;z-index:8888;max-width:280px;';
       document.body.appendChild(badge);
     }
-    // GL-9 (2026-08-30): this was "YOUR CART" with per-item prices and a
-    // running total, shown to a family who paid at checkout before the
-    // questionnaire even opened. It read as a second bill — it is the
-    // reason the submit button's "($198)" was alarming. No figures here.
     let html = '<div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#6C63FF;margin-bottom:8px;">YOUR REPORT SET</div>';
-    items.forEach(it => {
-      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;color:#2C2A4A;">';
-      html += '<span>' + it.name + '</span>';
-      html += '</div>';
+    items.forEach(function (it) {
+      html += '<div style="padding:4px 0;color:#2C2A4A;">' + escapeHtml(it.name) + '</div>';
     });
-    html += '<div style="border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-size:11.5px;color:#6B6982;">Already paid for at checkout \u2014 nothing more to pay.</div>';
+    html += '<div style="border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-size:11.5px;color:#6B6982;">Paid for at checkout \u2014 nothing more to pay.</div>';
+
+    if (pending.length) {
+      html += '<div style="margin-top:12px;font-size:10.5px;font-weight:700;letter-spacing:1px;color:#E8845A;">TO COMPLETE AFTER YOU SUBMIT</div>';
+      pending.forEach(function (a) {
+        html += '<div style="display:flex;justify-content:space-between;gap:10px;padding:4px 0;color:#2C2A4A;">' +
+                '<span>' + escapeHtml(a.name) + '</span><span style="color:#6B6982;">$' + a.price + '</span></div>';
+      });
+      html += '<div style="border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-size:11.5px;color:#6B6982;">We\u2019ll show you these at the end. Nothing is charged now.</div>';
+    }
     badge.innerHTML = html;
   }
 
@@ -1590,6 +1686,7 @@
   const ACTION_ADDON_STEPS = [
     {
       id: 'action_addon_babysitter',
+      addonKey: 'babysitter',
       eyebrow: 'Add-on: Babysitter Guide',
       title: 'Add a Babysitter / Respite Care Guide?',
       sub: 'Optional — a focused-issue version of the Babysitter Care Guide, tuned to this 4-week intervention window. Yes = added to your cart.',
@@ -1609,6 +1706,7 @@
     },
     {
       id: 'action_addon_extended_family',
+      addonKey: 'extended_family',
       eyebrow: 'Add-on: Extended Family Guide',
       title: 'Add an Extended Family / Close Friends Guide?',
       sub: 'Optional — warm, plain-language guide for grandparents, aunts/uncles, godparents. Yes = added to your cart.',
@@ -1633,6 +1731,7 @@
     },
     {
       id: 'action_addon_sibling',
+      addonKey: 'sibling',
       // SIBLING GUIDE SKIP (2026-09-01, Sarah). "No siblings" used to
       // soften this step's sub-copy but still show it, so a family with an
       // only child was asked to decline a Sibling Guide. Now the step is
@@ -1688,6 +1787,7 @@
     },
     {
       id: 'action_addon_teacher',
+      addonKey: 'teacher',
       eyebrow: 'Add-on: Teacher / School Staff Guide',
       title: 'Add a Teacher / School Staff Guide?',
       sub: 'Optional — neuro-affirming professional guide for school teams or homeschool co-ops. Yes = added to your cart.',
@@ -1712,6 +1812,7 @@
     },
     {
       id: 'action_addon_service_provider',
+      addonKey: 'service_provider',
       eyebrow: 'Add-on: Service Provider / Therapy Guide',
       title: 'Add a Service Provider / Therapy Guide?',
       sub: 'Optional — neuro-affirming clinical-bridge document for OTs, SLPs, social-skills facilitators, and other providers. Yes = added to your cart.',
@@ -1757,6 +1858,7 @@
     },
       {
       id: "action_addon_iep",
+      addonKey: 'iep',
       eyebrow: "Add-on: IEP Prep Companion",
       title: "Add IEP Goal Recommendations?",
       sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
@@ -2009,6 +2111,7 @@
   const COMPREHENSIVE_ADDON_STEPS = [
     {
       id: 'comp_addon_babysitter',
+      addonKey: 'babysitter',
       eyebrow: 'Add-on: Babysitter Guide',
       title: 'Add a Babysitter / Respite Care Guide?',
       sub: 'Optional — a printable need-to-knows guide for anyone watching your child.',
@@ -2072,6 +2175,7 @@
     },
     {
       id: 'comp_addon_extended_family',
+      addonKey: 'extended_family',
       eyebrow: 'Add-on: Extended Family Guide',
       title: 'Add an Extended Family / Close Friends Guide?',
       sub: 'Optional — a warm, plain-language guide for grandparents, aunts/uncles, godparents, and the close friends who feel like family.',
@@ -2093,6 +2197,7 @@
     },
     {
       id: 'comp_addon_sibling',
+      addonKey: 'sibling',
       // SIBLING GUIDE SKIP (2026-09-01, Sarah). "No siblings" used to
       // soften this step's sub-copy but still show it, so a family with an
       // only child was asked to decline a Sibling Guide. Now the step is
@@ -2148,6 +2253,7 @@
     },
     {
       id: 'comp_addon_teacher',
+      addonKey: 'teacher',
       eyebrow: 'Add-on: Teacher / School Staff Guide',
       title: 'Add a Teacher / School Staff Guide?',
       sub: 'Optional — neuro-affirming professional guide for school teams or homeschool co-ops.',
@@ -2172,6 +2278,7 @@
     },
     {
       id: 'comp_addon_service_provider',
+      addonKey: 'service_provider',
       eyebrow: 'Add-on: Service Provider / Therapy Guide',
       title: 'Add a Service Provider / Therapy Guide?',
       sub: 'Optional — neuro-affirming clinical-bridge document for OTs, SLPs, social-skills facilitators, and other providers.',
@@ -2214,6 +2321,7 @@
     },
       {
       id: "comp_addon_iep",
+      addonKey: 'iep',
       eyebrow: "Add-on: IEP Prep Companion",
       title: "Add IEP Goal Recommendations?",
       sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
@@ -3009,6 +3117,13 @@
     const _sub = (typeof step.sub === 'function') ? step.sub(state) : step.sub;
     if (_sub) card.appendChild(el('p', { className: 'step-sub' }, _sub));
 
+    // 2026-09-02: an add-on step says, in its own words, whether this family
+    // already owns it or is about to owe for it. Silent when unknown.
+    if (step.addonKey) {
+      const _note = renderAddonEntitlementNote(step.addonKey);
+      if (_note) card.appendChild(_note);
+    }
+
     const errorBox = el('div', { className: 'alert-error', id: 'step-error' });
     card.appendChild(errorBox);
 
@@ -3359,49 +3474,97 @@
   // ─────────────────────────────────────────────────────────────
   // ADD-ON STEP
   // ─────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
+  // FINAL SCREEN  (rewritten 2026-09-02)
+  //
+  // This used to be a SECOND IEP upsell titled "Add IEP Goal
+  // Recommendations?" -- a duplicate, because both flows already ask about
+  // IEP on their own step (action_addon_iep / comp_addon_iep, both
+  // required). It also showed the price as $99 in the big number while its
+  // own toggle said +$49, and checkout sells it at $49.
+  //
+  // It is now the confirmation screen: what we are about to build, what is
+  // still owed, and the submit button. The IEP toggle survives ONLY as a
+  // fallback for the case where nothing has asked yet.
+  // ─────────────────────────────────────────────────────────────
   function renderAddon(card) {
-    card.appendChild(el('div', { className: 'step-eyebrow' }, 'ONE LAST OPTION'));
-    card.appendChild(el('h2', { className: 'step-title serif' }, 'Add IEP Goal Recommendations?'));
-    card.appendChild(el('p', { className: 'step-sub' }, 'Optional — built specifically to drop into an IEP draft your team can refine. Most families add this when they\'re heading into an annual review or evaluation.'));
+    const pending = pendingAddons();
+    const iepAsked = typeof state.data.iep_addon_choice === 'string' && state.data.iep_addon_choice !== '';
 
-    const addon = el('div', { className: 'addon-card' });
-    addon.appendChild(el('div', { className: 'addon-flag' }, 'POPULAR ADD-ON'));
-    addon.appendChild(el('h3', null, 'IEP Goal Recommendations'));
-    // 2026-09-01: this read 99 while the toggle below said "+$49" and
-    // checkout.html sells IEP Goal Recommendations at $49. 49 is correct.
-    addon.appendChild(el('div', { className: 'addon-price', html: '<span style="font-size:14px;vertical-align:super;">$</span>49' }));
-    const ul = el('ul', { className: 'addon-features' });
-    [
-      'Measurable, IEP-ready goal language',
-      'Aligned to your child\'s strengths and challenges',
-      'Suggested accommodations and supports',
-      'Progress monitoring ideas your team can adopt'
-    ].forEach(t => ul.appendChild(el('li', null, t)));
-    addon.appendChild(ul);
+    card.appendChild(el('div', { className: 'step-eyebrow' }, 'LAST STEP'));
+    card.appendChild(el('h2', { className: 'step-title serif' }, 'Ready to build ' +
+      ((state.data.child_first_name || '').trim() || 'your child') + '\u2019s reports.'));
 
-    const isSel = !!state.addon_iep;
-    const toggle = el('label', { className: 'addon-toggle' + (isSel ? ' selected' : '') });
-    const cb = el('input', { type: 'checkbox' });
-    if (isSel) cb.setAttribute('checked', 'checked');
-    cb.addEventListener('change', () => {
-      state.addon_iep = cb.checked;
-      if (cb.checked) toggle.classList.add('selected'); else toggle.classList.remove('selected');
-      saveDraft();
-      // update the submit label below
-      const submitBtn = document.getElementById('submit-btn');
-      if (submitBtn) submitBtn.textContent = submitLabel();
-    });
-    toggle.appendChild(cb);
-    toggle.appendChild(el('span', null, 'Yes — add IEP Goal Recommendations (+$49)'));
-    addon.appendChild(toggle);
+    // What they are getting, and have already paid for.
+    const included = getCartItems();
+    if (included.length) {
+      const box = el('div', { style: 'background:rgba(82,183,136,0.08);border:1px solid rgba(82,183,136,0.30);' +
+                                     'border-radius:14px;padding:16px 20px;margin-bottom:18px;' });
+      box.appendChild(el('div', { style: 'font-size:11px;font-weight:700;letter-spacing:1px;color:#2f8f63;margin-bottom:8px;' },
+        'WE\u2019LL BUILD THESE NOW'));
+      included.forEach(function (it) {
+        box.appendChild(el('div', { style: 'padding:3px 0;color:#2C2A4A;' }, it.name));
+      });
+      box.appendChild(el('div', { style: 'margin-top:8px;font-size:12.5px;color:#6B6982;' },
+        'Paid for at checkout \u2014 nothing more to pay for these.'));
+      card.appendChild(box);
+    }
 
-    card.appendChild(addon);
+    // What they added but have not bought.
+    if (pending.length) {
+      const box = el('div', { style: 'background:rgba(232,132,90,0.09);border:1px solid rgba(232,132,90,0.35);' +
+                                     'border-radius:14px;padding:16px 20px;margin-bottom:18px;' });
+      box.appendChild(el('div', { style: 'font-size:11px;font-weight:700;letter-spacing:1px;color:#c0663a;margin-bottom:8px;' },
+        'YOU ALSO ASKED FOR THESE'));
+      pending.forEach(function (a) {
+        const row = el('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:3px 0;color:#2C2A4A;' });
+        row.appendChild(el('span', null, a.name));
+        row.appendChild(el('span', { style: 'color:#6B6982;' }, '$' + a.price));
+        box.appendChild(row);
+      });
+      const tot = el('div', { style: 'display:flex;justify-content:space-between;gap:12px;border-top:1px solid rgba(232,132,90,0.35);' +
+                                     'margin-top:8px;padding-top:8px;font-weight:700;color:#2C2A4A;' });
+      tot.appendChild(el('span', null, 'To complete'));
+      tot.appendChild(el('span', null, '$' + pendingTotal()));
+      box.appendChild(tot);
+      box.appendChild(el('div', { style: 'margin-top:10px;font-size:12.5px;color:#6B6982;' },
+        'Your answers for these are saved. Submit first \u2014 we\u2019ll show you how to complete them on the ' +
+        'next screen, and they\u2019re added to your set once payment is in. Your main reports start right away either way.'));
+      card.appendChild(box);
+    }
 
-    // skip notice
-    card.appendChild(el('p', { className: 'step-sub', style: 'font-size:13.5px; margin-top:-6px;' },
-      'No pressure — you can always add this later from your dashboard.'));
+    // FALLBACK ONLY: nothing has asked about IEP, so ask here.
+    if (!iepAsked && ownsAddon('iep') !== true) {
+      const addon = el('div', { className: 'addon-card' });
+      addon.appendChild(el('h3', null, 'IEP Goal Recommendations'));
+      addon.appendChild(el('div', { className: 'addon-price',
+        html: '<span style="font-size:14px;vertical-align:super;">$</span>49' }));
+      const ul = el('ul', { className: 'addon-features' });
+      [ 'Measurable, IEP-ready goal language',
+        'Aligned to your child\u2019s strengths and challenges',
+        'Suggested accommodations and supports',
+        'Progress monitoring ideas your team can adopt'
+      ].forEach(function (t) { ul.appendChild(el('li', null, t)); });
+      addon.appendChild(ul);
 
-    // Submit
+      const isSel  = !!state.addon_iep;
+      const toggle = el('label', { className: 'addon-toggle' + (isSel ? ' selected' : '') });
+      const cb = el('input', { type: 'checkbox' });
+      if (isSel) cb.setAttribute('checked', 'checked');
+      cb.addEventListener('change', function () {
+        state.addon_iep = cb.checked;
+        if (cb.checked) toggle.classList.add('selected'); else toggle.classList.remove('selected');
+        saveDraft();
+        render();               // the summary boxes above depend on this
+      });
+      toggle.appendChild(cb);
+      toggle.appendChild(el('span', null, 'Yes \u2014 add IEP Goal Recommendations ($49)'));
+      addon.appendChild(toggle);
+      card.appendChild(addon);
+      card.appendChild(el('p', { className: 'step-sub', style: 'font-size:13.5px; margin-top:-6px;' },
+        'No pressure \u2014 you can always add this later from your dashboard.'));
+    }
+
     const submitBtn = el('button', {
       className: 'btn btn-primary btn-large',
       id: 'submit-btn',
@@ -3409,7 +3572,7 @@
     }, submitLabel());
 
     const row = el('div', { className: 'step-actions' });
-    row.appendChild(el('button', { className: 'btn btn-ghost', onclick: goBack }, '← Back'));
+    row.appendChild(el('button', { className: 'btn btn-ghost', onclick: goBack }, '\u2190 Back'));
     const right = el('div', { className: 'right-side' });
     right.appendChild(submitBtn);
     row.appendChild(right);
@@ -3445,17 +3608,28 @@
     // cleared immediately after a successful submit.
     state.data = stripNaSentinels(state.data);
 
+    // What they added but have not paid for. Rides in the `answers` blob, so
+    // no migration is needed; it is the record of what is owed and of which
+    // questions were already answered for it.
+    const _pending = pendingAddons();
+    state.data.addons_pending_payment = _pending.map(function (a) { return a.key; });
+
     const payload = {
       user_id: session.user_id,
       flow: state.flow,
 
       // Add-on opt-ins (booleans) — populate the new Phase 2D columns
-      addon_iep: !!state.addon_iep || (typeof state.data.iep_addon_choice === 'string' && state.data.iep_addon_choice.indexOf('Yes') === 0),
-      addon_babysitter:        isYes(state.data.addon_babysitter),
-      addon_sibling:           isYes(state.data.addon_sibling),
-      addon_extended_family:   isYes(state.data.addon_extended_family),
-      addon_teacher:           isYes(state.data.addon_teacher),
-      addon_service_provider:  isYes(state.data.addon_service_provider),
+      // ★ addonGranted(), NOT "did they tick yes". A known-unpaid add-on
+      // submits FALSE so purchase_gate.py stays green and the main report
+      // renders on schedule; the selection is preserved in
+      // answers.addons_pending_payment and the family is shown how to
+      // complete it after submit. See addonGranted() for why unknown grants.
+      addon_iep:               addonGranted('iep'),
+      addon_babysitter:        addonGranted('babysitter'),
+      addon_sibling:           addonGranted('sibling'),
+      addon_extended_family:   addonGranted('extended_family'),
+      addon_teacher:           addonGranted('teacher'),
+      addon_service_provider:  addonGranted('service_provider'),
 
       // Promoted shared columns
       child_first_name: state.data.child_first_name || null,
@@ -3535,7 +3709,11 @@
           response_id: responseId,
           flow: state.flow,
           addon_iep: state.addon_iep,
-          child_first_name: state.data.child_first_name || ''
+          child_first_name: state.data.child_first_name || '',
+          // generating.html renders these as "complete your add-ons"
+          addons_pending: _pending.map(function (a) {
+            return { key: a.key, name: a.name, price: a.price };
+          })
         }));
       } catch (_) {}
 

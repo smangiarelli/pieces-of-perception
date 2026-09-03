@@ -324,6 +324,32 @@
       <span style="display:block;margin-top:10px;font-size:13px;color:var(--text-light);">Your answers stay private to your account. We never sell them, and no one outside Pieces of Perception sees them in raw form.</span>
     </div>
 
+    <!-- COMPLETE YOUR ADD-ONS (2026-09-02)
+         Hidden unless questionnaire.html handed over add-ons the family
+         selected but has not bought. Populated by JS below.
+
+         ⛔ The button goes to /checkout.html, NEVER to a raw buy.stripe.com
+         link. A direct payment link bypasses the accept-before-pay gate,
+         so no acceptance record is written for the purchase. -->
+    <div id="pending-addons" style="display:none; margin-top:26px; text-align:left;
+         background:rgba(232,132,90,0.09); border:1px solid rgba(232,132,90,0.35);
+         border-radius:14px; padding:18px 22px;">
+      <div style="font-size:11px; font-weight:700; letter-spacing:1px; color:#c0663a; margin-bottom:10px;">
+        COMPLETE YOUR ADD-ONS
+      </div>
+      <p style="font-size:14px; color:#2C2A4A; margin:0 0 12px;">
+        You asked for these while answering. Your answers for them are saved &mdash;
+        add them whenever you&rsquo;re ready and we&rsquo;ll build them into your set.
+        Your main reports are already underway.
+      </p>
+      <div id="pending-list"></div>
+      <a href="/checkout.html#addonList" class="btn btn-primary" style="margin-top:14px;">Complete These Add-Ons &rarr;</a>
+      <p style="font-size:12.5px; color:var(--text-light); margin-top:10px;">
+        No rush, and nothing expires. You can also find these any time under
+        <strong>Add to Your Report Set</strong> on your dashboard.
+      </p>
+    </div>
+
     <div class="complete-actions" id="complete-actions">
       <a href="/family-dashboard.html" class="btn btn-primary">Back to Dashboard</a>
       <p style="font-size:13px;color:var(--text-light);margin-top:6px;">You can close this tab. We'll email you the moment your reports are ready.</p>
@@ -347,6 +373,28 @@
       const d = JSON.parse(raw);
       if (d && d.child_first_name) {
         document.getElementById('child-name').textContent = d.child_first_name;
+      }
+      // Add-ons they selected but have not paid for.
+      if (d && Array.isArray(d.addons_pending) && d.addons_pending.length) {
+        var listEl = document.getElementById('pending-list');
+        var total  = 0;
+        d.addons_pending.forEach(function (a) {
+          total += Number(a.price) || 0;
+          var row = document.createElement('div');
+          row.style.cssText = 'display:flex; justify-content:space-between; gap:12px; padding:4px 0; color:#2C2A4A;';
+          var n = document.createElement('span'); n.textContent = String(a.name || a.key || '');
+          var pr = document.createElement('span'); pr.style.color = '#6B6982';
+          pr.textContent = '$' + (Number(a.price) || 0);
+          row.appendChild(n); row.appendChild(pr);
+          listEl.appendChild(row);
+        });
+        var tot = document.createElement('div');
+        tot.style.cssText = 'display:flex; justify-content:space-between; gap:12px; border-top:1px solid rgba(232,132,90,0.35); margin-top:8px; padding-top:8px; font-weight:700; color:#2C2A4A;';
+        var tl = document.createElement('span'); tl.textContent = 'Total';
+        var tv = document.createElement('span'); tv.textContent = '$' + total;
+        tot.appendChild(tl); tot.appendChild(tv);
+        listEl.appendChild(tot);
+        document.getElementById('pending-addons').style.display = 'block';
       }
     }
   } catch (_) {}
