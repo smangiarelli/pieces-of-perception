@@ -2826,6 +2826,29 @@
   //   they already own; hiding on an unknown buries a step they paid for.
   function ownsAddon(name) {
     if (!entitlements || !Array.isArray(entitlements.addons)) return null;
+
+    // ★★ ZERO PURCHASE ROWS MEANS "NOTHING TO GO ON", NOT "OWNS NOTHING".
+    //
+    // get_my_entitlements() returns ok:true with addons:[] and
+    // purchase_count:0 for a beta family, a hand-issued access grant, or a
+    // provider-sponsored family -- precisely the population
+    // purchase_gate.py steps aside for: "A family with NO purchase rows at
+    // all is a beta family or a hand-issued grant. The gate does not block
+    // them." An empty array is the SAME state, reported by a different
+    // layer, and must be read the same way.
+    //
+    // Reading it as "bought nothing" would tell a beta family their guides
+    // cost $15 and would strip those guides out of their submission.
+    // ⚠ Found 2026-09-03, when Sarah pointed out nobody has purchased
+    // anything yet -- which made this the state of EVERY account.
+    //
+    // A family who bought only the $99 plan is a different case: they have
+    // purchase_count >= 1 with addons [], and correctly own no add-ons.
+    //
+    // If purchase_count is ever absent, this returns null and everything
+    // grants free -- the safe direction.
+    if (!entitlements.purchase_count) return null;
+
     return entitlements.addons.indexOf(name) !== -1;
   }
 
