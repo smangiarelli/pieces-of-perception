@@ -684,7 +684,7 @@
     { key: 'sibling',          name: 'Sibling Guide',            price: 15 },
     { key: 'teacher',          name: 'Teacher / School Guide',   price: 15 },
     { key: 'service_provider', name: 'Service Provider Guide',   price: 15 },
-    { key: 'iep',              name: 'IEP Goal Recommendations', price: 49 }
+    { key: 'iep',              name: 'IEP Prep Companion',      price: 49 }
   ];
 
   function addonByKey(k) {
@@ -1860,12 +1860,12 @@
       id: "action_addon_iep",
       addonKey: 'iep',
       eyebrow: "Add-on: IEP Prep Companion",
-      title: "Add IEP Goal Recommendations?",
-      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
+      title: "Add the IEP Prep Companion?",
+      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion: your concerns and priorities in your own words, present levels, strengths, the goal areas for the team to translate into measurable annual goals, accommodations to discuss, and the questions to bring. If Yes, we ask 14 short follow-up questions to ground it in your child\u2019s current plan.",
       fields: [
         { key: "iep_addon_choice", type: "radio", required: true, triggersRerender: true,
-          disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a> for details.',
-          label: "Add the IEP Prep Companion + Goal Recommendations to your order?",
+          disclaimer: '* The IEP Prep Companion and its goal-area suggestions are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a> for details.',
+          label: "Add the IEP Prep Companion to your order?",
           options: [
             "Yes \u2014 generate the IEP Prep Companion (+$49, added to cart)",
             "No \u2014 skip the IEP add-on"
@@ -2323,12 +2323,12 @@
       id: "comp_addon_iep",
       addonKey: 'iep',
       eyebrow: "Add-on: IEP Prep Companion",
-      title: "Add IEP Goal Recommendations?",
-      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
+      title: "Add the IEP Prep Companion?",
+      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion: your concerns and priorities in your own words, present levels, strengths, the goal areas for the team to translate into measurable annual goals, accommodations to discuss, and the questions to bring. If Yes, we ask 14 short follow-up questions to ground it in your child\u2019s current plan.",
       fields: [
         { key: "iep_addon_choice", type: "radio", required: true, triggersRerender: true,
-          disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a> for details.',
-          label: "Add the IEP Prep Companion + Goal Recommendations to your order?",
+          disclaimer: '* The IEP Prep Companion and its goal-area suggestions are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a> for details.',
+          label: "Add the IEP Prep Companion to your order?",
           options: [
             "Yes \u2014 generate the IEP Prep Companion (+$49, added to cart)",
             "No \u2014 skip the IEP add-on"
@@ -3559,14 +3559,14 @@
     // FALLBACK ONLY: nothing has asked about IEP, so ask here.
     if (!iepAsked && ownsAddon('iep') !== true) {
       const addon = el('div', { className: 'addon-card' });
-      addon.appendChild(el('h3', null, 'IEP Goal Recommendations'));
+      addon.appendChild(el('h3', null, 'IEP Prep Companion'));
       addon.appendChild(el('div', { className: 'addon-price',
         html: '<span style="font-size:14px;vertical-align:super;">$</span>49' }));
       const ul = el('ul', { className: 'addon-features' });
-      [ 'Measurable, IEP-ready goal language',
-        'Aligned to your child\u2019s strengths and challenges',
-        'Suggested accommodations and supports',
-        'Progress monitoring ideas your team can adopt'
+      [ 'Your concerns and priorities, in your own words',
+        'Present levels, strengths, and the goal areas to address',
+        'Accommodations and supports to discuss',
+        'The questions to bring to the meeting'
       ].forEach(function (t) { ul.appendChild(el('li', null, t)); });
       addon.appendChild(ul);
 
@@ -3581,7 +3581,7 @@
         render();               // the summary boxes above depend on this
       });
       toggle.appendChild(cb);
-      toggle.appendChild(el('span', null, 'Yes \u2014 add IEP Goal Recommendations ($49)'));
+      toggle.appendChild(el('span', null, 'Yes \u2014 add the IEP Prep Companion ($49)'));
       addon.appendChild(toggle);
       card.appendChild(addon);
       card.appendChild(el('p', { className: 'step-sub', style: 'font-size:13.5px; margin-top:-6px;' },

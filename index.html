@@ -400,6 +400,19 @@
     }
     .report-page-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-3px); }
     .report-page-card:active { transform: translateY(-1px); }
+
+    /* Flip-through links to the four sample flipbooks (added 2026-09-06) */
+    .flip-links { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:6px; }
+    .flip-link {
+      display:inline-flex; align-items:center; gap:8px;
+      background:#fff; border:1.5px solid var(--border, #E6E8F0); border-radius:999px;
+      padding:12px 22px; font-size:15px; font-weight:700; color:var(--deep, #16162A);
+      text-decoration:none; transition:border-color .18s, box-shadow .18s, transform .18s;
+    }
+    .flip-link span { color:var(--accent, #6C63FF); transition:transform .18s; }
+    .flip-link:hover { border-color:var(--accent, #6C63FF); box-shadow:0 6px 18px rgba(108,99,255,.16); transform:translateY(-2px); }
+    .flip-link:hover span { transform:translateX(3px); }
+    @media (max-width:600px){ .flip-link { padding:11px 18px; font-size:14px; } }
     .report-page-card img {
       width: 100%; height: auto; display: block;
       aspect-ratio: 8.5 / 11;
@@ -947,6 +960,17 @@
     <p class="report-gallery-note">
       <strong>Sample only.</strong> Names, ages, and details have been changed. Your report is generated entirely from your answers — never reused, never templated.
     </p>
+
+    <!-- Flip-through samples (added 2026-09-06) -->
+    <p class="section-sub" style="margin-top:38px; margin-bottom:16px">
+      Rather turn the pages? Flip through a sample of each report.
+    </p>
+    <div class="flip-links">
+      <a class="flip-link" href="/sample-action-report.html">Action Report <span>&rarr;</span></a>
+      <a class="flip-link" href="/sample-comprehensive-profile.html">Comprehensive Profile <span>&rarr;</span></a>
+      <a class="flip-link" href="/sample-iep-prep-companion.html">IEP Prep Companion <span>&rarr;</span></a>
+      <a class="flip-link" href="/sample-add-on-guides.html">Add-On Guides <span>&rarr;</span></a>
+    </div>
   </div>
 </section>
 
@@ -1079,7 +1103,7 @@
           <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Everything in Action Report</li>
           <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Full Communication Scripts (5 audiences)</li>
           <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> 12-Week Implementation Framework</li>
-          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Crisis De-escalation Playbook</li>
+          <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Meltdown Support &amp; Recovery</li>
           <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Trigger Word Replacement Guide</li>
           <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Morning Launch Protocol</li>
           <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> Visual Scale Templates (printable)</li>
@@ -1142,7 +1166,7 @@
   <div class="section-inner" style="text-align:center">
     <div class="section-label">Add-Ons</div>
     <h2 class="section-title">Add-Ons: Care Guides &amp; IEP Support</h2>
-    <p class="section-sub">Consistency matters. Personalized guides so every caregiver follows the same approach — plus ready-to-share IEP goal language for the school team.</p>
+    <p class="section-sub">Consistency matters. Personalized guides so every caregiver follows the same approach — plus an IEP Prep Companion that organizes everything you know into the language and sections of the meeting.</p>
     <div class="care-grid">
       <div class="care-card" style="border-left:3px solid var(--warm)">
         <div class="care-price-tag" style="background:var(--warm-light);color:var(--warm)">$15</div>
@@ -1176,8 +1200,8 @@
       </div>
       <div class="care-card" id="iep" style="border-left:3px solid var(--lavender)">
         <div class="care-price-tag" style="background:var(--lavender-light);color:var(--lavender)">$49</div>
-        <h3>IEP Goal Recommendations</h3>
-        <p>Walk into your next IEP meeting prepared: specific, measurable, IDEA-aligned goal language built from your child's profile, plus recommended supports and questions to ask the team. An informational starting point for advocacy — not legal advice or an official IEP document. Always review with your child's school team.</p>
+        <h3>IEP Prep Companion</h3>
+        <p>Walk into your next IEP meeting prepared. Your child's profile, organized into the language and sections of an IEP: your concerns in your own words, present levels of functional performance, strengths, the goal areas you want addressed, accommodations to discuss, and the questions to bring. Parent input the team is required under IDEA to consider — not a draft IEP, not legal advice. Always review with your child's school team.</p>
       </div>
     </div>
     <div class="bundle-row">

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IEP Prep Companion &mdash; Sample Flipbook</title>
+<meta name="description" content="Flip through four pages of the Pieces of Perception IEP Prep Companion: how to use it, the parent-concerns section, accommodations to discuss, and the questions to bring to the meeting.">
+<link rel="canonical" href="https://piecesofperception.com/sample-iep-prep-companion.html">
+<meta name="theme-color" content="#6C63FF">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pieces of Perception">
+<meta property="og:url" content="https://piecesofperception.com/sample-iep-prep-companion.html">
+<meta property="og:title" content="IEP Prep Companion &mdash; Sample Flipbook">
+<meta property="og:description" content="Flip through four pages of the Pieces of Perception IEP Prep Companion: how to use it, the parent-concerns section, accommodations to discuss, and the questions to bring to the meeting.">
+<meta property="og:image" content="https://piecesofperception.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="IEP Prep Companion &mdash; Sample Flipbook">
+<meta name="twitter:description" content="Flip through four pages of the Pieces of Perception IEP Prep Companion: how to use it, the parent-concerns section, accommodations to discuss, and the questions to bring to the meeting.">
+<meta name="twitter:image" content="https://piecesofperception.com/og-image.png">
+<link href="/fonts.css" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  :root{
+    --accent:#6C63FF; --accent-dark:#5349e0; --accent-mid:#8B84FF; --accent-pale:#EFEDFF;
+    --warm:#E8845A; --sage:#52B788; --lavender:#8E7FC4; --rose:#D95B72; --sky:#3FA8CC;
+    --deep:#16162A; --text:#2C2C3E; --text-light:#6B6B80; --bg:#F7F8FC; --rule:#E6E8F0;
+  }
+  body { font-family:'DM Sans','Segoe UI',system-ui,sans-serif; color:var(--text);
+         background:linear-gradient(150deg,#EFEDFF 0%, #F7F8FC 55%, #FDF2EC 100%);
+         overflow:hidden; }
+
+  /* ---------- book shell (geometry identical to the brochure) ---------- */
+  #stage { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  #scaler { transform-origin:center center; }
+  .book { position:relative; width:680px; height:790px; perspective:2600px;
+          transition:transform .9s cubic-bezier(.4,0,.2,1); }
+  .sheet { position:absolute; left:340px; top:0; width:340px; height:790px;
+           transform-origin:left center; transform-style:preserve-3d;
+           transition:transform 1s cubic-bezier(.45,.05,.35,1); }
+  .no-anim .sheet, .no-anim .book, .no-anim #hint { transition:none !important; }
+  .face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+          border-radius:6px; overflow:hidden; box-shadow:0 6px 24px rgba(22,22,42,.18); background:#fff; }
+  .face.back { transform:rotateY(180deg); }
+  .edge { position:absolute; inset:0; pointer-events:none; z-index:9;
+          background:linear-gradient(to right, rgba(22,22,42,.10), transparent 12%); }
+  .face.back .edge { background:linear-gradient(to left, rgba(22,22,42,.10), transparent 12%); }
+  .face.blank { background:#FBFBFE; }
+
+  /* content authored at 2x, scaled down - keeps CSS numbers comfortable */
+  .pagebody { position:absolute; top:0; left:0; width:680px; height:1580px;
+              transform:scale(.5); transform-origin:top left; overflow:hidden;
+              display:flex; flex-direction:column; }
+
+  #hint { margin-top:18px; color:#6B6B80; font-size:14px; letter-spacing:.02em;
+          transition:opacity .4s; user-select:none; text-align:center; }
+  #nav { position:fixed; inset:0; display:flex; }
+  #nav div { flex:1; cursor:pointer; }
+  .brandbar { position:fixed; top:18px; left:22px; display:flex; align-items:center; gap:9px;
+              user-select:none; z-index:60; }
+  .brandbar svg { width:34px; height:auto; }
+  .brandbar span { font-weight:700; color:#16162A; font-size:15px; }
+  #counter { position:fixed; top:22px; right:24px; z-index:60; font-size:13px; font-weight:700;
+             letter-spacing:.06em; color:#6B6B80; user-select:none; }
+
+  /* ---------- page furniture ---------- */
+  .pad { padding:76px 60px 64px; flex:1; display:flex; flex-direction:column; }
+  .eyebrow { font-size:19px; font-weight:700; letter-spacing:.17em; text-transform:uppercase;
+             color:var(--accent-dark); margin-bottom:16px; }
+  .eyebrow.warm { color:var(--warm); }
+  h1.page { font-family:'Playfair Display',Georgia,serif; font-weight:800; font-size:60px;
+            line-height:1.13; color:var(--deep); letter-spacing:-.01em; }
+  h2.page { font-family:'Playfair Display',Georgia,serif; font-weight:800; font-size:42px;
+            line-height:1.18; color:var(--deep); margin-bottom:22px; }
+  h3.sec { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:27px;
+           line-height:1.25; color:var(--deep); margin-bottom:10px; }
+  p.body { font-size:21px; line-height:1.62; color:var(--text); margin-bottom:18px; }
+  p.body b { color:var(--accent-dark); }
+  p.lede { font-size:24px; line-height:1.55; color:var(--text-light); margin-bottom:22px; }
+  .small { font-size:17px; line-height:1.55; color:var(--text-light); }
+  .rule { height:3px; background:var(--accent); width:78px; border-radius:2px; margin:22px 0 26px; }
+  .spacer { flex:1; }
+
+  /* excerpt block - "this is lifted from the real report" */
+  .excerpt { border:2px solid var(--rule); border-radius:20px; background:#fff;
+             box-shadow:0 4px 16px rgba(22,22,42,.06); overflow:hidden; margin-bottom:22px; }
+  .excerpt .head { background:var(--bg); border-bottom:2px solid var(--rule);
+                   padding:16px 22px; display:flex; align-items:center; gap:12px; }
+  .excerpt .head .tag { flex:none; width:12px; height:12px; border-radius:50%; background:var(--accent); }
+  .excerpt .head span { font-size:17px; font-weight:700; letter-spacing:.1em;
+                        text-transform:uppercase; color:var(--text-light); }
+  .excerpt .inner { padding:22px 24px 24px; }
+  .excerpt .q { font-size:20px; font-weight:700; color:var(--deep); line-height:1.45; margin-bottom:10px; }
+  .excerpt .a { font-size:20px; line-height:1.6; color:var(--text); }
+  .excerpt .a + .q { margin-top:20px; padding-top:20px; border-top:1px dashed var(--rule); }
+
+  /* bullet rows with a colored dot */
+  .rows { margin-bottom:20px; }
+  .row { display:flex; gap:16px; margin-bottom:16px; }
+  .row .dot { flex:none; width:15px; height:15px; border-radius:50%; margin-top:8px; }
+  .row .txt { font-size:20px; line-height:1.55; color:var(--text); }
+  .row .txt b { color:var(--deep); }
+
+  /* strategy / do-this card */
+  .card { border-radius:20px; padding:26px 28px; margin-bottom:20px; }
+  .card.pale { background:var(--accent-pale); border-left:6px solid var(--accent); }
+  .card.warmc { background:rgba(232,132,90,.11); border-left:6px solid var(--warm); }
+  .card.sagec { background:rgba(82,183,136,.12); border-left:6px solid var(--sage); }
+  .card.skyc  { background:rgba(63,168,204,.12); border-left:6px solid var(--sky); }
+  .card .ct { font-size:22px; font-weight:700; color:var(--deep); margin-bottom:10px; }
+  .card .cb { font-size:20px; line-height:1.58; color:var(--text); }
+  .card .cb b { color:var(--accent-dark); }
+
+  /* dark panel */
+  .dark { background:var(--deep); border-radius:22px; padding:30px 30px 28px; color:#fff;
+          position:relative; overflow:hidden; margin-bottom:20px; }
+  .dark::after { content:''; position:absolute; right:-56px; top:-56px; width:190px; height:190px;
+                 border-radius:50%; background:rgba(108,99,255,.35); }
+  .dark .dt { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:30px;
+              line-height:1.22; margin-bottom:14px; position:relative; z-index:1; }
+  .dark .db { font-size:20px; line-height:1.58; color:rgba(255,255,255,.88); position:relative; z-index:1; }
+  .dark .db b { color:#C9C5FF; }
+
+  /* pull quote */
+  .pull { border-left:5px solid var(--accent); padding-left:22px; margin-bottom:22px; }
+  .pull p { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:26px;
+            line-height:1.42; color:var(--deep); margin-bottom:8px; }
+  .pull span { font-size:17px; font-weight:700; letter-spacing:.05em; color:var(--text-light); }
+
+  /* cover bits */
+  .logo-row { display:flex; align-items:center; gap:14px; margin-bottom:40px; }
+  .logo-row svg { width:66px; height:auto; }
+  .logo-row .wm { font-weight:700; font-size:29px; letter-spacing:-.01em; color:var(--deep); line-height:1.08; }
+  .cover-banner { background:var(--accent); border-radius:20px; padding:28px 30px;
+                  position:relative; overflow:hidden; }
+  .cover-banner .cc { position:absolute; border-radius:50%; }
+  .cover-banner .c1 { right:-60px; top:-60px; width:170px; height:170px; background:var(--warm); opacity:.9; }
+  .cover-banner .c2 { right:66px; bottom:-104px; width:135px; height:135px; background:var(--sage); opacity:.85; }
+  .dots { display:flex; gap:12px; margin-bottom:14px; position:relative; z-index:1; }
+  .dots i { width:18px; height:18px; border-radius:50%; display:block; }
+  .cover-url { font-weight:700; font-size:25px; color:#fff; position:relative; z-index:1; }
+  .stamp { display:inline-block; align-self:flex-start; font-size:16px; font-weight:700;
+           letter-spacing:.13em; text-transform:uppercase; color:var(--warm);
+           border:2px solid rgba(232,132,90,.45); border-radius:999px; padding:9px 18px; }
+
+  /* contents list on cover-inside */
+  .toc { list-style:none; }
+  .toc li { display:flex; gap:16px; align-items:baseline; padding:15px 0;
+            border-bottom:1px solid var(--rule); }
+  .toc li:last-child { border-bottom:none; }
+  .toc .n { flex:none; width:38px; height:38px; border-radius:50%; background:var(--accent-pale);
+            color:var(--accent-dark); font-weight:700; font-size:19px; display:flex;
+            align-items:center; justify-content:center; }
+  .toc .l { font-size:21px; line-height:1.4; color:var(--text); }
+  .toc .l b { display:block; color:var(--deep); font-size:22px; margin-bottom:3px; }
+
+  /* back page */
+  .backpage { background:linear-gradient(160deg,#EFEDFF 0%,#FDF2EC 100%); }
+  .price { display:flex; align-items:baseline; gap:12px; margin-bottom:8px; }
+  .price .amt { font-family:'Playfair Display',Georgia,serif; font-weight:800; font-size:52px; color:var(--deep); }
+  .price .unit { font-size:19px; color:var(--text-light); }
+  .btn { display:block; text-align:center; background:var(--accent); color:#fff; text-decoration:none;
+         font-size:23px; font-weight:700; border-radius:999px; padding:22px 30px;
+         box-shadow:0 10px 26px rgba(108,99,255,.32); margin-bottom:18px; }
+
+  /* watermark so no one mistakes a sample for a real child's report.
+     Bottom-right corner, inside the page margin - it must never sit over body text. */
+  .pagebody.hasmark .pad { padding-bottom:124px; }
+  .samplemark { position:absolute; right:30px; bottom:26px; z-index:8; pointer-events:none;
+                color:var(--accent-dark); background:var(--accent-pale);
+                border:1px solid rgba(108,99,255,.32); font-size:14px; font-weight:700;
+                letter-spacing:.16em; text-transform:uppercase; padding:7px 13px;
+                border-radius:999px; }
+
+  /* cover hook - fills the space between the meta rows and the footer banner */
+  .hook { margin-top:34px; background:rgba(142,127,196,.12); border-top:4px solid var(--accent);
+          border-radius:20px; padding:28px 28px 26px; }
+  .hook p { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:27px;
+            line-height:1.42; color:var(--deep); margin-bottom:10px; }
+  .hook span { font-size:17px; font-weight:700; letter-spacing:.05em; color:var(--text-light); }
+
+
+  /* ---------- phones: a two-page spread at 390px is unreadable, so the book
+     flattens into one page per screen-width, in reading order. The 3D flip is
+     a desktop affordance; on a phone the content is what matters. ---------- */
+  @media (max-width:760px){
+    body { overflow:auto; }
+    #stage { position:static; display:block; padding:66px 12px 40px; }
+    #scaler { transform:none !important; }
+    .book { position:static; width:100%; height:auto; perspective:none;
+            display:flex; flex-direction:column; gap:16px; transform:none !important; }
+    .sheet { position:static; width:100%; height:auto; left:auto; top:auto;
+             transform-style:flat; transform:none !important;
+             display:flex; flex-direction:column; gap:16px; }
+    .face { position:relative; inset:auto; width:100%; height:auto;
+            aspect-ratio:340 / 790; transform:none !important;
+            backface-visibility:visible; -webkit-backface-visibility:visible;
+            border-radius:12px; }
+    .face.blank { display:none; }
+    .edge { display:none; }
+    /* .pagebody is a fixed 680x1580 board - JS sizes --pgscale to the face width */
+    .pagebody { transform:scale(var(--pgscale, .5)); }
+    .samplemark { right:22px; bottom:20px; }
+    #nav, #hint, #counter { display:none; }
+    /* the closing page already carries the price and the button */
+    #endcard { display:none; }
+  }
+
+  /* ---------- end card ---------- */
+  #endcard { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+             justify-content:center; gap:14px; background:linear-gradient(150deg,#EFEDFF,#FDF2EC);
+             opacity:0; pointer-events:none; text-align:center; padding:0 30px; z-index:50;
+             transition:opacity .5s ease; }
+  #endcard.show { opacity:1 !important; pointer-events:auto !important; }
+  #endcard svg { width:150px; height:auto; margin-bottom:10px; }
+  #endcard h2 { font-family:'Playfair Display',Georgia,serif; font-size:46px; color:#16162A; font-weight:800; }
+  #endcard .sub { font-size:20px; color:#6B6B80; max-width:560px; line-height:1.5; }
+  #endcard a.url { font-size:34px; font-weight:700; color:#5349e0; text-decoration:none;
+                   border-bottom:3px solid rgba(83,73,224,.28); padding-bottom:2px; }
+  #endcard a.url:hover { border-bottom-color:#5349e0; }
+  #endcard .cta { margin-top:22px; display:inline-block; background:#6C63FF; color:#fff;
+                  text-decoration:none; font-size:22px; font-weight:700; border-radius:999px;
+                  padding:16px 38px; box-shadow:0 8px 22px rgba(108,99,255,.32); }
+  #endcard .cta:hover { background:#5349e0; }
+  #endcard .again { margin-top:16px; background:none; border:none; cursor:pointer; font:inherit;
+                    font-size:16px; color:#6B6B80; text-decoration:underline; letter-spacing:.02em; }
+  #endcard .again:hover { color:#16162A; }
+  @media (max-width:520px){
+    #endcard h2 { font-size:30px; }
+    #endcard a.url { font-size:23px; }
+    #endcard svg { width:104px; }
+    #endcard .cta { font-size:18px; padding:14px 30px; }
+    #counter { display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="brandbar"><svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg><span>Pieces of Perception</span></div>
+<div id="counter">IEP PREP COMPANION</div>
+<div id="stage">
+  <div id="scaler">
+    <div class="book" id="book">
+  <div class="sheet" id="s2" style="order:2">
+    <div class="face front"><div class="edge"></div><div class="samplemark">Sample</div><div class="pagebody hasmark"><div class="pad"><div class="eyebrow">Section 11 &middot; Questions for the Meeting</div><h2 class="page">The List to Bring with You</h2><p class="small" style="margin-bottom:18px">Mark a question &check; when answered, &rarr; when deferred for follow-up, or leave it blank to come back to.</p><div class="rows"><div class="row"><div class="dot" style="background:#6C63FF"></div><div class="txt">What evaluations has the school completed, and when were they last updated?</div></div><div class="row"><div class="dot" style="background:#6C63FF"></div><div class="txt">How will the team translate the parent priorities into <b>measurable annual goals</b>?</div></div><div class="row"><div class="dot" style="background:#E8845A"></div><div class="txt">Who will be the parent&rsquo;s primary point of contact between meetings?</div></div><div class="row"><div class="dot" style="background:#E8845A"></div><div class="txt">How often will the school report on progress, and in what format?</div></div><div class="row"><div class="dot" style="background:#52B788"></div><div class="txt">Has an <b>FBA</b> been considered, given the dysregulation patterns described?</div></div><div class="row"><div class="dot" style="background:#3FA8CC"></div><div class="txt">What is the plan if data shows insufficient progress at the 6-week mark?</div></div><div class="row"><div class="dot" style="background:#8E7FC4"></div><div class="txt">Will <b>Extended School Year</b> services be considered? On what basis?</div></div></div><div class="spacer"></div><p class="small">Twelve questions in all, each with a line to record the answer or the next step &mdash; so the meeting leaves a record.</p></div></div></div>
+    <div class="face back"><div class="edge"></div><div class="pagebody"><div class="pad backpage"><div class="eyebrow">The full document</div><h2 class="page">Twenty-one pages, in IEP order</h2><p class="body">You just read four. The Prep Companion organizes what you already know into the sections the team will actually work through:</p><ul class="toc"><li><span class="n">1</span><span class="l"><b>Student Information</b>The basics, in one place</span></li><li><span class="n">2</span><span class="l"><b>Parent Concerns &amp; Priorities</b>Your words, ready to read aloud</span></li><li><span class="n">3</span><span class="l"><b>Present Levels of Functional Performance</b>Parent-observed, behaviorally framed</span></li><li><span class="n">4</span><span class="l"><b>Strengths Inventory</b>What the team should build on</span></li><li><span class="n">5</span><span class="l"><b>Accommodations &amp; Specially Designed Instruction</b>What already works at home</span></li><li><span class="n">6</span><span class="l"><b>Triggers, De-escalation &amp; FBA Notes</b>The patterns, written down</span></li><li><span class="n">7</span><span class="l"><b>Questions for the Meeting</b>Twelve, with room for the answers</span></li></ul><div class="spacer"></div><div class="price"><span class="amt">$49</span><span class="unit">one-time payment</span></div><a class="btn" href="https://piecesofperception.com/questionnaire.html">Build Jamie&rsquo;s IEP Prep Companion</a><p class="small">A parent-prepared informational document &mdash; not a draft IEP, not legal advice, and not a diagnostic evaluation. Your district&rsquo;s team produces the official IEP.</p></div></div></div>
+  </div>
+  <div class="sheet" id="s1" style="order:1">
+    <div class="face front"><div class="edge"></div><div class="samplemark">Sample</div><div class="pagebody hasmark"><div class="pad"><div class="eyebrow">Section 02 &middot; Parent Concerns &amp; Priorities</div><h2 class="page">What You Want This IEP to Address</h2><p class="small" style="margin-bottom:20px">The text below is yours &mdash; already written, ready to read aloud or attach to the meeting record.</p><div class="excerpt"><div class="head"><div class="tag"></div><span>In the parent's words &nbsp;·&nbsp; verbatim</span></div><div class="inner"><div class="q">Biggest concern right now</div><div class="a">&ldquo;He has a fixation on thinking everyone is mad at him... his fixations and rigidity of thought make social situations stressful. He almost antagonizes others verbally and then becomes upset thinking they&rsquo;re upset with him. I really want him to feel more comfortable and natural in social settings.&rdquo;</div><div class="q">Top priorities for the next 12 months <br><i>(the parent&rsquo;s view &mdash; not pre-written goals)</i></div><div class="a">1. Help him trust external environments and teachers again. 2. Help him become more comfortable in social settings so he can develop friendships. 3. Build more confidence in his own abilities.</div></div></div><div class="spacer"></div><p class="small">These are the <b>areas</b> the parent wants the team to focus on. The IEP team translates them into measurable annual goals.</p></div></div></div>
+    <div class="face back"><div class="edge"></div><div class="samplemark">Sample</div><div class="pagebody hasmark"><div class="pad"><div class="eyebrow">Section 06 &middot; Accommodations to Discuss</div><h2 class="page">What&rsquo;s Already Working at Home</h2><p class="body">Under <b>IDEA &sect;300.320</b>, the IEP must describe accommodations needed for the student to participate in instruction and assessment. These have been observed by the parent at home. The team will consider, adapt, and add school-context accommodations.</p><div class="rows"><div class="row"><div class="dot" style="background:#6C63FF"></div><div class="txt">Short sideways chats beat face-to-face talks; car rides are ideal.</div></div><div class="row"><div class="dot" style="background:#E8845A"></div><div class="txt">A five-minute warning, then a two-minute warning, then a walk-with-me.</div></div><div class="row"><div class="dot" style="background:#52B788"></div><div class="txt">Name the feeling first, then offer the choice &mdash; <b>order matters here</b>.</div></div><div class="row"><div class="dot" style="background:#3FA8CC"></div><div class="txt">After a storm, reconnect first and review much later &mdash; ideally the next day.</div></div></div><div class="spacer"></div><div class="card pale"><div class="ct">Accommodation vs. modification</div><div class="cb">Accommodations change <b>HOW</b> a student learns and shows learning &mdash; extended time, sensory breaks, seating. Modifications change <b>WHAT</b> is being learned. Most students need accommodations; modifications are considered only when the team determines the general curriculum isn't accessible even with accommodations.</div></div></div></div></div>
+  </div>
+  <div class="sheet" id="s0" style="order:0">
+    <div class="face front"><div class="edge"></div><div class="pagebody"><div class="pad"><div class="logo-row"><svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg><div class="wm">Pieces of<br>Perception</div></div><div class="eyebrow warm">IEP Prep Companion &middot; Parent-voiced</div><h1 class="page">Bringing Jamie&nbsp;M. to the IEP table</h1><div class="rule"></div><p class="lede">A parent-prep companion that organizes your child&rsquo;s profile into the language and sections of an Individualized Education Program.</p><div class="rows"><div class="row"><div class="dot" style="background:#6C63FF"></div><div class="txt"><b>Prepared for</b><br>Jamie M., age 12</div></div><div class="row"><div class="dot" style="background:#E8845A"></div><div class="txt"><b>Parent voice</b><br>Sarah (Mother)</div></div><div class="row"><div class="dot" style="background:#52B788"></div><div class="txt"><b>Scope</b><br>Any-state adaptable</div></div></div><div class="stamp">Sample pages &middot; 4 of 21</div><div class="spacer"></div><div class="hook" style="margin-bottom:30px"><p>Walk into the meeting heard, prepared, and aligned with the team.</p><span>The whole point of the Companion</span></div><div class="cover-banner"><div class="cc c1"></div><div class="cc c2"></div><div class="dots"><i style="background:#fff"></i><i style="background:#C9C5FF"></i><i style="background:#FFD9C7"></i><i style="background:#A8E0C4"></i></div><div class="cover-url">piecesofperception.com</div></div></div></div></div>
+    <div class="face back"><div class="edge"></div><div class="samplemark">Sample</div><div class="pagebody hasmark"><div class="pad"><div class="eyebrow">How to use it</div><h2 class="page">Before, During, After</h2><div class="card pale"><div class="ct">Before the meeting</div><div class="cb">Share a copy with the IEP team <b>1&ndash;2 weeks in advance</b>. Email the chairperson and ask them to circulate it. Teachers and related service providers get time to read it and come to the meeting already aligned with your priorities.</div></div><div class="card warmc"><div class="ct">During the meeting</div><div class="cb">Bring a printed copy as your reference. <b>Section numbers map to standard IEP sections</b> &mdash; Present Levels, Goals, Accommodations, Services. When the team reaches a section, flip to the matching page and bring your data to the conversation.</div></div><div class="card sagec"><div class="ct">After the meeting</div><div class="cb">Use the Questions section to track what was answered, what was deferred, and what needs follow-up. <b>This becomes your record of what the team committed to.</b></div></div><div class="spacer"></div><div class="dark"><div class="dt">A note about parent voice</div><div class="db">Under <b>IDEA &sect;300.324</b>, the IEP team is required to consider the concerns of the parents for enhancing the education of their child. That is a federal mandate, not a suggestion. The data here is parent-observed, specific and behaviorally framed &mdash; exactly the form of input the team is required to consider.</div></div></div></div></div>
+  </div>
+    </div>
+    <div id="hint">Tap or click the pages to flip &rarr;</div>
+  </div>
+</div>
+<div id="nav"><div id="navL"></div><div id="navR"></div></div>
+<div id="endcard">
+  <svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg>
+  <h2>Walk in prepared.</h2>
+  <p class="sub">Your child&rsquo;s profile, organized into the language and sections of an IEP &mdash; parent input the team is required under IDEA to consider.</p>
+  <a class="url" href="https://piecesofperception.com">piecesofperception.com</a>
+  <a class="cta" href="https://piecesofperception.com/questionnaire.html">Build your child&rsquo;s IEP Prep Companion</a>
+  <button class="again" id="again" type="button">&#8592; Read this sample again</button>
+</div>
+<script>
+(function(){
+  var W=340, N=3, sheets=[];
+  for(var i=0;i<N;i++) sheets.push(document.getElementById('s'+i));
+  var book=document.getElementById('book'), hint=document.getElementById('hint'),
+      endcard=document.getElementById('endcard'), counter=document.getElementById('counter');
+  var flipped=0;
+  function zfix(animIdx){
+    for(var i=0;i<N;i++){
+      var s=sheets[i];
+      s.style.zIndex = (i<flipped) ? (i+1) : (N-i+3);
+      if(i===animIdx) s.style.zIndex = 20;
+    }
+  }
+  function shift(){
+    var t = (flipped===0) ? -W/2 : (flipped===N ? W/2 : 0);
+    book.style.transform='translateX('+t+'px)';
+  }
+  function apply(animIdx){
+    for(var i=0;i<N;i++) sheets[i].style.transform='rotateY('+(i<flipped?-180:0)+'deg)';
+    zfix(animIdx); shift(); fit();
+    hint.style.opacity = flipped===0 ? 1 : 0;
+    if(counter) counter.textContent =
+      (flipped===0 ? 'COVER' : (flipped===N ? 'BACK' : (2*flipped)+' / '+(2*N)));
+    if(flipped!==N) endcard.classList.remove('show');
+    if(hintEl2) hintEl2.textContent = (flipped===N)
+      ? 'Tap again for the link \u2192' : 'Tap or click the pages to flip \u2192';
+  }
+  var hintEl2 = hint;
+  /* The last page carries the price and the call to action, so it must be
+     readable: reaching the end shows it, and one MORE tap opens the end card. */
+  function next(){
+    if(flipped<N){ flipped++; apply(flipped-1); }
+    else { endcard.classList.add('show'); }
+  }
+  function prev(){
+    if(endcard.classList.contains('show')){ endcard.classList.remove('show'); return; }
+    if(flipped>0){ flipped--; apply(flipped); }
+  }
+  document.getElementById('again').addEventListener('click', function(e){
+    e.stopPropagation(); endcard.classList.remove('show'); flipped=0; apply();
+  });
+  document.getElementById('navR').addEventListener('click', next);
+  document.getElementById('navL').addEventListener('click', prev);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key===' ') next();
+    if(e.key==='ArrowLeft') prev();
+  });
+  var tx=null;
+  document.addEventListener('touchstart', function(e){ tx=e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(tx===null) return;
+    var dx=e.changedTouches[0].clientX-tx;
+    if(dx<-40) next(); if(dx>40) prev(); tx=null;
+  }, {passive:true});
+  function mobile(){ return innerWidth<=760; }
+  function fit(){
+    if(mobile()){
+      /* flattened reader: scale each 680px page board down to the face width */
+      var f=document.querySelector('.face');
+      if(f){
+        var w=f.getBoundingClientRect().width;
+        if(w>0) document.documentElement.style.setProperty('--pgscale', (w/680).toFixed(4));
+      }
+      document.getElementById('scaler').style.transform='none';
+      return;
+    }
+    var pad=70, aw=innerWidth-30, ah=innerHeight-pad, wide=720;
+    var sc=Math.min(aw/wide, ah/850, 1.25);
+    document.getElementById('scaler').style.transform='scale('+sc+')';
+  }
+  addEventListener('resize', fit);
+  fit();
+  if(!mobile()) apply(); else requestAnimationFrame(fit);
+})();
+</script>
+</body>
+</html>

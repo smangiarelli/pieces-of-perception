@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comprehensive Profile &mdash; Sample Flipbook</title>
+<meta name="description" content="Flip through four pages of a real Pieces of Perception Comprehensive Profile: the executive summary, the at-a-glance card, the 12-week implementation map and the trigger-word swaps.">
+<link rel="canonical" href="https://piecesofperception.com/sample-comprehensive-profile.html">
+<meta name="theme-color" content="#6C63FF">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pieces of Perception">
+<meta property="og:url" content="https://piecesofperception.com/sample-comprehensive-profile.html">
+<meta property="og:title" content="Comprehensive Profile &mdash; Sample Flipbook">
+<meta property="og:description" content="Flip through four pages of a real Pieces of Perception Comprehensive Profile: the executive summary, the at-a-glance card, the 12-week implementation map and the trigger-word swaps.">
+<meta property="og:image" content="https://piecesofperception.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Comprehensive Profile &mdash; Sample Flipbook">
+<meta name="twitter:description" content="Flip through four pages of a real Pieces of Perception Comprehensive Profile: the executive summary, the at-a-glance card, the 12-week implementation map and the trigger-word swaps.">
+<meta name="twitter:image" content="https://piecesofperception.com/og-image.png">
+<link href="/fonts.css" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  :root{
+    --accent:#6C63FF; --accent-dark:#5349e0; --accent-mid:#8B84FF; --accent-pale:#EFEDFF;
+    --warm:#E8845A; --sage:#52B788; --lavender:#8E7FC4; --rose:#D95B72; --sky:#3FA8CC;
+    --deep:#16162A; --text:#2C2C3E; --text-light:#6B6B80; --bg:#F7F8FC; --rule:#E6E8F0;
+  }
+  body { font-family:'DM Sans','Segoe UI',system-ui,sans-serif; color:var(--text);
+         background:linear-gradient(150deg,#EFEDFF 0%, #F7F8FC 55%, #FDF2EC 100%);
+         overflow:hidden; }
+
+  /* ---------- book shell (geometry identical to the brochure) ---------- */
+  #stage { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  #scaler { transform-origin:center center; }
+  .book { position:relative; width:680px; height:790px; perspective:2600px;
+          transition:transform .9s cubic-bezier(.4,0,.2,1); }
+  .sheet { position:absolute; left:340px; top:0; width:340px; height:790px;
+           transform-origin:left center; transform-style:preserve-3d;
+           transition:transform 1s cubic-bezier(.45,.05,.35,1); }
+  .no-anim .sheet, .no-anim .book, .no-anim #hint { transition:none !important; }
+  .face { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+          border-radius:6px; overflow:hidden; box-shadow:0 6px 24px rgba(22,22,42,.18); background:#fff; }
+  .face.back { transform:rotateY(180deg); }
+  .edge { position:absolute; inset:0; pointer-events:none; z-index:9;
+          background:linear-gradient(to right, rgba(22,22,42,.10), transparent 12%); }
+  .face.back .edge { background:linear-gradient(to left, rgba(22,22,42,.10), transparent 12%); }
+  .face.blank { background:#FBFBFE; }
+
+  /* content authored at 2x, scaled down - keeps CSS numbers comfortable */
+  .pagebody { position:absolute; top:0; left:0; width:680px; height:1580px;
+              transform:scale(.5); transform-origin:top left; overflow:hidden;
+              display:flex; flex-direction:column; }
+
+  #hint { margin-top:18px; color:#6B6B80; font-size:14px; letter-spacing:.02em;
+          transition:opacity .4s; user-select:none; text-align:center; }
+  #nav { position:fixed; inset:0; display:flex; }
+  #nav div { flex:1; cursor:pointer; }
+  .brandbar { position:fixed; top:18px; left:22px; display:flex; align-items:center; gap:9px;
+              user-select:none; z-index:60; }
+  .brandbar svg { width:34px; height:auto; }
+  .brandbar span { font-weight:700; color:#16162A; font-size:15px; }
+  #counter { position:fixed; top:22px; right:24px; z-index:60; font-size:13px; font-weight:700;
+             letter-spacing:.06em; color:#6B6B80; user-select:none; }
+
+  /* ---------- page furniture ---------- */
+  .pad { padding:76px 60px 64px; flex:1; display:flex; flex-direction:column; }
+  .eyebrow { font-size:19px; font-weight:700; letter-spacing:.17em; text-transform:uppercase;
+             color:var(--accent-dark); margin-bottom:16px; }
+  .eyebrow.warm { color:var(--warm); }
+  h1.page { font-family:'Playfair Display',Georgia,serif; font-weight:800; font-size:60px;
+            line-height:1.13; color:var(--deep); letter-spacing:-.01em; }
+  h2.page { font-family:'Playfair Display',Georgia,serif; font-weight:800; font-size:42px;
+            line-height:1.18; color:var(--deep); margin-bottom:22px; }
+  h3.sec { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:27px;
+           line-height:1.25; color:var(--deep); margin-bottom:10px; }
+  p.body { font-size:21px; line-height:1.62; color:var(--text); margin-bottom:18px; }
+  p.body b { color:var(--accent-dark); }
+  p.lede { font-size:24px; line-height:1.55; color:var(--text-light); margin-bottom:22px; }
+  .small { font-size:17px; line-height:1.55; color:var(--text-light); }
+  .rule { height:3px; background:var(--accent); width:78px; border-radius:2px; margin:22px 0 26px; }
+  .spacer { flex:1; }
+
+  /* excerpt block - "this is lifted from the real report" */
+  .excerpt { border:2px solid var(--rule); border-radius:20px; background:#fff;
+             box-shadow:0 4px 16px rgba(22,22,42,.06); overflow:hidden; margin-bottom:22px; }
+  .excerpt .head { background:var(--bg); border-bottom:2px solid var(--rule);
+                   padding:16px 22px; display:flex; align-items:center; gap:12px; }
+  .excerpt .head .tag { flex:none; width:12px; height:12px; border-radius:50%; background:var(--accent); }
+  .excerpt .head span { font-size:17px; font-weight:700; letter-spacing:.1em;
+                        text-transform:uppercase; color:var(--text-light); }
+  .excerpt .inner { padding:22px 24px 24px; }
+  .excerpt .q { font-size:20px; font-weight:700; color:var(--deep); line-height:1.45; margin-bottom:10px; }
+  .excerpt .a { font-size:20px; line-height:1.6; color:var(--text); }
+  .excerpt .a + .q { margin-top:20px; padding-top:20px; border-top:1px dashed var(--rule); }
+
+  /* bullet rows with a colored dot */
+  .rows { margin-bottom:20px; }
+  .row { display:flex; gap:16px; margin-bottom:16px; }
+  .row .dot { flex:none; width:15px; height:15px; border-radius:50%; margin-top:8px; }
+  .row .txt { font-size:20px; line-height:1.55; color:var(--text); }
+  .row .txt b { color:var(--deep); }
+
+  /* strategy / do-this card */
+  .card { border-radius:20px; padding:26px 28px; margin-bottom:20px; }
+  .card.pale { background:var(--accent-pale); border-left:6px solid var(--accent); }
+  .card.warmc { background:rgba(232,132,90,.11); border-left:6px solid var(--warm); }
+  .card.sagec { background:rgba(82,183,136,.12); border-left:6px solid var(--sage); }
+  .card.skyc  { background:rgba(63,168,204,.12); border-left:6px solid var(--sky); }
+  .card .ct { font-size:22px; font-weight:700; color:var(--deep); margin-bottom:10px; }
+  .card .cb { font-size:20px; line-height:1.58; color:var(--text); }
+  .card .cb b { color:var(--accent-dark); }
+
+  /* dark panel */
+  .dark { background:var(--deep); border-radius:22px; padding:30px 30px 28px; color:#fff;
+          position:relative; overflow:hidden; margin-bottom:20px; }
+  .dark::after { content:''; position:absolute; right:-56px; top:-56px; width:190px; height:190px;
+                 border-radius:50%; background:rgba(108,99,255,.35); }
+  .dark .dt { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:30px;
+              line-height:1.22; margin-bottom:14px; position:relative; z-index:1; }
+  .dark .db { font-size:20px; line-height:1.58; color:rgba(255,255,255,.88); position:relative; z-index:1; }
+  .dark .db b { color:#C9C5FF; }
+
+  /* pull quote */
+  .pull { border-left:5px solid var(--accent); padding-left:22px; margin-bottom:22px; }
+  .pull p { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:26px;
+            line-height:1.42; color:var(--deep); margin-bottom:8px; }
+  .pull span { font-size:17px; font-weight:700; letter-spacing:.05em; color:var(--text-light); }
+
+  /* cover bits */
+  .logo-row { display:flex; align-items:center; gap:14px; margin-bottom:40px; }
+  .logo-row svg { width:66px; height:auto; }
+  .logo-row .wm { font-weight:700; font-size:29px; letter-spacing:-.01em; color:var(--deep); line-height:1.08; }
+  .cover-banner { background:var(--accent); border-radius:20px; padding:28px 30px;
+                  position:relative; overflow:hidden; }
+  .cover-banner .cc { position:absolute; border-radius:50%; }
+  .cover-banner .c1 { right:-60px; top:-60px; width:170px; height:170px; background:var(--warm); opacity:.9; }
+  .cover-banner .c2 { right:66px; bottom:-104px; width:135px; height:135px; background:var(--sage); opacity:.85; }
+  .dots { display:flex; gap:12px; margin-bottom:14px; position:relative; z-index:1; }
+  .dots i { width:18px; height:18px; border-radius:50%; display:block; }
+  .cover-url { font-weight:700; font-size:25px; color:#fff; position:relative; z-index:1; }
+  .stamp { display:inline-block; align-self:flex-start; font-size:16px; font-weight:700;
+           letter-spacing:.13em; text-transform:uppercase; color:var(--warm);
+           border:2px solid rgba(232,132,90,.45); border-radius:999px; padding:9px 18px; }
+
+  /* contents list on cover-inside */
+  .toc { list-style:none; }
+  .toc li { display:flex; gap:16px; align-items:baseline; padding:15px 0;
+            border-bottom:1px solid var(--rule); }
+  .toc li:last-child { border-bottom:none; }
+  .toc .n { flex:none; width:38px; height:38px; border-radius:50%; background:var(--accent-pale);
+            color:var(--accent-dark); font-weight:700; font-size:19px; display:flex;
+            align-items:center; justify-content:center; }
+  .toc .l { font-size:21px; line-height:1.4; color:var(--text); }
+  .toc .l b { display:block; color:var(--deep); font-size:22px; margin-bottom:3px; }
+
+  /* back page */
+  .backpage { background:linear-gradient(160deg,#EFEDFF 0%,#FDF2EC 100%); }
+  .price { display:flex; align-items:baseline; gap:12px; margin-bottom:8px; }
+  .price .amt { font-family:'Playfair Display',Georgia,serif; font-weight:800; font-size:52px; color:var(--deep); }
+  .price .unit { font-size:19px; color:var(--text-light); }
+  .btn { display:block; text-align:center; background:var(--accent); color:#fff; text-decoration:none;
+         font-size:23px; font-weight:700; border-radius:999px; padding:22px 30px;
+         box-shadow:0 10px 26px rgba(108,99,255,.32); margin-bottom:18px; }
+
+  /* watermark so no one mistakes a sample for a real child's report.
+     Bottom-right corner, inside the page margin - it must never sit over body text. */
+  .pagebody.hasmark .pad { padding-bottom:124px; }
+  .samplemark { position:absolute; right:30px; bottom:26px; z-index:8; pointer-events:none;
+                color:var(--accent-dark); background:var(--accent-pale);
+                border:1px solid rgba(108,99,255,.32); font-size:14px; font-weight:700;
+                letter-spacing:.16em; text-transform:uppercase; padding:7px 13px;
+                border-radius:999px; }
+
+  /* cover hook - fills the space between the meta rows and the footer banner */
+  .hook { margin-top:34px; background:rgba(142,127,196,.12); border-top:4px solid var(--accent);
+          border-radius:20px; padding:28px 28px 26px; }
+  .hook p { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:27px;
+            line-height:1.42; color:var(--deep); margin-bottom:10px; }
+  .hook span { font-size:17px; font-weight:700; letter-spacing:.05em; color:var(--text-light); }
+
+
+  /* ---------- phones: a two-page spread at 390px is unreadable, so the book
+     flattens into one page per screen-width, in reading order. The 3D flip is
+     a desktop affordance; on a phone the content is what matters. ---------- */
+  @media (max-width:760px){
+    body { overflow:auto; }
+    #stage { position:static; display:block; padding:66px 12px 40px; }
+    #scaler { transform:none !important; }
+    .book { position:static; width:100%; height:auto; perspective:none;
+            display:flex; flex-direction:column; gap:16px; transform:none !important; }
+    .sheet { position:static; width:100%; height:auto; left:auto; top:auto;
+             transform-style:flat; transform:none !important;
+             display:flex; flex-direction:column; gap:16px; }
+    .face { position:relative; inset:auto; width:100%; height:auto;
+            aspect-ratio:340 / 790; transform:none !important;
+            backface-visibility:visible; -webkit-backface-visibility:visible;
+            border-radius:12px; }
+    .face.blank { display:none; }
+    .edge { display:none; }
+    /* .pagebody is a fixed 680x1580 board - JS sizes --pgscale to the face width */
+    .pagebody { transform:scale(var(--pgscale, .5)); }
+    .samplemark { right:22px; bottom:20px; }
+    #nav, #hint, #counter { display:none; }
+    /* the closing page already carries the price and the button */
+    #endcard { display:none; }
+  }
+
+  /* ---------- end card ---------- */
+  #endcard { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center;
+             justify-content:center; gap:14px; background:linear-gradient(150deg,#EFEDFF,#FDF2EC);
+             opacity:0; pointer-events:none; text-align:center; padding:0 30px; z-index:50;
+             transition:opacity .5s ease; }
+  #endcard.show { opacity:1 !important; pointer-events:auto !important; }
+  #endcard svg { width:150px; height:auto; margin-bottom:10px; }
+  #endcard h2 { font-family:'Playfair Display',Georgia,serif; font-size:46px; color:#16162A; font-weight:800; }
+  #endcard .sub { font-size:20px; color:#6B6B80; max-width:560px; line-height:1.5; }
+  #endcard a.url { font-size:34px; font-weight:700; color:#5349e0; text-decoration:none;
+                   border-bottom:3px solid rgba(83,73,224,.28); padding-bottom:2px; }
+  #endcard a.url:hover { border-bottom-color:#5349e0; }
+  #endcard .cta { margin-top:22px; display:inline-block; background:#6C63FF; color:#fff;
+                  text-decoration:none; font-size:22px; font-weight:700; border-radius:999px;
+                  padding:16px 38px; box-shadow:0 8px 22px rgba(108,99,255,.32); }
+  #endcard .cta:hover { background:#5349e0; }
+  #endcard .again { margin-top:16px; background:none; border:none; cursor:pointer; font:inherit;
+                    font-size:16px; color:#6B6B80; text-decoration:underline; letter-spacing:.02em; }
+  #endcard .again:hover { color:#16162A; }
+  @media (max-width:520px){
+    #endcard h2 { font-size:30px; }
+    #endcard a.url { font-size:23px; }
+    #endcard svg { width:104px; }
+    #endcard .cta { font-size:18px; padding:14px 30px; }
+    #counter { display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="brandbar"><svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg><span>Pieces of Perception</span></div>
+<div id="counter">COMPREHENSIVE PROFILE</div>
+<div id="stage">
+  <div id="scaler">
+    <div class="book" id="book">
+  <div class="sheet" id="s2" style="order:2">
+    <div class="face front"><div class="edge"></div><div class="samplemark">Sample</div><div class="pagebody hasmark"><div class="pad"><div class="eyebrow">Section 09 &middot; Trigger Word Replacements</div><h2 class="page">The Specific Word Swaps</h2><p class="small" style="margin-bottom:20px">Live, named substitutions. Every adult he sees &mdash; including extended family and visiting friends &mdash; needs the swap list.</p><div class="excerpt"><div class="head"><div class="tag"></div><span>Retire &nbsp;·&nbsp; why it matters</span></div><div class="inner"><div class="q">Retire &ldquo;STOP&rdquo; &rarr; use &ldquo;Pause / Wait / Hold on / Freeze&rdquo;</div><div class="a">STOP is the live trigger word. It pulls him back into the PTSD body memory. Replace it everywhere &mdash; every adult, every context, every visitor.</div><div class="q">Retire &ldquo;Red is bad / green is good&rdquo; &rarr; use &ldquo;Red is the color of fire trucks&rdquo;</div><div class="a">Synesthesia means colors have feelings. Moralizing a color tells him it has bad feelings, which distresses him.</div><div class="q">Retire &ldquo;Calm down&rdquo; &rarr; use &ldquo;Take a breath with me&rdquo;</div><div class="a">Calm cannot be commanded. Co-regulating models it.</div><div class="q">Retire &ldquo;That&rsquo;s not real&rdquo; &rarr; use &ldquo;I&rsquo;m not going to feed that thought or worry&rdquo;</div><div class="a">Don’t dismiss the thoughts. Don’t engage them either. Acknowledge without confirming.</div><div class="q">Retire &ldquo;You&rsquo;re fine&rdquo; &rarr; use &ldquo;That was hard. You bounced back.&rdquo;</div><div class="a">Don’t minimize. Affirm the difficulty AND the recovery.</div></div></div></div></div></div>
+    <div class="face back"><div class="edge"></div><div class="pagebody"><div class="pad backpage"><div class="eyebrow">The full report</div><h2 class="page">Fourteen sections and the appendix</h2><p class="body">You just read four pages of twenty-four. The Comprehensive Profile is the whole-child version &mdash; everything in the Action Report, plus:</p><ul class="toc"><li><span class="n">1</span><span class="l"><b>Sensory Map</b>All systems, with what to do for each</span></li><li><span class="n">2</span><span class="l"><b>Implementation Framework</b>A full 12-week map, phase by phase</span></li><li><span class="n">3</span><span class="l"><b>Meltdown Support &amp; Recovery</b>De-escalation, recovery and repair</span></li><li><span class="n">4</span><span class="l"><b>Suggested Daily Rhythm</b>Morning, transition, evening, sleep</span></li><li><span class="n">5</span><span class="l"><b>Progress Tracking</b>What movement actually looks like</span></li><li><span class="n">6</span><span class="l"><b>Existing Team &amp; Referrals</b>Plus the questions to ask</span></li><li><span class="n">7</span><span class="l"><b>Appendix</b>Every answer you gave, verbatim, ready to hand to a new doctor, therapist or the IEP team</span></li></ul><div class="spacer"></div><div class="price"><span class="amt">$149</span><span class="unit">one-time payment &middot; best value</span></div><a class="btn" href="https://piecesofperception.com/questionnaire.html">Start Jamie&rsquo;s Comprehensive Profile</a><p class="small">Informational resource &mdash; not a diagnostic instrument or a substitute for professional clinical evaluation. Sample content shown.</p></div></div></div>
+  </div>
+  <div class="sheet" id="s1" style="order:1">
+    <div class="face front"><div class="edge"></div><div class="samplemark">Sample</div><div class="pagebody hasmark"><div class="pad"><div class="eyebrow">Section 02 &middot; Quick Reference</div><h2 class="page">Jamie at a Glance</h2><p class="small" style="margin-bottom:20px">A 1-page card. Print it, post it on the fridge, hand it to anyone new &mdash; babysitter, sub provider, ER triage nurse.</p><div class="excerpt"><div class="head"><div class="tag"></div><span>The card &nbsp;·&nbsp; as it prints</span></div><div class="inner"><div class="q">What regulates him</div><div class="a">Hugs &mdash; he asks many times a day, even when not visibly upset; honor every request. Books. Music of all kinds. Walks. Car rides. An adult getting down to his eye level.</div><div class="q">What overwhelms him</div><div class="a">The energetic complexity of crowded spaces (not volume &mdash; energy). Strong smells. Stuck thoughts comparing two unrelated things. Frustrated adult expressions. The word &ldquo;STOP.&rdquo;</div><div class="q">Early warning signs</div><div class="a">Verbal stimming and looping phrases. The rhythmic breathing sound &mdash; this is a self-regulation attempt, a milestone, let it happen. Asking trick questions of people he doesn’t know well.</div><div class="q">What never to say</div><div class="a">&ldquo;STOP.&rdquo; &ldquo;Because I said so.&rdquo; Anything in a scolding tone. Color-as-moral framing. Avoid visible frustration &mdash; he won’t hear the words past your face.</div></div></div></div></div></div>
+    <div class="face back"><div class="edge"></div><div class="samplemark">Sample</div><div class="pagebody hasmark"><div class="pad"><div class="eyebrow">Section 07 &middot; Implementation Framework</div><h2 class="page">Your 12-Week Map</h2><p class="body">Built around the three goals you named. Each phase has <b>one primary lever</b> &mdash; never more.</p><div class="card pale"><div class="ct">Weeks 1&ndash;2 &middot; Language reset</div><div class="cb">The whole household removes &ldquo;STOP&rdquo; from active vocabulary. Color-as-moral framing is retired. <b>&ldquo;I'm not going to feed that thought or worry&rdquo;</b> becomes the family-wide phrase.<br><br><i>Expect:</i> lots of accidental &ldquo;STOP&rdquo;s in week one. Self-correct calmly and move on.</div></div><div class="card warmc"><div class="ct">Weeks 3&ndash;4 &middot; Build trust in adults outside the household</div><div class="cb">Name the three adults he already trusts as &ldquo;Jamie's team&rdquo; out loud. Brief every new provider on the honor-the-lean rule. <b>Add no new adults this phase</b> &mdash; stability over breadth.<br><br><i>Expect:</i> elevated behaviors at the start of any new session. Resist &ldquo;how was it?&rdquo; right afterward.</div></div><div class="card sagec"><div class="ct">Weeks 5&ndash;6 &middot; Soften the rigidity loop</div><div class="cb">Not challenging the synesthesia or the categorical thinking &mdash; introducing <b>&ldquo;Two things can be true at once&rdquo;</b> as a frame. When a stuck thought arrives, don't argue: &ldquo;Tell me more &mdash; and what's happening in your body right now?&rdquo;</div></div><div class="spacer"></div><p class="small">Weeks 7&ndash;12 continue through confidence-building, sleep and the puberty conversation &mdash; each with actions and what to expect.</p></div></div></div>
+  </div>
+  <div class="sheet" id="s0" style="order:0">
+    <div class="face front"><div class="edge"></div><div class="pagebody"><div class="pad"><div class="logo-row"><svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg><div class="wm">Pieces of<br>Perception</div></div><div class="eyebrow warm">Comprehensive Profile &middot; Sample</div><h1 class="page">The whole&nbsp;child, in one plan</h1><div class="rule"></div><p class="lede">A whole-child action plan built directly from the answers you shared. Designed to be read alone, with your care team, or alongside an IEP conversation.</p><div class="rows"><div class="row"><div class="dot" style="background:#6C63FF"></div><div class="txt"><b>Pathway</b><br>1 of 2 &mdash; Comprehensive</div></div><div class="row"><div class="dot" style="background:#E8845A"></div><div class="txt"><b>Sections</b><br>14, plus a verbatim appendix</div></div><div class="row"><div class="dot" style="background:#52B788"></div><div class="txt"><b>Framework</b><br>A 12-week implementation map</div></div></div><div class="stamp">Sample pages &middot; 4 of 37</div><div class="spacer"></div><div class="hook" style="margin-bottom:30px"><p>His curiosity, memory and love of music, animals and books are the operating system. Every strategy builds on those &mdash; never around them.</p><span>From Section 01 &middot; Executive Summary</span></div><div class="cover-banner"><div class="cc c1"></div><div class="cc c2"></div><div class="dots"><i style="background:#fff"></i><i style="background:#C9C5FF"></i><i style="background:#FFD9C7"></i><i style="background:#A8E0C4"></i></div><div class="cover-url">piecesofperception.com</div></div></div></div></div>
+    <div class="face back"><div class="edge"></div><div class="samplemark">Sample</div><div class="pagebody hasmark"><div class="pad"><div class="eyebrow">Section 01 &middot; Executive Summary</div><h2 class="page">The Whole Picture</h2><div class="card pale"><div class="ct">How to use this report</div><div class="cb">Read sections 1&ndash;3 first. Section 4 (Communication) is the section to copy and hand to anyone new. The Reference Guide near the end is the single page you can print for the fridge. The Appendix is a verbatim copy of every answer you shared &mdash; so Jamie's story doesn't have to be told from scratch every time.</div></div><p class="body">The current pressure point is the collision between rigid black-and-white thinking and social anxiety: thought patterns pull toward 'trick questions' and categorical judgments, which can antagonize the very people whose approval he then anxiously seeks.</p><h3 class="sec">Three anchor truths to start with</h3><div class="rows"><div class="row"><div class="dot" style="background:#6C63FF"></div><div class="txt"><b>Strengths first.</b> Curiosity, memory, and love of music, animals and books are the operating system. Every strategy builds on those &mdash; never around them.</div></div><div class="row"><div class="dot" style="background:#E8845A"></div><div class="txt"><b>Calm tone before words.</b> His nervous system locks onto the adult's emotional state before the content lands. If you are frustrated, he won't hear the sentence &mdash; he'll only see your face.</div></div><div class="row"><div class="dot" style="background:#52B788"></div><div class="txt"><b>Honor the lean.</b> He rarely greets new adults warmly, and he WILL test the situation. If he gives a lean, comes close, or makes any move toward you &mdash; he is starting to trust. That is the win.</div></div></div></div></div></div>
+  </div>
+    </div>
+    <div id="hint">Tap or click the pages to flip &rarr;</div>
+  </div>
+</div>
+<div id="nav"><div id="navL"></div><div id="navR"></div></div>
+<div id="endcard">
+  <svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M 2,1 L 7,1 C 19,1 19,17 7,17 L 7,31 L 2,31 Z" fill="#6C63FF"/><path d="M 38,1 L 33,1 C 21,1 21,17 33,17 L 33,31 L 38,31 Z" fill="#E8845A"/><circle cx="20" cy="16" r="7" fill="#52B788"/><circle cx="20" cy="16" r="2.5" fill="white"/></svg>
+  <h2>The whole child, in one plan.</h2>
+  <p class="sub">This was four pages of thirty-seven &mdash; fourteen sections plus a verbatim appendix you can hand to any new doctor, therapist or IEP team.</p>
+  <a class="url" href="https://piecesofperception.com">piecesofperception.com</a>
+  <a class="cta" href="https://piecesofperception.com/questionnaire.html">Start your child&rsquo;s Comprehensive Profile</a>
+  <button class="again" id="again" type="button">&#8592; Read this sample again</button>
+</div>
+<script>
+(function(){
+  var W=340, N=3, sheets=[];
+  for(var i=0;i<N;i++) sheets.push(document.getElementById('s'+i));
+  var book=document.getElementById('book'), hint=document.getElementById('hint'),
+      endcard=document.getElementById('endcard'), counter=document.getElementById('counter');
+  var flipped=0;
+  function zfix(animIdx){
+    for(var i=0;i<N;i++){
+      var s=sheets[i];
+      s.style.zIndex = (i<flipped) ? (i+1) : (N-i+3);
+      if(i===animIdx) s.style.zIndex = 20;
+    }
+  }
+  function shift(){
+    var t = (flipped===0) ? -W/2 : (flipped===N ? W/2 : 0);
+    book.style.transform='translateX('+t+'px)';
+  }
+  function apply(animIdx){
+    for(var i=0;i<N;i++) sheets[i].style.transform='rotateY('+(i<flipped?-180:0)+'deg)';
+    zfix(animIdx); shift(); fit();
+    hint.style.opacity = flipped===0 ? 1 : 0;
+    if(counter) counter.textContent =
+      (flipped===0 ? 'COVER' : (flipped===N ? 'BACK' : (2*flipped)+' / '+(2*N)));
+    if(flipped!==N) endcard.classList.remove('show');
+    if(hintEl2) hintEl2.textContent = (flipped===N)
+      ? 'Tap again for the link \u2192' : 'Tap or click the pages to flip \u2192';
+  }
+  var hintEl2 = hint;
+  /* The last page carries the price and the call to action, so it must be
+     readable: reaching the end shows it, and one MORE tap opens the end card. */
+  function next(){
+    if(flipped<N){ flipped++; apply(flipped-1); }
+    else { endcard.classList.add('show'); }
+  }
+  function prev(){
+    if(endcard.classList.contains('show')){ endcard.classList.remove('show'); return; }
+    if(flipped>0){ flipped--; apply(flipped); }
+  }
+  document.getElementById('again').addEventListener('click', function(e){
+    e.stopPropagation(); endcard.classList.remove('show'); flipped=0; apply();
+  });
+  document.getElementById('navR').addEventListener('click', next);
+  document.getElementById('navL').addEventListener('click', prev);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key===' ') next();
+    if(e.key==='ArrowLeft') prev();
+  });
+  var tx=null;
+  document.addEventListener('touchstart', function(e){ tx=e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(tx===null) return;
+    var dx=e.changedTouches[0].clientX-tx;
+    if(dx<-40) next(); if(dx>40) prev(); tx=null;
+  }, {passive:true});
+  function mobile(){ return innerWidth<=760; }
+  function fit(){
+    if(mobile()){
+      /* flattened reader: scale each 680px page board down to the face width */
+      var f=document.querySelector('.face');
+      if(f){
+        var w=f.getBoundingClientRect().width;
+        if(w>0) document.documentElement.style.setProperty('--pgscale', (w/680).toFixed(4));
+      }
+      document.getElementById('scaler').style.transform='none';
+      return;
+    }
+    var pad=70, aw=innerWidth-30, ah=innerHeight-pad, wide=720;
+    var sc=Math.min(aw/wide, ah/850, 1.25);
+    document.getElementById('scaler').style.transform='scale('+sc+')';
+  }
+  addEventListener('resize', fit);
+  fit();
+  if(!mobile()) apply(); else requestAnimationFrame(fit);
+})();
+</script>
+</body>
+</html>
