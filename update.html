@@ -760,7 +760,7 @@
     try {
       const res = await fetch(
         `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.${session.user_id}` +
-        `&policy_type=eq.customer_agreement&policy_version=eq.v1.1` +
+        `&policy_type=eq.customer_agreement&policy_version=eq.v2.0` +
         `&select=policy_type&limit=1`,
         { headers: {
             'apikey': SUPABASE_ANON_KEY,
@@ -842,7 +842,7 @@
       return;
     }
 
-    // Family Service Agreement v1.0 gate. Beta families must accept the current
+    // Terms and Conditions v1.0 gate. Beta families must accept the current
     // Agreement before a free beta-family update (attorney direction, MES
     // 2026-08-19); paying customers already accepted it at checkout, so this
     // never fires for them. Backstop for anyone who links straight here rather
@@ -852,7 +852,7 @@
       const dashHref = await dashboardPath(session);
       showGate('&#128220;', 'One quick step first',
         'Before receiving a Report update, you need to accept the current ' +
-        '<a href="/customer-agreement.html" target="_blank" rel="noopener"><strong>Family Service Agreement</strong></a>. ' +
+        '<a href="/terms-and-conditions.html" target="_blank" rel="noopener"><strong>Terms and Conditions</strong></a>. ' +
         'Acceptance governs this update and your family’s continued use of the service going forward.' +
         '<span class="gate-note" style="display:block;">Head back to your dashboard — the update card there walks you through it. ' +
         'If this is your free beta-family update, accepting does <strong>not</strong> mean paying: that update is still free.<br><br>' +

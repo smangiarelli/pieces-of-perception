@@ -1710,7 +1710,7 @@
       sub: 'Optional — neuro-affirming clinical-bridge document for OTs, SLPs, social-skills facilitators, and other providers. Yes = added to your cart.',
       fields: [
         { key: 'addon_service_provider', type: 'radio', required: true, triggersRerender: true,
-          disclaimer: '* The Service Provider / Therapy Guide is an informational, supportive bridge document. It is <strong>not</strong> a clinical evaluation, diagnosis, treatment plan, or a substitute for the professional judgment of your child\u2019s providers, and it is not prepared by a licensed clinician. Share it with providers at your discretion. See the full <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a> for details.',
+          disclaimer: '* The Service Provider / Therapy Guide is an informational, supportive bridge document. It is <strong>not</strong> a clinical evaluation, diagnosis, treatment plan, or a substitute for the professional judgment of your child\u2019s providers, and it is not prepared by a licensed clinician. Share it with providers at your discretion. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
           label: 'Generate a Service Provider / Therapy Guide?',
           options: [
             'Yes — generate the Service Provider Guide (added to cart)',
@@ -1755,7 +1755,7 @@
       sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
       fields: [
         { key: "iep_addon_choice", type: "radio", required: true, triggersRerender: true,
-          disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a> for details.',
+          disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
           label: "Add the IEP Prep Companion + Goal Recommendations to your order?",
           options: [
             "Yes \u2014 generate the IEP Prep Companion (+$49, added to cart)",
@@ -2148,7 +2148,7 @@
       sub: 'Optional — neuro-affirming clinical-bridge document for OTs, SLPs, social-skills facilitators, and other providers.',
       fields: [
         { key: 'addon_service_provider', type: 'radio', required: true, triggersRerender: true,
-          disclaimer: '* The Service Provider / Therapy Guide is an informational, supportive bridge document. It is <strong>not</strong> a clinical evaluation, diagnosis, treatment plan, or a substitute for the professional judgment of your child\u2019s providers, and it is not prepared by a licensed clinician. Share it with providers at your discretion. See the full <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a> for details.',
+          disclaimer: '* The Service Provider / Therapy Guide is an informational, supportive bridge document. It is <strong>not</strong> a clinical evaluation, diagnosis, treatment plan, or a substitute for the professional judgment of your child\u2019s providers, and it is not prepared by a licensed clinician. Share it with providers at your discretion. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
           label: 'Generate a Service Provider / Therapy Guide?',
           options: ['Yes — generate the Service Provider Guide (added to cart)','No — skip'] },
         { key: 'provider_current_providers', type: 'multi_with_text', required: false,
@@ -2190,7 +2190,7 @@
       sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
       fields: [
         { key: "iep_addon_choice", type: "radio", required: true, triggersRerender: true,
-          disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/customer-agreement.html" target="_blank" rel="noopener">Family Service Agreement</a> for details.',
+          disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
           label: "Add the IEP Prep Companion + Goal Recommendations to your order?",
           options: [
             "Yes \u2014 generate the IEP Prep Companion (+$49, added to cart)",
@@ -3128,12 +3128,12 @@
   // Lifted from beta-dashboard.html so the acks gate the questionnaire
   // every time it's started — not just the first dashboard visit.
   // ───────────────────────────────────────────────────────────────
-  // LIVE customers accept the Family Service Agreement at CHECKOUT, before
+  // LIVE customers accept the Terms and Conditions at CHECKOUT, before
   // payment (attorney requirement, MES redline 2026-08-19). By the time they
   // reach this form the ack is already on record and this screen is skipped.
   // The screen below is the fallback for any account that arrives without an
   // acknowledgment — and it now uses the CUSTOMER agreement, not the beta one.
-  const CUSTOMER_AGREEMENT = { type: 'customer_agreement', version: 'v1.1', url: '/customer-agreement.html' };
+  const CUSTOMER_AGREEMENT = { type: 'customer_agreement', version: 'v2.0', url: '/terms-and-conditions.html' };
   const BETA_AGREEMENT     = { type: 'beta_agreement',     version: 'v1.0', url: '/beta-agreement.html' };
   // What a NEW acknowledgment recorded from this screen is recorded as.
   const ACTIVE_AGREEMENT = CUSTOMER_AGREEMENT;
@@ -3148,7 +3148,7 @@
   // word-for-word identical to the boxes on checkout.html and family-dashboard.html
   // — do not reword one without the other two.
   const ACK_POINTS = [
-    'I have read and agree to the <strong>Family Service Agreement</strong> ' +
+    'I have read and agree to the <strong>Terms and Conditions</strong> ' +
       '<a href="' + ACTIVE_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>, ' +
       'including the parental consent provisions in the Agreement.',
     'I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person ' +
@@ -3176,7 +3176,7 @@
     card.appendChild(el('h2', { className: 'step-title serif' }, 'What you’re agreeing to'));
 
     const sub = el('p', { className: 'step-sub', html:
-      'Everything below is part of one document — the <strong>Family Service Agreement</strong>. ' +
+      'Everything below is part of one document — the <strong>Terms and Conditions</strong>. ' +
       'Please <a href="' + ACTIVE_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">read the full agreement</a>, ' +
       'then check each box to confirm. Your acknowledgment is recorded with a timestamp.' });
     card.appendChild(sub);
@@ -3220,7 +3220,7 @@
         PROVIDER_NAME = provName;
         const item = el('label', { className: 'ack-item' });
         // OPTIONAL by design: sponsored access does not require the family to
-        // authorize sharing (Family Service Agreement, Section 1). Checking it
+        // authorize sharing (Terms and Conditions, Section 1). Checking it
         // is the authorization; leaving it unchecked is a valid answer and must
         // NOT block the Continue button.
         const cb = el('input', {
@@ -3230,7 +3230,7 @@
         });
         cb.setAttribute('data-optional', '1');
         item.appendChild(cb);
-        // Wording tracks Section 1 of the Family Service Agreement (sponsored
+        // Wording tracks Section 1 of the Terms and Conditions (sponsored
         // access): the Provider PAYS for access, but the family is the
         // customer, Reports go to the family, and NOTHING reaches the Provider
         // unless the family authorizes it here. No branding claim — the
@@ -3242,7 +3242,7 @@
           'questionnaire responses and Reports to <strong>' + provName + '</strong> for use in their services to my family. ' +
           'I understand ' + provName + ' is an independent business, not employed or endorsed by Pieces of Perception, and that I may withdraw ' +
           'this authorization for future sharing at any time by emailing hello@piecesofperception.com. ' +
-          'All other terms of the Family Service Agreement are unchanged. ' +
+          'All other terms of the Terms and Conditions are unchanged. ' +
           '<em>If you do not want your answers or Reports shared, leave this box unchecked and use the Continue button below.</em>' }));
         list.appendChild(item);
         refreshAckContinue();
@@ -3251,7 +3251,7 @@
 
     card.appendChild(el('p', {
       className: 'ack-footnote'
-    }, 'By checking these boxes you confirm you have read and agree to the full Family Service Agreement. You can revisit it any time at piecesofperception.com/customer-agreement.html.'));
+    }, 'By checking these boxes you confirm you have read and agree to the full Terms and Conditions. You can revisit it any time at piecesofperception.com/terms-and-conditions.html.'));
 
     const actions = el('div', { style: 'margin-top:24px;display:flex;justify-content:flex-end;gap:12px;' });
     const continueBtn = el('button', {
@@ -3270,7 +3270,7 @@
     errEl.style.display = 'none';
     if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
 
-    // Record a single acknowledgment of the unified Family Service Agreement.
+    // Record a single acknowledgment of the unified Terms and Conditions.
     const session = getSession ? getSession() : null;
     if (session && session.user_id) {
       const rows = [{
@@ -3283,7 +3283,7 @@
       // consent is visible in the pipeline and the report Q&A appendix).
       if (PROVIDER_NAME) {
         // Record the family's ACTUAL answer — yes or no. Sponsored access does
-        // not imply authorization to share (Family Service Agreement, Sec. 1).
+        // not imply authorization to share (Terms and Conditions, Sec. 1).
         const shareBox = document.getElementById('ack-provider-share');
         const authorized = !!(shareBox && shareBox.checked);
         rows.push({
@@ -3870,7 +3870,7 @@
     // the check errors.
     if (!state.acks_confirmed) {
       try {
-        // Accept EITHER agreement on record: customer_agreement v1.1 (live
+        // Accept EITHER agreement on record: customer_agreement v2.0 (live
         // customers, accepted at checkout before payment) OR beta_agreement
         // v1.0 (beta families completing their original questionnaire). Beta
         // families are separately required to accept the current Family
@@ -3879,7 +3879,7 @@
         const ar = await fetch(
           `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.` +
           encodeURIComponent(session.user_id) +
-          // Per-type versions. The live Agreement is v1.1; the beta agreement
+          // Per-type versions. The live Agreement is v2.0; the beta agreement
           // stays v1.0. A single &policy_version filter across both types would
           // lock every beta family out of their own questionnaire, so each type
           // carries its own version here.
