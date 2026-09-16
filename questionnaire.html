@@ -1402,9 +1402,17 @@
       id: 'comp_b9_daily_living',
       eyebrow: 'Daily living skills',
       title: 'Real-world functioning — where are they ABLE, and where do they need support?',
-      sub: 'One of the most useful sections for IEP teams, therapists, and service providers. Kids are often advanced in some areas and behind in others — that mismatch is the point.',
+      sub: function (s) {
+        return s.flow === 'next_chapter'
+          ? 'Just the safety piece here — the independence table you already filled in covers the rest.'
+          : 'One of the most useful sections for IEP teams, therapists, and service providers. Kids are often advanced in some areas and behind in others — that mismatch is the point.';
+      },
       fields: [
         { key: 'adaptive_self_care', type: 'radio', required: true, naOption: true,
+          // Hidden on the Next Chapter flow (2026-09-16): the 12-domain
+          // transition table covers this properly, and this key is not in
+          // schema.py so the pipeline drops it anyway (RPT-1).
+          showIf: function(s) { return s.flow !== 'next_chapter'; },
           label: 'Self-care: dressing, toileting / hygiene, feeding themselves',
           options: [
             'Independent for their age',
@@ -1413,6 +1421,10 @@
             'Not yet — fully dependent'
           ] },
         { key: 'adaptive_home_routines', type: 'radio', required: true, naOption: true,
+          // Hidden on the Next Chapter flow (2026-09-16): the 12-domain
+          // transition table covers this properly, and this key is not in
+          // schema.py so the pipeline drops it anyway (RPT-1).
+          showIf: function(s) { return s.flow !== 'next_chapter'; },
           label: 'Home routines: morning, bedtime, multi-step household tasks',
           options: [
             'Independent for their age',
@@ -1421,6 +1433,10 @@
             'Not yet — fully dependent'
           ] },
         { key: 'adaptive_community', type: 'radio', required: true, naOption: true,
+          // Hidden on the Next Chapter flow (2026-09-16): the 12-domain
+          // transition table covers this properly, and this key is not in
+          // schema.py so the pipeline drops it anyway (RPT-1).
+          showIf: function(s) { return s.flow !== 'next_chapter'; },
           label: 'Community: stores, restaurants, appointments, asking a stranger for help',
           options: [
             'Independent for their age',
@@ -2689,7 +2705,8 @@
           label: 'Describe what a good adult life looks like for them five years from now.',
           help: 'Where are they living, what are they doing on a Tuesday, who is around them?',
           placeholder: '' },
-        { key: 'tr_young_adult_own_vision', type: 'textarea', required: false,
+        { key: 'tr_young_adult_own_vision', type: 'textarea', required: true, naOption: true,
+          naLabel: 'They haven\u2019t said, or can\u2019t tell us \u2014 I understand the report will speak in my words instead',
           label: 'In THEIR words: what do they say they want their life to look like?',
           help: 'If it is different from your answer above, say so. Both belong in the report — a plan that ignores the person tends not to survive contact with the person.',
           placeholder: '' },
@@ -2735,7 +2752,8 @@
           label: 'What work, volunteering, chores, or internships have they done so far — and how did each go?',
           help: 'Including the ones that did not work out. Especially those.',
           placeholder: '' },
-        { key: 'tr_work_interests', type: 'textarea', required: false,
+        { key: 'tr_work_interests', type: 'textarea', required: true, naOption: true,
+          naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What kinds of tasks do they gravitate toward or ask to do?',
           help: 'Sorting, fixing, organizing, caring for animals, being outside, working alone, working near people but not with them.',
           placeholder: '' },
@@ -2842,7 +2860,8 @@
           label: 'Emergencies — calling for help, describing what happened, following instructions under stress' },
         { key: 'tr_ind_self_advocacy', type: 'radio', required: true, options: TR_LEVELS,
           label: 'Self-advocacy — saying they need a break, correcting a wrong assumption, asking for an accommodation' },
-        { key: 'tr_independence_details', type: 'textarea', required: false,
+        { key: 'tr_independence_details', type: 'textarea', required: true, naOption: true,
+          naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'For any area above: what does the support actually look like in real life?',
           help: 'The concrete version. "Will hand over a twenty for a two-dollar item and not wait for change" is worth more than any rating.',
           placeholder: '' },
@@ -2888,7 +2907,8 @@
             'Depends on the person and the setting',
             'They have not been asked / cannot say'
           ] },
-        { key: 'tr_new_adult_first_meeting', type: 'textarea', required: false,
+        { key: 'tr_new_adult_first_meeting', type: 'textarea', required: true, naOption: true,
+          naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
           label: 'What should a brand-new adult do in the first ten minutes to get this right?',
           help: 'This becomes the first block of the one-page profile.',
           placeholder: '' },
@@ -3009,7 +3029,8 @@
             'I answered on their behalf',
             'They are not able to participate in this kind of questionnaire'
           ] },
-        { key: 'tr_young_adult_own_words', type: 'textarea', required: false,
+        { key: 'tr_young_adult_own_words', type: 'textarea', required: true, naOption: true,
+          naLabel: 'They have nothing they want added \u2014 I understand the closing part of the report, which is written to them, will be shorter as a result',
           label: 'Anything they want said in their own words — printed as theirs, not yours.',
           help: 'This is quoted in the report and shapes the whole self-advocacy section. Even one sentence changes it.',
           placeholder: '' },
