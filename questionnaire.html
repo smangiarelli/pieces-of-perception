@@ -2871,6 +2871,46 @@
       ]
     },
     {
+      id: 'tr_functional',
+      eyebrow: 'Reading, forms, and money',
+      title: 'The skills a job or program will assume they have.',
+      sub: 'Nobody asks this out loud and everybody assumes it. Answering it is what turns "needs support" into a specific accommodation somebody can actually arrange.',
+      fields: [
+        { key: 'tr_func_reading', type: 'radio', required: true,
+          label: 'Reading \u2014 a shift schedule, a form, a medication label, a text from a supervisor',
+          options: [
+            'Reads and understands most everyday text',
+            'Reads familiar text; new or dense text is hard',
+            'Reads a few key words, names, and symbols',
+            'Does not read text \u2014 uses pictures, icons, or someone reading it aloud',
+            'Not sure'
+          ] },
+        { key: 'tr_func_writing_forms', type: 'radio', required: true,
+          label: 'Writing and forms \u2014 filling in an application, writing a short message, signing where indicated',
+          options: [
+            'Completes most forms independently',
+            'Completes a form with someone sitting alongside',
+            'Signs their name and copies information that is shown to them',
+            'Someone else completes forms for them',
+            'Not sure'
+          ] },
+        { key: 'tr_func_money_numbers', type: 'radio', required: true,
+          label: 'Money as numbers \u2014 making change, checking a receipt, knowing whether there is enough for something',
+          help: 'Different from the money question earlier, which was about handling a purchase. This one is the arithmetic behind it.',
+          options: [
+            'Handles the numbers independently',
+            'Handles familiar amounts; larger or unfamiliar ones are hard',
+            'Recognizes coins and bills but not the arithmetic',
+            'Someone else manages money entirely',
+            'Not sure'
+          ] },
+        { key: 'tr_func_details', type: 'textarea', required: false,
+          label: 'What does that look like in practice?',
+          help: '"Can read the words on a schedule but cannot work out which shift is his" is exactly the kind of thing a job coach needs.',
+          placeholder: '' },
+      ]
+    },
+    {
       id: 'tr_new_adults',
       eyebrow: 'New adults',
       title: 'How do they land with someone who does not know them?',
@@ -2964,6 +3004,46 @@
         { key: 'tr_agencies_involved', type: 'textarea', required: false,
           label: 'Which adult agencies, case managers, or programs are already involved?',
           help: 'Names and roles if you have them, or "one intake meeting last spring and nothing since" — that is useful too.',
+          placeholder: '' },
+        { key: 'tr_current_support_hours', type: 'radio', required: true,
+          label: 'How much paid or funded support is in place right now?',
+          help: 'The first thing every adult agency asks. A rough number moves a conversation along faster than a description.',
+          options: [
+            'None \u2014 the family provides everything',
+            'A few hours a week',
+            'About 10 to 20 hours a week',
+            'About 20 to 40 hours a week',
+            'Support most waking hours',
+            'It varies week to week',
+            'Not sure'
+          ] },
+        { key: 'tr_current_support_who', type: 'multi_with_text', required: false,
+          label: 'Who provides the support they have now? (check all that apply)',
+          options: [
+            'Family only',
+            'School staff',
+            'Staff through an adult agency',
+            'A self-directed or family-hired worker',
+            'Privately paid help',
+            'A day or community program',
+            'Nobody outside the family'
+          ], extraPlaceholder: 'Names or hours, if you have them.' },
+        { key: 'tr_documents_in_hand', type: 'multi_with_text', required: false,
+          label: 'Which of these do you already have in hand? (check all that apply)',
+          help: 'Programs and employers ask for these on day one, and families routinely find out at intake that something is missing or expired.',
+          options: [
+            'State ID or driver\u2019s license',
+            'Social Security card',
+            'Birth certificate',
+            'Proof of work authorization',
+            'Benefits award or denial letter',
+            'A copy of the current IEP or school records',
+            'None of these yet',
+            'Not sure'
+          ], extraPlaceholder: 'Anything expired, lost, or in progress?' },
+        { key: 'tr_health_program_must_know', type: 'textarea', required: false,
+          label: 'Is there anything about their health a program, employer, or job coach would need to know on day one to keep them safe?',
+          help: 'Allergies, a medication that has to be taken at a set time, a condition that can produce an emergency, or anything an EMT would want to know. Optional \u2014 leave it blank and nothing appears. What you write here is governed by the disclosure preference you set earlier.',
           placeholder: '' },
       ]
     },
