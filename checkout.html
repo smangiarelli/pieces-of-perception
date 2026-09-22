@@ -58,7 +58,7 @@ const CONFIG = {
       id: "action",
       badge: "",
       name: "Action Report",
-      blurb: "Your child's complete profile, sensory map, strengths spotlight, regulation toolkit, quick-reference cheat sheet, and week-one checklist.",
+      blurb: "Goes deep on the one thing consuming everything right now \u2014 with your child's sensory map, strengths spotlight, regulation toolkit, quick-reference cheat sheet, and week-one checklist.",
       price: 99,
       paymentLink: "https://buy.stripe.com/3cI14nb4KchH6J36oP5AQ08"
     },
@@ -286,6 +286,7 @@ const CONFIG = {
     <div class="eyebrow">Checkout</div>
     <h1 class="serif">Choose your plan</h1>
     <p>One-time purchase — no required subscription. Your reports are yours to download, keep, and share.</p>
+    <p style="margin-top:10px"><strong>Two quick steps:</strong> first, confirm you're the parent or guardian and accept the terms (about a minute). Then choose your plan &mdash; Action Report $99 or Comprehensive Plan $149 &mdash; and pay securely through Stripe. Your report usually arrives within 3&ndash;5 days after you finish the questionnaire.</p>
   </div>
 
   <!-- ============ STEP 1: ACCEPTANCE GATE (attorney-required, pre-payment) ============ -->
@@ -361,10 +362,10 @@ const CONFIG = {
     </div>
   </div>
 
-  <!-- Founding-family code -->
+  <!-- Discount code -->
   <div class="founder">
-    <h2 class="serif">Have a founding-family code?</h2>
-    <p>Enter it below and we'll carry it through to the secure payment page. Founding-family pricing is limited.</p>
+    <h2 class="serif">Have a discount code?</h2>
+    <p>Enter it below and we'll carry it through to the secure payment page.</p>
     <div class="promo-row">
       <input id="promoInput" type="text" placeholder="Enter code" autocomplete="off" spellcheck="false">
       <button id="promoBtn" type="button">Apply</button>
@@ -676,7 +677,8 @@ const CONFIG = {
 
   function renderProducts() {
     var grid = document.getElementById("productGrid");
-    grid.innerHTML = CONFIG.products.map(function (p) {
+    // 2026-09-22: plans without a live payment link are hidden, not shown as "Coming soon".
+    grid.innerHTML = CONFIG.products.filter(function (p) { return !!p.paymentLink; }).map(function (p) {
       var feature = p.badge ? " feature" : "";
       var badge = p.badge ? '<div class="badge">' + p.badge + '</div>' : "";
       var cls = p.badge ? "" : "warm";
@@ -771,7 +773,7 @@ const CONFIG = {
     if (code === CONFIG.founderCode.toUpperCase()) {
       founderApplied = true;
       msg.className = "promo-msg ok";
-      msg.textContent = "✓ " + CONFIG.founderPercent + "% founding-family discount applied. It will be confirmed on the secure payment page.";
+      msg.textContent = "✓ " + CONFIG.founderPercent + "% discount applied. It will be confirmed on the secure payment page.";
       renderAll();
     } else {
       founderApplied = false;
