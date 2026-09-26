@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+<script src="/i18n.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#6C63FF">
   <title>Family Dashboard | Pieces of Perception</title>
@@ -427,6 +428,9 @@
     /* ── ACKNOWLEDGMENT VIEW ── (Phase 3.5) */
     #ack-view { display: none; }
     #ack-view.show { display: block; }
+    /* LEG-4 parent verification gate */
+    #verify-view { display: none; }
+    #verify-view.show { display: block; }
     .ack-card {
       background: white;
       border-radius: 22px;
@@ -579,6 +583,39 @@
   </div>
 </div>
 
+<!-- LEG-4: parent verification gate. Shown only when this family's access
+     did not come from a completed transaction on their own card, and Stripe
+     has not reported a verified result yet. The questionnaire carries a
+     backstop that sends anyone who types its URL straight back here. -->
+<div id="verify-view">
+  <div class="ack-card">
+    <h2 class="serif">One more step before we begin</h2>
+    <p class="ack-lede">
+      Everything we build starts with what you tell us about your child, so before you tell us
+      anything, we confirm one thing: that you are an adult, and that you are this child&#8217;s
+      parent or guardian. Most families confirm this when their card is charged. Yours
+      wasn&#8217;t, so we do it directly instead.
+    </p>
+    <p class="ack-lede">
+      It takes about two minutes on your phone. You&#8217;ll photograph your ID and take a selfie.
+      <strong>Stripe handles the whole thing &mdash; we never see or keep your ID.</strong> All that
+      reaches us is a yes, and the date.
+    </p>
+    <div id="verify-msg" style="display:none; padding:10px 14px; border-radius:10px; font-size:13px; margin:12px 0;"></div>
+    <a id="verify-start" class="btn btn-primary btn-large" href="#" target="_blank" rel="noopener" style="margin-top:6px;">Verify With Stripe &rarr;</a>
+    <p style="margin-top:18px; font-size:13px;">
+      Finished it in another tab?
+      <a href="#" onclick="recheckVerification(event)" style="font-weight:600;">Check again</a>
+    </p>
+    <p class="ack-footnote">
+      Stuck, or you don&#8217;t have a photo ID? Email
+      <a id="verify-help-link" href="mailto:hello@piecesofperception.com?subject=Help%20with%20verification">hello@piecesofperception.com</a>
+      and we&#8217;ll find another way. You will not be left without your reports.
+    </p>
+    <button class="btn btn-outline" onclick="signOut()" style="margin-top:12px;">Sign Out</button>
+  </div>
+</div>
+
 <!-- Shown when beta_access is false -->
 <div id="no-access-view">
   <div class="no-access">
@@ -673,6 +710,13 @@
   const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
   const PENDING_CODE_KEY = 'pop_pending_invite_code';
+
+  // LEG-4 · the Stripe Identity static link for the verification flow
+  // "Parent verification - $0 and sponsored families"
+  // (flow vf_1UGQvhFeSg9Y0KB6XCNDeM0I).
+  // Stripe -> Identity -> Verification flows -> that flow -> Copy link.
+  // MUST be the LIVE-mode link, not the test-mode one.
+  const VERIFY_LINK = 'PASTE_STRIPE_VERIFY_LINK_HERE';
 
   function getSession() {
     try {
@@ -964,9 +1008,14 @@
   // ── Phase 4.5: list + signed-URL download for the user's reports ──
   function humanizeReportName(filename) {
     let n = filename.replace(/\.pdf$/i, '');
+    // <Name>_<Report>_ES.pdf is the Spanish copy (2026-09-25).
+    const isSpanish = /_ES$/.test(n);
+    if (isSpanish) n = n.replace(/_ES$/, '');
     const parts = n.split('_');
     if (parts.length > 1) { parts.shift(); n = parts.join('_'); }
-    return n.replace(/_/g, ' ');
+    let label = n.replace(/_/g, ' ');
+    if (window.popT) label = window.popT(label);
+    return isSpanish ? label + ' (Español)' : label;
   }
 
   function escapeText(s) {
@@ -1097,6 +1146,79 @@
     }
   }
 
+  // LEG-4 - Ask the database whether this family still owes us a
+  // verification. FAILS OPEN on any technical failure: a broken RPC or a
+  // dropped connection must never strand every family at once. A clean
+  // answer of required=true DOES block - that is the point of the gate.
+  async function fetchVerificationStatus(session) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_verification_status`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: '{}'
+      });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) { return null; }
+  }
+
+  function renderVerificationView(vs, session) {
+    const code  = (vs && vs.access_code) || '';
+    const email = (vs && vs.email) || session.email || '';
+
+    const btn = document.getElementById('verify-start');
+    const msg = document.getElementById('verify-msg');
+
+    if (!VERIFY_LINK || VERIFY_LINK.indexOf('PASTE_') === 0) {
+      // The link was never filled in. Do not show a dead button - send them
+      // to the escape hatch instead, and make it loud in the console.
+      btn.style.display = 'none';
+      msg.style.background = '#fbf1e8';
+      msg.style.color = '#8a5a2b';
+      msg.textContent = 'We’re just finishing setting this step up. Please email us at the address below and we’ll get you started right away — sorry for the wait.';
+      msg.style.display = 'block';
+      console.error('LEG-4: VERIFY_LINK is not configured in family-dashboard.html');
+    } else {
+      // client_reference_id is what lets the Stripe webhook match the
+      // outcome back to this family. prefilled_email saves them typing.
+      const sep = VERIFY_LINK.indexOf('?') === -1 ? '?' : '&';
+      let url = VERIFY_LINK + sep + 'client_reference_id=' + encodeURIComponent(code);
+      if (email) url += '&prefilled_email=' + encodeURIComponent(email);
+      btn.href = url;
+
+      if (vs && vs.status === 'requires_input') {
+        msg.style.background = '#fbf1e8';
+        msg.style.color = '#8a5a2b';
+        msg.textContent = 'That last attempt didn’t go through — usually a blurry photo or a glare on the ID. Please try once more; you can use a different document if it’s easier.';
+        msg.style.display = 'block';
+      } else if (vs && vs.status === 'processing') {
+        msg.style.background = '#eef3ff';
+        msg.style.color = '#33407a';
+        msg.textContent = 'Your check is still being reviewed. This usually takes under a minute — use “Check again” below in a moment.';
+        msg.style.display = 'block';
+      }
+    }
+
+    const help = document.getElementById('verify-help-link');
+    if (help) {
+      const body = 'Hi Sarah,\n\nI need help with the verification step on my dashboard.\n\nAccount email: ' + email + '\nAccess code: ' + code + '\n\nWhat happened:\n\nThank you.';
+      help.href = 'mailto:hello@piecesofperception.com?subject=' +
+        encodeURIComponent('Help with verification') + '&body=' + encodeURIComponent(body);
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('verify-view').classList.add('show');
+  }
+
+  function recheckVerification(e) {
+    if (e) e.preventDefault();
+    window.location.reload();
+  }
+
   async function init() {
     const session = getSession();
     if (!session) { redirectToAuth(); return; }
@@ -1126,6 +1248,15 @@
     }
     if (!hasAgreementAck(acks)) {
       renderAcknowledgmentView();
+      return;
+    }
+
+    // LEG-4 - Verification gate. Runs AFTER the Agreement gate on
+    // purpose: they self-certify first, then we ask for the evidence -
+    // and both happen before a single question about their child.
+    const vstat = await fetchVerificationStatus(session);
+    if (vstat && vstat.ok === true && vstat.required === true && vstat.status !== 'verified') {
+      renderVerificationView(vstat, session);
       return;
     }
 

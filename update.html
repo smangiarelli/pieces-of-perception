@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+<script src="/i18n.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Update Your Reports | Pieces of Perception</title>
@@ -713,6 +714,10 @@
       const note = state.data[noteKey(q)];
       if (note && note.trim()) answers[noteKey(q)] = note.trim();
     });
+
+    // Spanish site → ask for the Spanish (_ES) report copies too. Only sent
+    // when "es"; absent means the original submission's choice stands.
+    if (window.popLang && window.popLang() === 'es') answers.report_language = 'es';
 
     const payload = {
       user_id: session.user_id,

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+<script src="/i18n.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#6C63FF">
   <title>Beta Dashboard | Pieces of Perception</title>
@@ -975,9 +976,14 @@
   // ── Phase 4.5: list + signed-URL download for the user's reports ──
   function humanizeReportName(filename) {
     let n = filename.replace(/\.pdf$/i, '');
+    // <Name>_<Report>_ES.pdf is the Spanish copy (2026-09-25).
+    const isSpanish = /_ES$/.test(n);
+    if (isSpanish) n = n.replace(/_ES$/, '');
     const parts = n.split('_');
     if (parts.length > 1) { parts.shift(); n = parts.join('_'); }
-    return n.replace(/_/g, ' ');
+    let label = n.replace(/_/g, ' ');
+    if (window.popT) label = window.popT(label);
+    return isSpanish ? label + ' (Español)' : label;
   }
 
   function escapeText(s) {

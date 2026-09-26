@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+<script src="/i18n.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#6C63FF">
   <title>Questionnaire | Pieces of Perception</title>
@@ -4255,7 +4256,13 @@
       // Catch-all JSON blob — every field the user answered, forward-compatible.
       // The promoted columns above are duplicated here on purpose so any field
       // not yet promoted is still queryable.
-      answers: state.data,
+      // report_language (2026-09-25): "es" when the family filled this in on
+      // the Spanish site. render_family.py then builds a Spanish (_ES) copy of
+      // every report alongside the English set. Read from the raw answers by
+      // the pipeline, like flow — not a schema field.
+      answers: Object.assign({}, state.data, {
+        report_language: (window.popLang && window.popLang() === 'es') ? 'es' : 'en'
+      }),
       status: 'submitted'
     };
 
@@ -4354,6 +4361,31 @@
   async function init() {
     const session = await ensureFreshSession();
     if (!session) { redirectToAuth(); return; }
+
+    // LEG-4 - verification backstop. The dashboard is where the verify
+    // screen lives; this exists so that typing this page's URL directly
+    // does not walk around it. Sends them back to the dashboard rather
+    // than duplicating the screen, so there is one copy of that copy.
+    // FAILS OPEN on any technical failure - a broken lookup must never
+    // strand every family at once.
+    try {
+      const vr = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_verification_status`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        },
+        body: '{}'
+      });
+      if (vr.ok) {
+        const vs = await vr.json();
+        if (vs && vs.ok === true && vs.required === true && vs.status !== 'verified') {
+          window.location.replace('/family-dashboard.html');
+          return;
+        }
+      }
+    } catch (e) { /* fail open */ }
 
     // Submission cap: initial + one update = 2 max per family.
     // Exempt accounts (founder/test) bypass. Fails open; DB trigger is the
