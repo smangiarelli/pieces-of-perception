@@ -212,5 +212,14 @@
   <p class="fc">&copy; 2026 Pieces of Perception LLC &nbsp;·&nbsp; Rhode Island</p>
 </footer>
 
+<script>
+  // Spanish site → hand out the Spanish Behavior Translator (2026-09-26).
+  (function () {
+    if (!(window.popLang && window.popLang() === 'es')) return;
+    document.querySelectorAll('a[href="PoP_Behavior_Translator.pdf"]').forEach(function (a) {
+      a.setAttribute('href', 'PoP_Behavior_Translator_ES.pdf');
+    });
+  })();
+</script>
 </body>
 </html>
