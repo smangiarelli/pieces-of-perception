@@ -549,6 +549,24 @@
       }
       saveSession(data);
 
+      // Keep the account's email language in step with the site language
+      // the family is using (2026-09-26). Best effort — never blocks sign-in.
+      try {
+        const siteLang = (window.popLang && window.popLang() === 'es') ? 'es' : 'en';
+        const meta = (data.user && data.user.user_metadata) || {};
+        if (meta.lang !== siteLang) {
+          fetch(`${SUPABASE_URL}/auth/v1/user`, {
+            method: 'PUT',
+            headers: {
+              'apikey': SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${data.access_token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data: { lang: siteLang } })
+          }).catch(() => {});
+        }
+      } catch (_) {}
+
       // If a pending invite code was stored at signup (email-confirmation flow),
       // redeem it now.
       let pendingCode = null;
@@ -604,7 +622,9 @@
         body: JSON.stringify({
           email,
           password,
-          data: { name, invite_code: inviteCode }
+          // lang (2026-09-26): picks the Spanish or English version of the
+          // sign-up and password emails (Supabase email templates read it).
+          data: { name, invite_code: inviteCode, lang: (window.popLang && window.popLang() === 'es') ? 'es' : 'en' }
         })
       });
       const signupData = await signupRes.json();

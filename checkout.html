@@ -646,6 +646,12 @@ const CONFIG = {
     if (accepted && accepted.email) {
       params.push("prefilled_email=" + encodeURIComponent(accepted.email));
     }
+    // Spanish site -> Stripe's payment page in Spanish too (2026-09-26).
+    // The completed session carries locale "es", which the stripe-webhook
+    // uses to send the access-code email in Spanish.
+    if (window.popLang && window.popLang() === "es") {
+      params.push("locale=es");
+    }
     if (!params.length) return link;
     const sep = link.indexOf("?") === -1 ? "?" : "&";
     return link + sep + params.join("&");
