@@ -37,6 +37,11 @@
       "permanent": false
     },
     {
+      "source": "/marketing/sample-report/Sample_Comprehensive_Profile.pdf",
+      "destination": "/sample-comprehensive-profile.html",
+      "permanent": false
+    },
+    {
       "source": "/Pieces_of_Perception_Demo.html",
       "destination": "/",
       "permanent": false

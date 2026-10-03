@@ -28,6 +28,9 @@ Disallow: /update.html
 Disallow: /checkout.html
 Disallow: /thankyou.html
 
+# Provider intake form (added 2026-10-03, ES-4)
+Disallow: /provider-intake.html
+
 # Surveys
 Disallow: /review.html
 Disallow: /feedback.html
