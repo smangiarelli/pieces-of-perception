@@ -3519,7 +3519,7 @@
       '<a href="' + ACTIVE_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>, ' +
       'including the parental consent provisions in the Agreement.',
     'I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person ' +
-      'legally authorized to provide information about the Child for whom I am obtaining a Report.',
+      'legally authorized to provide information about the Child for whom I am purchasing or otherwise obtaining a Report.',
     'I understand that my questionnaire responses and Reports will remain available through my ' +
       'account for the applicable <strong>12-month Retention Period</strong> described in the Agreement. ' +
       'After the applicable Retention Period ends, this information will be permanently deleted. ' +
@@ -4358,9 +4358,39 @@
     } catch (e) { /* non-critical */ }
   }
 
+  // LC-18 (2026-10-03): send beta families back to THEIR dashboard. The
+  // static "Dashboard" links on this page point at /family-dashboard.html,
+  // the customer dashboard, so a beta family who followed one left the beta
+  // portal. Same test as update.html's dashboardPath(): a beta_agreement
+  // acknowledgment on record. Any failure leaves the links as they were.
+  async function routeBetaDashboardLinks(session) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.${encodeURIComponent(session.user_id)}` +
+        `&policy_type=eq.beta_agreement&select=policy_type&limit=1`,
+        { headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Accept': 'application/json'
+          } }
+      );
+      if (!res.ok) return;
+      const rows = await res.json();
+      if (!(Array.isArray(rows) && rows.length > 0)) return;
+      const FROM = 'a[href="/family-dashboard.html"]';
+      document.querySelectorAll(FROM).forEach(function (a) { a.setAttribute('href', '/beta-dashboard.html'); });
+      // Links built later (e.g. the cap-reached screen) are caught at click time.
+      document.addEventListener('click', function (e) {
+        const a = e.target && e.target.closest ? e.target.closest(FROM) : null;
+        if (a) a.setAttribute('href', '/beta-dashboard.html');
+      }, true);
+    } catch (e) { /* leave links alone */ }
+  }
+
   async function init() {
     const session = await ensureFreshSession();
     if (!session) { redirectToAuth(); return; }
+    routeBetaDashboardLinks(session);
 
     // LEG-4 - verification backstop. The dashboard is where the verify
     // screen lives; this exists so that typing this page's URL directly

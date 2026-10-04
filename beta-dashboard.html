@@ -428,6 +428,9 @@
     /* ── ACKNOWLEDGMENT VIEW ── (Phase 3.5) */
     #ack-view { display: none; }
     #ack-view.show { display: block; }
+    /* LC-18: current Terms and Conditions gate */
+    #terms-view { display: none; }
+    #terms-view.show { display: block; }
     .ack-card {
       background: white;
       border-radius: 22px;
@@ -577,6 +580,26 @@
     <div id="ack-msg"></div>
     <button id="ack-continue" class="btn btn-primary btn-large" onclick="submitAcknowledgments()" disabled>I Agree — Continue to Dashboard</button>
     <p class="ack-footnote">By checking these boxes you confirm you have read and agree to the full Beta Family Participation Agreement. You can revisit it any time at piecesofperception.com/beta-agreement.html.</p>
+  </div>
+</div>
+
+<!-- LC-18 (2026-10-03): every beta family must accept the CURRENT Terms and
+     Conditions to keep using their account (Megan Sheehan, 1 Sept 2026: "to
+     maintain access they need to accept the current terms and conditions").
+     Shown after the Beta Family Participation Agreement gate, before the
+     dashboard. Records the same policy_acknowledgments row as the customer
+     dashboard's fallback gate. Fails CLOSED. -->
+<div id="terms-view">
+  <div class="ack-card">
+    <h2 class="serif">Our Terms and Conditions have been updated</h2>
+    <p class="ack-lede">To maintain access to your account, please accept the current <a href="/terms-and-conditions.html" target="_blank" rel="noopener" class="ack-link">Terms and Conditions</a>. Read them using that link, then confirm the three points below. Accepting does not charge you anything.</p>
+    <div class="ack-confirm">
+      <h3 class="ack-confirm-title">Confirm to continue</h3>
+      <div id="terms-list"><!-- populated by JS --></div>
+    </div>
+    <div id="terms-msg" style="display:none; font-size:13px; font-weight:600; margin:10px 0; padding:10px 14px; border-radius:10px;"></div>
+    <button id="terms-continue" class="btn btn-primary btn-large" disabled>I Agree — Continue to Dashboard</button>
+    <p class="ack-footnote">By checking these boxes you confirm you have read and agree to the full Terms and Conditions. You can revisit it any time at piecesofperception.com/terms-and-conditions.html.</p>
   </div>
 </div>
 
@@ -1189,7 +1212,7 @@
       '<a href="' + CUSTOMER_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>, ' +
       'including the parental consent provisions in the Agreement.',
     'I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person ' +
-      'legally authorized to provide information about the Child for whom I am obtaining a Report.',
+      'legally authorized to provide information about the Child for whom I am purchasing or otherwise obtaining a Report.',
     'I understand that my questionnaire responses and Reports will remain available through my ' +
       'account for the applicable <strong>12-month Retention Period</strong> described in the Agreement. ' +
       'After the applicable Retention Period ends, this information will be permanently deleted. ' +
@@ -1215,6 +1238,57 @@
       const rows = await res.json();
       return Array.isArray(rows) && rows.length > 0;
     } catch (e) { return false; }
+  }
+
+  // ── LC-18: current Terms and Conditions gate for the whole beta dashboard ──
+  function renderTermsView(session) {
+    const list = document.getElementById('terms-list');
+    list.innerHTML = FSA_ACK_POINTS.map(function (pt) {
+      return '<label class="ack-item">' +
+               '<input type="checkbox" class="terms-box">' +
+               '<span class="ack-item-text">' + pt + '</span>' +
+             '</label>';
+    }).join('');
+    const btn = document.getElementById('terms-continue');
+    const label = btn.textContent;
+    Array.from(list.querySelectorAll('.terms-box')).forEach(function (b) {
+      b.addEventListener('change', function () {
+        btn.disabled = !Array.from(list.querySelectorAll('.terms-box')).every(function (x) { return x.checked; });
+      });
+    });
+    btn.onclick = async function () {
+      const msg = document.getElementById('terms-msg');
+      msg.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/policy_acknowledgments`, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=ignore-duplicates'
+          },
+          body: JSON.stringify([{
+            user_id:        session.user_id,
+            policy_type:    CUSTOMER_AGREEMENT.type,
+            policy_version: CUSTOMER_AGREEMENT.version
+          }])
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        window.location.reload();
+      } catch (e) {
+        msg.style.display = 'block';
+        msg.style.background = 'rgba(217,91,114,0.08)';
+        msg.style.color = 'var(--rose)';
+        msg.textContent = "We couldn't save your acceptance. Please try again.";
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+    };
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('terms-view').classList.add('show');
   }
 
   function renderUpdateFsaGate(session) {
@@ -1290,6 +1364,12 @@
     const acks = await fetchAcknowledgments(session);
     if (!hasAgreementAck(acks)) {
       renderAcknowledgmentView();
+      return;
+    }
+
+    // LC-18: the current Terms and Conditions, required to keep access.
+    if (!(await hasCustomerAgreementAck(session))) {
+      renderTermsView(session);
       return;
     }
 
