@@ -32,6 +32,21 @@
   ],
   "redirects": [
     {
+      "source": "/terms.html",
+      "destination": "/terms-and-conditions.html",
+      "permanent": true
+    },
+    {
+      "source": "/refund.html",
+      "destination": "/terms-and-conditions.html#s14",
+      "permanent": true
+    },
+    {
+      "source": "/disclaimer.html",
+      "destination": "/terms-and-conditions.html#s9",
+      "permanent": true
+    },
+    {
       "source": "/partner-sample-report.pdf",
       "destination": "/partnerships.html",
       "permanent": false

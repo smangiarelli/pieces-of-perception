@@ -1203,7 +1203,7 @@
   // ── Terms and Conditions gate for beta-family updates ──
   // Version lives in the constant below. Bumping it re-gates everyone (S19).
   // NOTE: BETA_AGREEMENT stays v1.0 — only the customer Agreement moved to v1.1.
-  const CUSTOMER_AGREEMENT = { type: 'customer_agreement', version: 'v2.0', url: '/terms-and-conditions.html' };
+  const CUSTOMER_AGREEMENT = { type: 'customer_agreement', version: 'v2.1', url: '/terms-and-conditions.html' };
 
   // Same three acknowledgments used at checkout, on family-dashboard.html and
   // in the questionnaire. Do not reword one without the others.
@@ -1211,8 +1211,10 @@
     'I have read and agree to the <strong>Terms and Conditions</strong> ' +
       '<a href="' + CUSTOMER_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>, ' +
       'including the parental consent provisions in the Agreement.',
-    'I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person ' +
-      'legally authorized to provide information about the Child for whom I am purchasing or otherwise obtaining a Report.',
+    'I confirm that I am over the age of 18 and that I am either (a) the parent, legal guardian, or other person ' +
+      'legally authorized to provide information about the Child for whom I am purchasing or otherwise obtaining a Report, ' +
+      'or (b) for a Next Chapter Profile only, the young adult the Report is about, or a person providing information ' +
+      'about that young adult with their permission.',
     'I understand that my questionnaire responses and Reports will remain available through my ' +
       'account for the applicable <strong>12-month Retention Period</strong> described in the Agreement. ' +
       'After the applicable Retention Period ends, this information will be permanently deleted. ' +

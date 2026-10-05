@@ -84,25 +84,7 @@
     <priority>0.4</priority>
   </url>
 
-  <url>
-    <loc>https://piecesofperception.com/terms.html</loc>
-    <lastmod>2026-09-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
 
-  <url>
-    <loc>https://piecesofperception.com/disclaimer.html</loc>
-    <lastmod>2026-09-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
 
-  <url>
-    <loc>https://piecesofperception.com/refund.html</loc>
-    <lastmod>2026-09-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
 
 </urlset>

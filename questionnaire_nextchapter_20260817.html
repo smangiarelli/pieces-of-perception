@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-<script src="/i18n.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#6C63FF">
   <title>Questionnaire | Pieces of Perception</title>
@@ -281,11 +280,20 @@
     /* flow-choice cards (entry step) */
     .flow-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 18px;
       margin-top: 8px;
     }
     @media (max-width: 700px) { .flow-grid { grid-template-columns: 1fr; } }
+
+    /* Third flow card — Next Chapter Profile (transition years, 16+) */
+    @media (min-width: 701px) and (max-width: 1040px) {
+      .flow-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .flow-card.transition { border-color: #3FA8CC; background: linear-gradient(145deg, rgba(63,168,204,0.05), white); }
+    .flow-card.transition:hover { border-color: #3FA8CC; }
+    .btn-sky { background: #3FA8CC; color: #fff; border: 1px solid #3FA8CC; }
+    .btn-sky:hover { background: #3796b8; border-color: #3796b8; }
 
     .flow-card {
       border: 2px solid var(--border);
@@ -314,11 +322,6 @@
     .flow-price .currency { font-size: 16px; vertical-align: super; margin-right: 2px; }
     .flow-desc { font-size: 13.5px; color: var(--text); line-height: 1.55; margin-bottom: 16px; flex: 1; }
     .flow-card .btn { width: 100%; }
-    /* Third flow card — Next Chapter Profile (transition years, 16+) */
-    .flow-card.transition { border-color: #3FA8CC; background: linear-gradient(145deg, rgba(63,168,204,0.05), white); }
-    .flow-card.transition:hover { border-color: #3FA8CC; }
-    .btn-sky { background: #3FA8CC; color: #fff; border: 1px solid #3FA8CC; }
-    .btn-sky:hover { background: #3796b8; border-color: #3796b8; }
 
     /* ── NAV ROW ── */
     .step-actions {
@@ -541,7 +544,7 @@
 <footer>
   <a href="/index.html">Home</a>
   <a href="/privacy.html">Privacy</a>
-  <a href="/terms-and-conditions.html">Terms</a>
+  <a href="/terms.html">Terms</a>
   <a href="/disclaimer.html">Disclaimer</a>
   <span style="margin-left:10px">&copy; 2026 Pieces of Perception LLC</span>
 </footer>
@@ -552,7 +555,7 @@
   // ─────────────────────────────────────────────────────────────
   const SUPABASE_URL = 'https://ezberjgmwdahiljzproz.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_BmIVYs8B9SBH4csFJpeF2A_L-iChMgX';
-  const DRAFT_KEY_PREFIX = 'pop_questionnaire_draft_v2_';
+  const DRAFT_KEY_PREFIX = 'pop_nextchapter_draft_v2_';
   const LEGACY_DRAFT_KEYS = ['pop_questionnaire_draft', 'pop_update_draft_v1'];
   let DRAFT_KEY = DRAFT_KEY_PREFIX + 'anon';
 
@@ -627,7 +630,7 @@
   // ─────────────────────────────────────────────────────────────
   // answers shape: { flow: 'action'|'comprehensive', step: number, data: {...}, addon_iep: bool }
   let state = {
-    flow: null,        // 'action' | 'comprehensive' — null until chosen
+    flow: null,        // 'action' | 'comprehensive' | 'next_chapter' — null until chosen
     acks_confirmed: false, // Phase 3.5: policy acknowledgments required before each questionnaire
     intro_shown: false, // pre-questionnaire encouragement screen — show once after flow choice
     step: 0,           // 0 = flow-choice; 1..N = question steps; N+1 = review; N+2 = addon
@@ -671,126 +674,33 @@
   function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch (_) {} }
 
   // ─────────────────────────────────────────────────────────────
-  // ADD-ON CATALOGUE + ENTITLEMENT HELPERS  (2026-09-02)
-  //
-  // `key` matches get_my_entitlements() EXACTLY. Verified against the live
-  // prosrc: the RPC returns only babysitter / sibling / extended_family /
-  // teacher / service_provider / iep, and it expands the $49 bundle itself.
-  // The same six strings are purchase_gate.PAID_GATES in the render
-  // pipeline (minus next_chapter, which the RPC reports as a `flow`).
-  // ⚠ Change one list and you must change the other.
-  //
-  // Prices are shown ONLY for an add-on this family has NOT bought — see
-  // the pricing-copy rule: a family who already paid must never be shown a
-  // figure that reads as a second bill.
-  // ─────────────────────────────────────────────────────────────
-  const ADDON_CATALOGUE = [
-    { key: 'babysitter',       name: 'Babysitter Care Guide',    price: 15 },
-    { key: 'extended_family',  name: 'Extended Family Guide',    price: 15 },
-    { key: 'sibling',          name: 'Sibling Guide',            price: 15 },
-    { key: 'teacher',          name: 'Teacher / School Guide',   price: 15 },
-    { key: 'service_provider', name: 'Service Provider Guide',   price: 15 },
-    { key: 'iep',              name: 'IEP Prep Companion',      price: 49 }
-  ];
-
-  function addonByKey(k) {
-    for (let i = 0; i < ADDON_CATALOGUE.length; i++) {
-      if (ADDON_CATALOGUE[i].key === k) return ADDON_CATALOGUE[i];
-    }
-    return null;
-  }
-
-  // Did the family tick "Yes" for this add-on in the questionnaire?
-  // Every guide's radio lives at state.data['addon_' + key]; IEP is the odd
-  // one out, selectable on its own step OR on the final add-on screen.
-  function addonSelected(key) {
-    function yes(v) { return typeof v === 'string' && v.indexOf('Yes') === 0; }
-    if (key === 'iep') return !!state.addon_iep || yes(state.data.iep_addon_choice);
-    return yes(state.data['addon_' + key]);
-  }
-
-  // ★★ THE RULE THAT KEEPS SARAH'S RENDER UNBLOCKED.
-  //
-  // A submitted addon_* boolean is what purchase_gate.py reconciles against
-  // `purchases`. If we sent TRUE for an add-on the family has not paid for,
-  // render_family.py would REFUSE THE ENTIRE RUN -- turning a nuisance
-  // prompt into a hard stop needing a hand --override, per family.
-  //
-  // So an add-on is granted only when it is selected AND NOT KNOWN-UNPAID.
-  //
-  // ⚠ `ownsAddon() !== false` is deliberate, not `=== true`. null means
-  // UNKNOWN -- the RPC failed, or this is a provider-sponsored family with
-  // no purchases row -- and on unknown we grant. That matches purchase_gate,
-  // which steps aside entirely for a family with no purchase rows. Treating
-  // unknown as unpaid would silently strip add-ons from sponsored families.
-  function addonGranted(key) {
-    return addonSelected(key) && ownsAddon(key) !== false;
-  }
-
-  // Selected, and we KNOW it was not bought -> owed after submit.
-  function addonPending(key) {
-    return addonSelected(key) && ownsAddon(key) === false;
-  }
-
-  function pendingAddons() {
-    return ADDON_CATALOGUE.filter(function (a) { return addonPending(a.key); });
-  }
-
-  function pendingTotal() {
-    return pendingAddons().reduce(function (t, a) { return t + a.price; }, 0);
-  }
-
-  // The per-step banner. Renders nothing when entitlements are UNKNOWN --
-  // saying nothing is always safe; guessing about someone's money is not.
-  function renderAddonEntitlementNote(key) {
-    const a = addonByKey(key);
-    if (!a) return null;
-    const owned = ownsAddon(key);
-    if (owned === null) return null;
-
-    const note = el('div', { className: 'step-sub' });
-    if (owned) {
-      note.style.cssText = 'background:rgba(82,183,136,0.10);border:1px solid rgba(82,183,136,0.35);' +
-                           'border-radius:12px;padding:12px 16px;margin-bottom:18px;';
-      note.textContent = 'You bought the ' + a.name + ' at checkout. Say yes and we\u2019ll build it \u2014 ' +
-                         'there is nothing more to pay.';
-    } else {
-      note.style.cssText = 'background:rgba(232,132,90,0.10);border:1px solid rgba(232,132,90,0.35);' +
-                           'border-radius:12px;padding:12px 16px;margin-bottom:18px;';
-      note.textContent = 'This one isn\u2019t part of what you bought. You can still add it \u2014 answer the ' +
-                         'questions now and we\u2019ll show you how to complete it ($' + a.price + ') after you ' +
-                         'submit. Your main reports are never held up waiting for it.';
-    }
-    return note;
-  }
-
-  // ─────────────────────────────────────────────────────────────
-  // REPORT-SET BADGE
-  // GL-9 (2026-08-30): this was "YOUR CART" with per-item prices and a
-  // running total, shown to a family who had already paid at checkout. It
-  // read as a second bill. No figures for anything already owned.
-  //
-  // 2026-09-02: it also flatly asserted "Already paid for at checkout --
-  // nothing more to pay", which stopped being true the moment a family
-  // could add an unpurchased guide. Now split into two lists.
+  // CART SUMMARY — surfaces opted-in Care Guides as "added to cart"
   // ─────────────────────────────────────────────────────────────
   function getCartItems() {
     const items = [];
-    if (!state.flow) return items;
-    items.push({ name: state.flow === 'next_chapter'  ? 'Next Chapter Profile'
-                     : state.flow === 'comprehensive' ? 'Comprehensive Plan'
-                     : 'Action Report' });
-    ADDON_CATALOGUE.forEach(function (a) {
-      if (addonGranted(a.key)) items.push({ name: a.name });
-    });
+    const flow = state.flow;
+    if (!flow) return items;
+    const base = flow === 'next_chapter'
+      ? { name: 'Next Chapter Profile', price: 149 }
+      : flow === 'comprehensive'
+      ? { name: 'Comprehensive Plan', price: 149 }
+      : { name: 'Action Report',      price: 99 };
+    items.push(base);
+    function isYes(v) { return typeof v === 'string' && v.indexOf('Yes') === 0; }
+    if (isYes(state.data.addon_babysitter))       items.push({ name: 'Babysitter Care Guide',       price: 15 });
+    if (isYes(state.data.addon_extended_family))  items.push({ name: 'Extended Family Guide',       price: 15 });
+    if (isYes(state.data.addon_sibling))          items.push({ name: 'Sibling Guide',               price: 15 });
+    if (isYes(state.data.addon_teacher))          items.push({ name: 'Teacher / School Guide',      price: 15 });
+    if (isYes(state.data.addon_service_provider)) items.push({ name: 'Service Provider Guide',      price: 15 });
+    // Parenting in Partnership Guide: FREE for every family (2026-08-30) —
+    // delivered to everyone by render_family, so it is never a cart item.
+    if (state.addon_iep)                          items.push({ name: 'IEP Goal Recommendations',    price: 49 });
     return items;
   }
-
   function renderCartBadge() {
     let badge = document.getElementById('cart-badge');
-    const items   = getCartItems();
-    const pending = pendingAddons();
-    if (!state.flow || (items.length === 0 && pending.length === 0)) {
+    const items = getCartItems();
+    if (!state.flow || items.length === 0) {
       if (badge) badge.remove();
       return;
     }
@@ -800,20 +710,21 @@
       badge.style.cssText = 'position:fixed;bottom:20px;right:20px;background:white;border:1px solid #E8E4DC;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,0.08);padding:14px 18px;font-family:-apple-system,sans-serif;font-size:13px;z-index:8888;max-width:280px;';
       document.body.appendChild(badge);
     }
-    let html = '<div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#6C63FF;margin-bottom:8px;">YOUR REPORT SET</div>';
-    items.forEach(function (it) {
-      html += '<div style="padding:4px 0;color:#2C2A4A;">' + escapeHtml(it.name) + '</div>';
+    let html = '<div style="font-size:10.5px;font-weight:700;letter-spacing:1px;color:#6C63FF;margin-bottom:8px;">YOUR CART</div>';
+    items.forEach(it => {
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;color:#2C2A4A;">';
+      html += '<span>' + it.name + '</span>';
+      html += '<span style="color:#6B6982;font-size:12px;">' + (it.price != null ? ('$' + it.price) : 'add-on') + '</span>';
+      html += '</div>';
     });
-    html += '<div style="border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-size:11.5px;color:#6B6982;">Paid for at checkout \u2014 nothing more to pay.</div>';
-
-    if (pending.length) {
-      html += '<div style="margin-top:12px;font-size:10.5px;font-weight:700;letter-spacing:1px;color:#E8845A;">TO COMPLETE AFTER YOU SUBMIT</div>';
-      pending.forEach(function (a) {
-        html += '<div style="display:flex;justify-content:space-between;gap:10px;padding:4px 0;color:#2C2A4A;">' +
-                '<span>' + escapeHtml(a.name) + '</span><span style="color:#6B6982;">$' + a.price + '</span></div>';
-      });
-      html += '<div style="border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-size:11.5px;color:#6B6982;">We\u2019ll show you these at the end. Nothing is charged now.</div>';
+    // Bundle logic: 4+ individual guides auto-price as the $49 all-5 bundle
+    const guideSum = items.filter(it => it.price === 15).reduce((s, it) => s + it.price, 0);
+    const otherSum = items.filter(it => it.price !== 15).reduce((s, it) => s + (it.price || 0), 0);
+    if (guideSum > 49) {
+      html += '<div style="padding:4px 0;color:#52B788;font-size:11.5px;font-weight:600;">&#10003; 4+ guides selected &mdash; all-5 bundle price ($49) applied</div>';
     }
+    const total = otherSum + Math.min(guideSum, 49);
+    html += '<div style="display:flex;justify-content:space-between;border-top:1px solid #E8E4DC;margin-top:6px;padding-top:6px;font-weight:700;color:#2C2A4A;"><span>Total</span><span>$' + total + '</span></div>';
     badge.innerHTML = html;
   }
 
@@ -834,7 +745,7 @@
       sub: 'These basics help us tune the tone and developmental lens of your report.',
       fields: [
         { key: 'child_first_name', type: 'text', required: true, label: "Child's first name as it should appear in the report", placeholder: 'e.g., Sam' },
-        { key: 'child_last_initial', type: 'text', required: true, naOption: true, label: 'Last initial (e.g., "Sam R.")', placeholder: 'M' },
+        { key: 'child_last_initial', type: 'text', required: true, label: 'Last initial (e.g., "Sam R.")', placeholder: 'M' },
         { key: 'child_age', type: 'number', required: true, min: 1, max: 25, label: 'Age today', placeholder: '7' },
         { key: 'child_pronouns', type: 'text', required: true, label: 'Pronouns', help: 'he/him, she/her, they/them, etc.', placeholder: 'he/him' },
         { key: 'grade_level', type: 'radio', required: true, label: 'Grade level (or developmental equivalent)',
@@ -847,9 +758,9 @@
       title: 'What\'s the diagnostic picture?',
       sub: "We'll tune the framing of the report based on what you share. There's no wrong answer — even \"in evaluation\" or \"unsure\" is useful.",
       fields: [
-        { key: 'diagnoses', type: 'checkbox', required: true, naOption: true, triggersRerender: true,
+        { key: 'diagnoses', type: 'checkbox', required: true, triggersRerender: true,
           label: 'Primary diagnosis or diagnoses (check all that apply)',
-          options: ['Autism / ASD','ADHD','Anxiety','Sensory Processing Disorder','Dyslexia','PTSD','OCD','No diagnosis yet / in the evaluation process','No formal diagnosis \u2014 and that is fine','Other (specify below)'] },
+          options: ['Autism / ASD','ADHD','Anxiety','Sensory Processing Disorder','Dyslexia','PTSD','OCD','Other (specify below)'] },
         { key: 'diagnoses_other', type: 'textarea', required: false,
           label: 'If "Other" — what?  And: when was each diagnosis received?',
           help: 'Approximate dates / ages are fine. Helps frame how new the language is for your child and the family.',
@@ -889,7 +800,7 @@
       title: 'How does your child communicate?',
       sub: 'Be specific — this tunes the tone of the focused report.',
       fields: [
-        { key: 'communication_style_freetext', type: 'textarea', required: true, naOption: true,
+        { key: 'communication_style_freetext', type: 'textarea', required: true,
           label: 'Communication style',
           help: 'Verbal? Mostly verbal but loses words under stress? Uses an AAC device? Limited verbal? Non-speaking? Be specific.',
           placeholder: '' },
@@ -905,11 +816,11 @@
           label: "What's the one specific issue, trigger, trauma, or pattern this report should focus on?",
           help: "Examples: 'Bedtime regression in the last 6 weeks — won't sleep alone after a thunderstorm.' 'New trigger word from a coach that produces shutdowns.' 'Sibling-dynamic spike since the baby was born.'",
           placeholder: '' },
-        { key: 'focused_issue_start_date', type: 'text', required: true, naOption: true,
+        { key: 'focused_issue_start_date', type: 'text', required: true,
           label: 'When did this start?',
           help: 'Date or rough timeframe. Was there a clear precipitating event? Or did it creep in?',
           placeholder: 'e.g., About 6 weeks ago, after the back-to-school transition' },
-        { key: 'focused_issue_frequency', type: 'multi_with_text', required: true, naOption: true,
+        { key: 'focused_issue_frequency', type: 'multi_with_text', required: true,
           label: 'How often is it happening?',
           help: 'Daily? Multiple times a day? Weekly? In specific settings only?',
           placeholder: '' , options: [
@@ -929,7 +840,7 @@
       title: "What does the issue look like, inside and out?",
       sub: 'The more concrete, the better the report.',
       fields: [
-        { key: 'focused_issue_physical_appearance', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'focused_issue_physical_appearance', type: 'multi_with_text', required: true,
           label: 'What does it look like physically — what do you actually SEE happening?',
           help: 'Be concrete. Body language, facial expression, vocalizations, things they say, things they do.',
           placeholder: '' , options: [
@@ -944,7 +855,7 @@
           "Repetitive motion (rocking, flapping)",
           "Stomach pain or other physical symptoms"
         ], extraPlaceholder: "Other physical signs during the focused issue?"},
-        { key: 'focused_issue_emotional_appearance', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'focused_issue_emotional_appearance', type: 'multi_with_text', required: true,
           label: 'What does it look like emotionally — what do you sense is going on internally for them?',
           help: "Even if it's a guess. 'I think he's afraid.' 'It feels like shame.' 'I think she's overstimulated and embarrassed at the same time.'",
           placeholder: '' , options: [
@@ -958,7 +869,7 @@
           "Confusion",
           "Numbness / disconnection"
         ], extraPlaceholder: "Other emotional patterns during the focused issue?"},
-        { key: 'focused_issue_struggling_direction', type: 'checkbox', required: true, naOption: true,
+        { key: 'focused_issue_struggling_direction', type: 'checkbox', required: true,
           label: 'When this issue is active, your child tends to (check all that apply):',
           help: 'The direction of struggling shapes what responses will land.',
           options: [
@@ -977,11 +888,11 @@
       title: 'What sets it off — and when does it NOT happen?',
       sub: 'Both halves matter. The negative space tells us what\'s protective.',
       fields: [
-        { key: 'focused_issue_trigger_theory', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'focused_issue_trigger_theory', type: 'textarea', required: true,
           label: "What's the trigger — or your best theory of the trigger?",
           help: "A specific person? A word? A place? A type of transition? A sensory input? Something that happened earlier? Even 'I don't know — that's part of why I'm here' is a useful answer.",
           placeholder: '' },
-        { key: 'focused_issue_when_not_happening', type: 'multi_with_text', required: true, naOption: true,
+        { key: 'focused_issue_when_not_happening', type: 'multi_with_text', required: true,
           label: 'When does this NOT happen?',
           help: 'When is your child OK? What contexts seem protective?',
           placeholder: '' , options: [
@@ -1022,7 +933,7 @@
           "Witnessed difficult events",
           "Unsure or do not want to specify"
         ], extraPlaceholder: "Anything else about trauma context we should know?"},
-        { key: 'regulation_profile_in_general', type: 'multi_with_text', required: true, naOption: true,
+        { key: 'regulation_profile_in_general', type: 'multi_with_text', required: true,
           label: "What is your child's regulation profile in general?",
           help: "What ALREADY helps them regulate, even when this issue isn't active? Hugs? Pressure? Music? Movement? Quiet space? Specific people?",
           placeholder: '' , options: [
@@ -1043,7 +954,7 @@
       title: "What have you already tried with this specific issue?",
       sub: "Even things that didn't work are useful — we'll suggest what to try next.",
       fields: [
-        { key: 'strategies_already_tried', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'strategies_already_tried', type: 'textarea', required: true,
           label: "List every strategy, intervention, or accommodation you've tried with this specific issue.",
           help: "Be honest about how each fared. e.g., 'Reward chart — worked 3 days, then stopped. Visual schedule — helped a little. Removing screens before bed — no change.'",
           placeholder: '' },
@@ -1067,11 +978,11 @@
       title: 'What does Day 28 look like if this works?',
       sub: 'Specific, observable, honest.',
       fields: [
-        { key: 'success_day_28_vision', type: 'textarea', required: true, naOption: true,
+        { key: 'success_day_28_vision', type: 'textarea', required: true,
           label: 'If this report works perfectly, what does Day 28 look like?',
           help: "Paint the picture. 'Three smooth bedtimes a week. He sleeps in his own bed. He asks for a hug instead of a meltdown.'",
           placeholder: '' },
-        { key: 'family_bandwidth_for_implementation', type: 'multi_with_text', required: true, naOption: true,
+        { key: 'family_bandwidth_for_implementation', type: 'multi_with_text', required: true,
           label: "What is the FAMILY's bandwidth for implementation right now?",
           help: "Are you in a good window to adopt new routines, or surviving? Be honest. 'We have 15 minutes a day at most' is a real answer that shapes the report.",
           placeholder: '', options: [
@@ -1084,7 +995,7 @@
           "Have support from a partner or family",
           "Doing this mostly on my own"
         ], extraPlaceholder: "Anything else about your bandwidth right now?" },
-        { key: 'implementer_of_plan', type: 'multi_with_text', required: true, naOption: true,
+        { key: 'implementer_of_plan', type: 'multi_with_text', required: true,
           label: 'Who in the family is in charge of implementing this?',
           help: 'One parent? Both? Co-parents in different households? A grandparent? Will the implementer have support?',
           placeholder: '', options: [
@@ -1130,7 +1041,7 @@
       title: 'How does your child communicate?',
       sub: 'Pick the option that fits most days. We know it can change from moment to moment.',
       fields: [
-        { key: 'communication_style', type: 'radio', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result', triggersRerender: true,
+        { key: 'communication_style', type: 'radio', required: true, triggersRerender: true,
           label: "Primary communication style",
           options: ['Verbal','Mostly verbal with support','AAC device (specify below)','Limited verbal','Non-speaking'] },
         { key: 'communication_aac_device_details', type: 'textarea', required: false,
@@ -1138,7 +1049,7 @@
           help: 'Brand/model if you remember; how often they use it; anything quirky about how it shows up in their day.',
           placeholder: '',
           showIf: function(s) { return s.data.communication_style === 'AAC device (specify below)'; } },
-        { key: 'communication_when_overwhelmed', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'communication_when_overwhelmed', type: 'multi_with_text', required: true,
           label: "How do they communicate when they're stretched or overwhelmed?",
           help: 'Does they go quiet? Repeat phrases? Shut down? Use their device differently? Hit walls? Be specific.',
           placeholder: '' , options: [
@@ -1160,10 +1071,10 @@
       title: 'Meltdowns, shutdowns, and recovery.',
       sub: 'No need to soften — the more accurate, the better the plan.',
       fields: [
-        { key: 'meltdown_frequency', type: 'radio', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'meltdown_frequency', type: 'radio', required: true,
           label: 'How often do meltdowns or shutdowns happen?',
           options: ['Rarely','Weekly','Daily','Multiple times per day'] },
-        { key: 'dysregulation_physical_signs', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'dysregulation_physical_signs', type: 'multi_with_text', required: true,
           label: 'What does it look like — physically — when they are starting to dysregulate?',
           help: 'Hands over ears? Pacing? Going quiet? Verbal stim-loops? Specific phrases they repeat?',
           placeholder: '' , options: [
@@ -1183,7 +1094,7 @@
           "Loss of appetite",
           "Repetitive movements (rocking, flapping)"
         ], extraPlaceholder: "Other physical signs we should know about?"},
-        { key: 'full_meltdown_appearance', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'full_meltdown_appearance', type: 'multi_with_text', required: true,
           label: 'What does a full meltdown / shutdown look like for them?',
           placeholder: '', options: [
           "Crying or sobbing",
@@ -1198,7 +1109,7 @@
           "Dropping to the floor",
           "Unresponsive to voice or touch"
         ], extraPlaceholder: "Describe what a full meltdown / shutdown looks like for them." },
-        { key: 'recovery_time_after_hard_moment', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'recovery_time_after_hard_moment', type: 'multi_with_text', required: true,
           label: 'How long does recovery typically take after a hard moment?',
           help: 'Minutes? Hour? Half a day? Be specific.',
           placeholder: '' , options: [
@@ -1209,7 +1120,7 @@
           "2 to 4 hours",
           "4+ hours or rest of the day"
         ], extraPlaceholder: "Any patterns in what speeds or slows recovery?"},
-        { key: 'struggling_direction', type: 'checkbox', required: true, naOption: true,
+        { key: 'struggling_direction', type: 'checkbox', required: true,
           label: 'When your child is struggling, do they tend to (check all that apply):',
           help: 'The DIRECTION of their struggling shapes what kind of supports will land — internalizing (quiet, withdrawn) and externalizing (loud, physical) need different responses.',
           options: [
@@ -1228,18 +1139,18 @@
       title: 'Sensory sensitivities, in detail.',
       sub: "Select every category that often impacts your child's day.",
       fields: [
-        { key: 'sensory_sensitivities', type: 'checkbox', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'sensory_sensitivities', type: 'checkbox', required: true,
           label: 'Sensory areas of significant sensitivity (check all that apply)',
           options: [
             'Sound (auditory)','Light (visual)','Touch (tactile)','Food / taste (gustatory)',
             'Smell (olfactory)','Proprioceptive / movement','Vestibular (balance / spinning)',
             'Interoceptive (body awareness — hunger, fullness, bathroom)','None significant'
           ] },
-        { key: 'sensory_trigger_examples', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'sensory_trigger_examples', type: 'textarea', required: true,
           label: 'For each sensory area you checked, give one or two concrete examples of triggers.',
           help: "e.g., 'Sound: vacuum, blender, more than 2 voices talking at once. Light: fluorescent overhead at the store.'",
           placeholder: '' },
-        { key: 'sensory_regulation_inputs', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'sensory_regulation_inputs', type: 'multi_with_text', required: true,
           label: 'What sensory inputs REGULATE them? (deep pressure, movement, music, etc.)',
           help: "Be specific — exact tools or types. 'Weighted blanket,' 'trampoline 10 minutes,' 'audiobook with single narrator,' etc.",
           placeholder: '' , options: [
@@ -1254,7 +1165,7 @@
           "Texture seeking (fidgets, soft fabrics)",
           "Visual focus items (lava lamps, kaleidoscope)"
         ], extraPlaceholder: "Other sensory inputs that help regulate?"},
-        { key: 'sensory_seeking', type: 'radio', required: true, naOption: true, triggersRerender: true,
+        { key: 'sensory_seeking', type: 'radio', required: true, triggersRerender: true,
           label: 'Does your child SEEK certain sensory experiences in ways that feel unusual or intense?',
           help: 'Examples: crashes into furniture, chews non-food items, needs constant movement, spins, sniffs everything, needs background sound/music to focus.',
           options: ['Yes — seeks intensely', 'Sometimes seeks', 'Rarely seeks', 'Not applicable'] },
@@ -1273,7 +1184,7 @@
           "Touching textures"
         ], extraPlaceholder: "Other inputs they seek?",
           showIf: function(s) { return s.data.sensory_seeking === 'Yes — seeks intensely' || s.data.sensory_seeking === 'Sometimes seeks'; } },
-        { key: 'sensory_under_registration', type: 'radio', required: true, naOption: true, triggersRerender: true,
+        { key: 'sensory_under_registration', type: 'radio', required: true, triggersRerender: true,
           label: 'Does your child sometimes UNDER-register sensory input?',
           help: "Examples: not noticing they're hungry, tired, hurt, hot, cold, or need the bathroom until it's urgent.",
           options: ['Yes — often misses internal cues', 'Sometimes', 'Rarely', 'Not applicable'] },
@@ -1290,14 +1201,14 @@
       title: "What's the school setting?",
       sub: "This helps us frame strategies that will actually fit their day.",
       fields: [
-        { key: 'school_setting', type: 'radio', required: true, naOption: true, triggersRerender: true,
+        { key: 'school_setting', type: 'radio', required: true, triggersRerender: true,
           label: 'Current setting',
           options: ['General ed','Inclusion','Self-contained','Homeschool','Hybrid (specify below)','Not in school'] },
         { key: 'school_setting_hybrid_other', type: 'textarea', required: false,
           label: 'If "Hybrid" — describe the mix.',
           placeholder: '',
           showIf: function(s) { return s.data.school_setting === 'Hybrid (specify below)'; } },
-        { key: 'iep_504_status', type: 'radio', required: true, naOption: true, triggersRerender: true,
+        { key: 'iep_504_status', type: 'radio', required: true, triggersRerender: true,
           label: 'Does they have an IEP or 504 plan?',
           options: ['IEP','504','Neither','In evaluation'] },
         { key: 'anticipate_needing_iep_504', type: 'textarea', required: false,
@@ -1313,11 +1224,11 @@
       title: 'Tell us what they do beautifully.',
       sub: 'We anchor every plan in strengths first.',
       fields: [
-        { key: 'strengths_list', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'strengths_list', type: 'textarea', required: true,
           label: 'Tell us what they do beautifully — list at least 3-5 things.',
           help: 'Pattern recognition, gentleness with animals, deep memory, art, humor, observational ability — whatever lights them up.',
           placeholder: '' },
-        { key: 'special_interests', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'special_interests', type: 'textarea', required: true,
           label: 'Their special interests (the things they could talk about for an hour).',
           help: "These become on-ramps into therapy, school, regulation. Be specific — 'weather,' 'dinosaurs,' 'a specific book series,' 'trains.'",
           placeholder: '' },
@@ -1329,7 +1240,7 @@
       title: 'Top 3 goals right now.',
       sub: 'Can be social, academic, daily-living, regulation, self-advocacy — anything.',
       fields: [
-        { key: 'top_3_goals', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'top_3_goals', type: 'textarea', required: true,
           label: 'Your top 3 current goals.',
           placeholder: '1.\n2.\n3.' },
       ]
@@ -1340,7 +1251,7 @@
       title: 'Sleep and eating.',
       sub: 'These two anchors shape almost every other behavior.',
       fields: [
-        { key: 'sleep_patterns', type: 'radio', required: true, naOption: true,
+        { key: 'sleep_patterns', type: 'radio', required: true,
           label: 'Sleep patterns',
           options: ['Good','Some difficulty','Significant difficulty'] },
         { key: 'sleep_details', type: 'multi_with_text', required: false,
@@ -1357,7 +1268,7 @@
           "Sleep duration varies widely",
           "Sleeps fine — no concerns"
         ], extraPlaceholder: "Anything else about sleep we should know?"},
-        { key: 'eating_profile', type: 'radio', required: true, naOption: true,
+        { key: 'eating_profile', type: 'radio', required: true,
           label: 'Eating / food',
           options: ['No issues','Some selective eating','Significant feeding challenges'] },
         { key: 'eating_details', type: 'multi_with_text', required: false,
@@ -1383,10 +1294,10 @@
       title: 'Social style and what helps.',
       sub: 'How they connect, and what helps them recover.',
       fields: [
-        { key: 'social_style', type: 'radio', required: true, naOption: true,
+        { key: 'social_style', type: 'radio', required: true,
           label: 'Their social style',
           options: ['Makes friends easily','Has a few friends','Struggles socially','Prefers to be alone'] },
-        { key: 'emotional_regulation_tools', type: 'checkbox', required: true, naOption: true, triggersRerender: true,
+        { key: 'emotional_regulation_tools', type: 'checkbox', required: true, triggersRerender: true,
           label: 'Emotional regulation tools that currently help (check all that apply)',
           options: [
             'Deep pressure','Movement breaks','Quiet space','Music / audiobooks','Fidgets',
@@ -1403,17 +1314,9 @@
       id: 'comp_b9_daily_living',
       eyebrow: 'Daily living skills',
       title: 'Real-world functioning — where are they ABLE, and where do they need support?',
-      sub: function (s) {
-        return s.flow === 'next_chapter'
-          ? 'Just the safety piece here — the independence table you already filled in covers the rest.'
-          : 'One of the most useful sections for IEP teams, therapists, and service providers. Kids are often advanced in some areas and behind in others — that mismatch is the point.';
-      },
+      sub: 'One of the most useful sections for IEP teams, therapists, and service providers. Kids are often advanced in some areas and behind in others — that mismatch is the point.',
       fields: [
-        { key: 'adaptive_self_care', type: 'radio', required: true, naOption: true,
-          // Hidden on the Next Chapter flow (2026-09-16): the 12-domain
-          // transition table covers this properly, and this key is not in
-          // schema.py so the pipeline drops it anyway (RPT-1).
-          showIf: function(s) { return s.flow !== 'next_chapter'; },
+        { key: 'adaptive_self_care', type: 'radio', required: true,
           label: 'Self-care: dressing, toileting / hygiene, feeding themselves',
           options: [
             'Independent for their age',
@@ -1421,11 +1324,7 @@
             'Significant support needed',
             'Not yet — fully dependent'
           ] },
-        { key: 'adaptive_home_routines', type: 'radio', required: true, naOption: true,
-          // Hidden on the Next Chapter flow (2026-09-16): the 12-domain
-          // transition table covers this properly, and this key is not in
-          // schema.py so the pipeline drops it anyway (RPT-1).
-          showIf: function(s) { return s.flow !== 'next_chapter'; },
+        { key: 'adaptive_home_routines', type: 'radio', required: true,
           label: 'Home routines: morning, bedtime, multi-step household tasks',
           options: [
             'Independent for their age',
@@ -1433,11 +1332,7 @@
             'Significant support needed',
             'Not yet — fully dependent'
           ] },
-        { key: 'adaptive_community', type: 'radio', required: true, naOption: true,
-          // Hidden on the Next Chapter flow (2026-09-16): the 12-domain
-          // transition table covers this properly, and this key is not in
-          // schema.py so the pipeline drops it anyway (RPT-1).
-          showIf: function(s) { return s.flow !== 'next_chapter'; },
+        { key: 'adaptive_community', type: 'radio', required: true,
           label: 'Community: stores, restaurants, appointments, asking a stranger for help',
           options: [
             'Independent for their age',
@@ -1445,7 +1340,7 @@
             'Significant support needed',
             'Not yet — fully dependent'
           ] },
-        { key: 'adaptive_safety', type: 'radio', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result', triggersRerender: true,
+        { key: 'adaptive_safety', type: 'radio', required: true, triggersRerender: true,
           label: 'Safety awareness: street safety, recognizing danger, asking for help in an emergency',
           options: [
             'Independent for their age',
@@ -1483,11 +1378,11 @@
       title: 'A good day vs. a hard day.',
       sub: 'The shape of each tells us what\'s working and what\'s not.',
       fields: [
-        { key: 'good_day_description', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'good_day_description', type: 'textarea', required: true,
           label: 'What does a GOOD day look like?',
           help: 'Concrete — when they wake up, what they do, what they eat, who\'s around, what they say, how it ends.',
           placeholder: '' },
-        { key: 'hard_day_description', type: 'textarea', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'hard_day_description', type: 'textarea', required: true,
           label: 'What does a HARD day look like?',
           help: 'No need to soften.',
           placeholder: '' },
@@ -1499,7 +1394,7 @@
       title: 'Predictable triggers.',
       sub: 'List the things you can brace for.',
       fields: [
-        { key: 'predictable_dysregulation_triggers', type: 'multi_with_text', required: true, naOption: true, naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'predictable_dysregulation_triggers', type: 'multi_with_text', required: true,
           label: 'List the situations / words / events that you can predict will dysregulate them.',
           help: "e.g., 'Fluorescent lights at the doctor.' 'Surprise touch.' 'The word stop.' 'Plans changing without warning.' Anything you brace for.",
           placeholder: '' , options: [
@@ -1545,7 +1440,7 @@
             'Three or more (specify below)',
             'It varies — describe below'
           ] },
-        { key: 'household_primary_people', type: 'textarea', required: true, naOption: true,
+        { key: 'household_primary_people', type: 'textarea', required: true,
           label: 'Who lives in the primary household?',
           help: 'List each person: name (or relationship), role, age range. e.g., "Maria (Parent 1), 42; Emma, sister, 14; the dog Buddy."',
           placeholder: '' },
@@ -1710,7 +1605,6 @@
   const ACTION_ADDON_STEPS = [
     {
       id: 'action_addon_babysitter',
-      addonKey: 'babysitter',
       eyebrow: 'Add-on: Babysitter Guide',
       title: 'Add a Babysitter / Respite Care Guide?',
       sub: 'Optional — a focused-issue version of the Babysitter Care Guide, tuned to this 4-week intervention window. Yes = added to your cart.',
@@ -1721,7 +1615,7 @@
             'Yes — generate the Babysitter Guide (added to cart)',
             'No — skip the Babysitter Guide'
           ] },
-        { key: 'babysitter_emergency_contacts', type: 'textarea', required: true, naOption: true,
+        { key: 'babysitter_emergency_contacts', type: 'textarea', required: false,
           label: 'Emergency contacts + key allergies/medications + bedtime steps a sitter should follow',
           help: 'One item per line. Same shape as the contacts card in the Comprehensive Plan.',
           placeholder: 'PARENT 1: Maria, 401-555-0100\nPARENT 2: David, 401-555-0101\nPEDIATRICIAN: Dr. Patel, 401-555-0200\nALLERGIES: peanuts (Epi-Pen in front entry)\nBEDTIME: 8:30 — bath, audiobook, lights off by 9.',
@@ -1730,7 +1624,6 @@
     },
     {
       id: 'action_addon_extended_family',
-      addonKey: 'extended_family',
       eyebrow: 'Add-on: Extended Family Guide',
       title: 'Add an Extended Family / Close Friends Guide?',
       sub: 'Optional — warm, plain-language guide for grandparents, aunts/uncles, godparents. Yes = added to your cart.',
@@ -1741,12 +1634,12 @@
             'Yes — generate the Extended Family Guide (added to cart)',
             'No — skip'
           ] },
-        { key: 'extfam_avoid_phrases_from_upbringing', type: 'textarea', required: true, naOption: true,
+        { key: 'extfam_avoid_phrases_from_upbringing', type: 'textarea', required: false,
           label: "Phrases or attitudes from how YOU were raised that don't work for your child — and that you wish extended family would set down.",
           help: "e.g., 'Toughen up.' 'Look me in the eye.' 'Because I said so.' 'Don't make a scene.'",
           placeholder: '',
           showIf: function(s) { return s.data.addon_extended_family === 'Yes — generate the Extended Family Guide (added to cart)'; } },
-        { key: 'extfam_relationships_with_specific_members', type: 'textarea', required: true, naOption: true,
+        { key: 'extfam_relationships_with_specific_members', type: 'textarea', required: false,
           label: 'Anything specific about how your child relates to particular extended-family members?',
           help: "e.g., 'Grandma is regulating; Grandpa's tone often overwhelms him.'",
           placeholder: '',
@@ -1755,32 +1648,9 @@
     },
     {
       id: 'action_addon_sibling',
-      addonKey: 'sibling',
-      // SIBLING GUIDE SKIP (2026-09-01, Sarah). "No siblings" used to
-      // soften this step's sub-copy but still show it, so a family with an
-      // only child was asked to decline a Sibling Guide. Now the step is
-      // dropped from the flow outright.
-      //
-      // The one exception is a family who ALREADY PAID for the Sibling
-      // Guide at checkout and then answers "No" -- hiding it there would
-      // take $15 and deliver nothing. They still get the step, and the
-      // cousin / family-friend option is how they use what they bought.
-      //
-      // ownsAddon() returns null when entitlements are unknown (RPC error,
-      // provider-sponsored family). null is NOT true, so an unknown falls
-      // through to the has_siblings test -- correct: an unknown family who
-      // says "No siblings" almost certainly did not buy a Sibling Guide.
-      showIfStep: function (s) {
-        if (ownsAddon('sibling') === true) return true;
-        return s.data.has_siblings !== 'No';
-      },
       eyebrow: 'Add-on: Sibling Guide',
       title: 'Add a Sibling Guide?',
-      sub: function (s) {
-        return s.data.has_siblings === 'No'
-          ? 'You told us there are no siblings at home, and you purchased this guide — so it can be made for a close cousin or family-friend child instead.'
-          : 'Age-tiered (4–7 / 8–11 / 12+). For an actual sibling or a close cousin / family-friend child.';
-      },
+      sub: 'Optional — age-tiered (4–7 / 8–11 / 12+). Yes = added to your cart.',
       fields: [
         { key: 'addon_sibling', type: 'radio', required: true, triggersRerender: true,
           label: 'Generate a Sibling Guide?',
@@ -1789,7 +1659,7 @@
             'Yes — for a close cousin / family-friend child (added to cart)',
             'No — no siblings, or N/A'
           ] },
-        { key: 'addon_sibling_close_cousin_details', type: 'textarea', required: true, naOption: true,
+        { key: 'addon_sibling_close_cousin_details', type: 'textarea', required: false,
           label: "If you chose option 2, give that child's name, age, and relationship.",
           placeholder: '',
           showIf: function(s) { return s.data.addon_sibling === 'Yes — for a close cousin / family-friend child (added to cart)'; } },
@@ -1811,7 +1681,6 @@
     },
     {
       id: 'action_addon_teacher',
-      addonKey: 'teacher',
       eyebrow: 'Add-on: Teacher / School Staff Guide',
       title: 'Add a Teacher / School Staff Guide?',
       sub: 'Optional — neuro-affirming professional guide for school teams or homeschool co-ops. Yes = added to your cart.',
@@ -1823,11 +1692,11 @@
             'Yes — keep it on file for a future school re-entry scenario (added to cart)',
             'No — skip'
           ] },
-        { key: 'teacher_group_learning_environment', type: 'textarea', required: true, naOption: true,
+        { key: 'teacher_group_learning_environment', type: 'textarea', required: false,
           label: 'If your child is in any group-learning environment (co-op, art class, sport), describe it briefly.',
           placeholder: '',
           showIf: function(s) { return s.data.addon_teacher && s.data.addon_teacher.indexOf('Yes') === 0; } },
-        { key: 'teacher_accommodations_at_home', type: 'textarea', required: true, naOption: true,
+        { key: 'teacher_accommodations_at_home', type: 'textarea', required: false,
           label: "Specific accommodations YOU rely on at home that you'd want any group setting to know about.",
           help: 'e.g., 25-min movement break minimum; first lesson always wolves; weighted lap pad on chair.',
           placeholder: '',
@@ -1836,7 +1705,6 @@
     },
     {
       id: 'action_addon_service_provider',
-      addonKey: 'service_provider',
       eyebrow: 'Add-on: Service Provider / Therapy Guide',
       title: 'Add a Service Provider / Therapy Guide?',
       sub: 'Optional — neuro-affirming clinical-bridge document for OTs, SLPs, social-skills facilitators, and other providers. Yes = added to your cart.',
@@ -1848,7 +1716,7 @@
             'Yes — generate the Service Provider Guide (added to cart)',
             'No — skip'
           ] },
-        { key: 'provider_current_providers', type: 'multi_with_text', required: true, naOption: true,
+        { key: 'provider_current_providers', type: 'multi_with_text', required: false,
           label: 'Which providers does your child currently see, or which kind are you actively pursuing?',
           help: "List specialty + frequency. e.g., 'OT, weekly, sees Dr. Lee at MercyCare.' 'SLP, on waitlist.'",
           placeholder: '', options: [
@@ -1864,16 +1732,16 @@
           "None currently"
         ], extraPlaceholder: "Add specialty + frequency (e.g., 'OT, weekly, sees Dr. Lee').",
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
-        { key: 'provider_clinical_goals', type: 'textarea', required: true, naOption: true,
+        { key: 'provider_clinical_goals', type: 'textarea', required: false,
           label: 'What clinical goals does your child already have in any current therapy?',
           help: 'Optional but very useful — lets the bridge document align home work with existing clinical goals.',
           placeholder: '',
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
-        { key: 'provider_social_skills_history', type: 'textarea', required: true, naOption: true,
+        { key: 'provider_social_skills_history', type: 'textarea', required: false,
           label: "Has your child been in a social-skills group before? If yes, what worked / what didn't?",
           placeholder: '',
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
-        { key: 'provider_quirks_preferences', type: 'textarea', required: true, naOption: true,
+        { key: 'provider_quirks_preferences', type: 'textarea', required: false,
           label: 'Any provider quirks / preferences?',
           help: 'e.g., warms up to providers who match a special interest; shuts down when a new clinician greets them at the door.',
           placeholder: '',
@@ -1882,19 +1750,18 @@
     },
       {
       id: "action_addon_iep",
-      addonKey: 'iep',
       eyebrow: "Add-on: IEP Prep Companion",
-      title: "Add the IEP Prep Companion?",
-      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion: your concerns and priorities in your own words, present levels, strengths, the goal areas for the team to translate into measurable annual goals, accommodations to discuss, and the questions to bring. If Yes, we ask 14 short follow-up questions to ground it in your child\u2019s current plan.",
+      title: "Add IEP Goal Recommendations?",
+      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
       fields: [
         { key: "iep_addon_choice", type: "radio", required: true, triggersRerender: true,
-          disclaimer: '* The IEP Prep Companion and its goal-area suggestions are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
-          label: "Add the IEP Prep Companion to your order?",
+          disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
+          label: "Add the IEP Prep Companion + Goal Recommendations to your order?",
           options: [
             "Yes \u2014 generate the IEP Prep Companion (+$49, added to cart)",
             "No \u2014 skip the IEP add-on"
           ] },
-        { key: "iep_current_status", type: "radio", required: true, naOption: true,
+        { key: "iep_current_status", type: "radio", required: false,
           label: "What\u2019s the current state of your child\u2019s IEP / 504 plan?",
           options: [
             "Has an active IEP",
@@ -1904,11 +1771,11 @@
             "Never had one \u2014 exploring now"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_district", type: "text", required: true, naOption: true,
+        { key: "iep_district", type: "text", required: false,
           label: "Which school district holds (or would hold) the plan?",
           placeholder: "e.g., Providence Public Schools",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_case_manager_role", type: "radio", required: true, naOption: true,
+        { key: "iep_case_manager_role", type: "radio", required: false,
           label: "Who is the primary case manager?",
           options: [
             "Special-education teacher",
@@ -1921,7 +1788,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_current_services", type: "checkbox", required: true, naOption: true,
+        { key: "iep_current_services", type: "checkbox", required: false,
           label: "Which related services are currently provided? (check all that apply)",
           options: [
             "Speech-Language",
@@ -1939,7 +1806,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_service_hours_concern", type: "radio", required: true, naOption: true,
+        { key: "iep_service_hours_concern", type: "radio", required: false,
           label: "How do you feel about the current service hours?",
           options: [
             "They are adequate",
@@ -1951,7 +1818,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_current_goals_summary", type: "textarea", required: true, naOption: true,
+        { key: "iep_current_goals_summary", type: "textarea", required: false,
           label: "List the current annual goals (paste from the IEP if easier \u2014 just the goal language).",
           help: "Skip if you don\u2019t have them in front of you \u2014 we can still draft recommendations.",
           placeholder: "e.g., \"Joey will initiate a peer interaction with adult prompt during structured activities in 4 of 5 opportunities by June 2027.\"",
@@ -1959,7 +1826,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && st === "Has an active IEP";
           } },
-        { key: "iep_goals_progress", type: "radio", required: true, naOption: true,
+        { key: "iep_goals_progress", type: "radio", required: false,
           label: "For the current goals, how is progress?",
           options: [
             "Most are on track",
@@ -1972,7 +1839,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && st === "Has an active IEP";
           } },
-        { key: "iep_accommodations_using", type: "textarea", required: true, naOption: true,
+        { key: "iep_accommodations_using", type: "textarea", required: false,
           label: "Which accommodations are written in the current plan?",
           help: "Optional but useful \u2014 lets us identify gaps.",
           placeholder: "e.g., preferential seating, sensory breaks every 30 min, extended time on tests, headphones in cafeteria",
@@ -1980,18 +1847,18 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_accommodations_working", type: "textarea", required: true, naOption: true,
+        { key: "iep_accommodations_working", type: "textarea", required: false,
           label: "Of those accommodations, which actually work day-to-day?",
           placeholder: "e.g., sensory breaks are essential; extended time is rarely used; headphones make the cafeteria possible",
           showIf: function(s) {
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_last_evaluation_date", type: "text", required: true, naOption: true,
+        { key: "iep_last_evaluation_date", type: "text", required: false,
           label: "When was the most recent formal evaluation? (year is fine)",
           placeholder: "e.g., Fall 2024",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_advocate_involved", type: "radio", required: true, naOption: true,
+        { key: "iep_advocate_involved", type: "radio", required: false,
           label: "Do you have an advocate or special-ed attorney involved?",
           options: [
             "Yes \u2014 paid advocate or attorney",
@@ -2000,19 +1867,19 @@
             "No \u2014 and not planning to"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_biggest_frustration", type: "textarea", required: true, naOption: true,
+        { key: "iep_biggest_frustration", type: "textarea", required: false,
           label: "What\u2019s the single biggest frustration with the IEP process right now?",
           placeholder: "e.g., the team listens but nothing changes; my child masks at school so they don\u2019t see what I see; we can\u2019t get an evaluation",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_next_meeting_date", type: "text", required: true, naOption: true,
+        { key: "iep_next_meeting_date", type: "text", required: false,
           label: "When is the next IEP / 504 meeting? (date or \"don\u2019t know\")",
           placeholder: "e.g., March 12, 2027",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_top_request", type: "textarea", required: true, naOption: true,
+        { key: "iep_top_request", type: "textarea", required: false,
           label: "If you could get ONE thing into the IEP at the next meeting, what would it be?",
           placeholder: "e.g., a dedicated sensory break room my child can access without asking",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_transition_concerns", type: "textarea", required: true, naOption: true,
+        { key: "iep_transition_concerns", type: "textarea", required: false,
           label: "(Age 14+ only) For transition planning: what\u2019s your biggest concern about post-21 / adult life?",
           placeholder: "e.g., independent living, vocational fit, social isolation, who will know my child the way we do",
           showIf: function(s) {
@@ -2020,7 +1887,7 @@
             var age = parseInt(s.data.child_age, 10);
             return c && c.indexOf("Yes") === 0 && age >= 14;
           } },
-        { key: "iep_eligibility_category", type: "radio", required: true, naOption: true,
+        { key: "iep_eligibility_category", type: "radio", required: false,
           label: "What eligibility category is (or would be) used for the IEP?",
           help: "If you're not sure, pick the closest fit or 'Don't know yet'.",
           options: [
@@ -2036,7 +1903,7 @@
             "Other"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_lre_setting", type: "radio", required: true, naOption: true,
+        { key: "iep_lre_setting", type: "radio", required: false,
           label: "What is the current (or proposed) educational placement?",
           help: "LRE = Least Restrictive Environment.",
           options: [
@@ -2050,26 +1917,26 @@
             "Other"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_next_reeval_date", type: "text", required: true, naOption: true,
+        { key: "iep_next_reeval_date", type: "text", required: false,
           label: "When is the next 3-year reevaluation due? (year is fine)",
           placeholder: "e.g., Spring 2027",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_pls_academic_strengths_concerns", type: "textarea", required: true, naOption: true,
+        { key: "iep_pls_academic_strengths_concerns", type: "textarea", required: false,
           label: "Academic profile: what does your child do well, and where are the challenges?",
           help: "Reading, writing, math, attention, work completion, organization.",
           placeholder: "e.g., reads two grade levels above peers; struggles with multi-step word problems; cannot tolerate timed tests.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_pls_communication_strengths_concerns", type: "textarea", required: true, naOption: true,
+        { key: "iep_pls_communication_strengths_concerns", type: "textarea", required: false,
           label: "Communication profile: how does your child communicate, and where are the gaps?",
           help: "Expressive language, receptive understanding, social pragmatics, AAC use.",
           placeholder: "e.g., highly articulate one-on-one but freezes in groups; struggles to ask for help when overwhelmed.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_pls_social_strengths_concerns", type: "textarea", required: true, naOption: true,
+        { key: "iep_pls_social_strengths_concerns", type: "textarea", required: false,
           label: "Social profile: how does your child interact with peers and adults?",
           help: "Friendships, group dynamics, conflict, trust with new adults.",
           placeholder: "e.g., loves 1:1 with a familiar adult; avoids group play; reads adult body language carefully before approaching.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_priority_goal_areas", type: "checkbox", required: true, naOption: true,
+        { key: "iep_priority_goal_areas", type: "checkbox", required: false,
           label: "What goal AREAS would you like the team to focus on this year? (check all that apply)",
           options: [
             "Self-regulation",
@@ -2087,12 +1954,12 @@
             "Vocational / pre-employment"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_behavior_incidents_history", type: "textarea", required: true, naOption: true,
+        { key: "iep_behavior_incidents_history", type: "textarea", required: false,
           label: "Has your child had behavior incidents at school? (restraints, seclusion, suspensions, removal from class)",
           help: "List dates / contexts as best you remember. Critical for the FBA / BIP discussion.",
           placeholder: "e.g., October 2024 — restrained for 12 minutes when refusing math test; November 2024 — sent home early after a meltdown in the cafeteria.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_fba_status", type: "radio", required: true, naOption: true,
+        { key: "iep_fba_status", type: "radio", required: false,
           label: "Has a Functional Behavioral Assessment (FBA) been completed?",
           options: [
             "Yes — completed, BIP (Behavior Intervention Plan) is in place",
@@ -2103,17 +1970,17 @@
             "Don't know what this is"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_outside_evaluations", type: "textarea", required: true, naOption: true,
+        { key: "iep_outside_evaluations", type: "textarea", required: false,
           label: "Are there outside evaluations the team should consider? (private neuropsych, OT/SLP from outside the school, medical workups)",
           help: "If you have reports, list them by evaluator + date so the team can request copies.",
           placeholder: "e.g., neuropsych eval Dr. Patel, June 2024; private SLP eval Bright Futures Therapy, March 2024.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_parent_questions_for_team", type: "textarea", required: true, naOption: true,
+        { key: "iep_parent_questions_for_team", type: "textarea", required: false,
           label: "What specific questions do YOU want to ask the team at the next meeting?",
           help: "We'll put these directly in Section 11 of the IEP Prep Companion so you have them in hand.",
           placeholder: "e.g., how is progress on the regulation goal being measured? what happens when the 1:1 aide is absent?",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_transition_post_secondary_interest", type: "textarea", required: true, naOption: true,
+        { key: "iep_transition_post_secondary_interest", type: "textarea", required: false,
           label: "(Age 14+) What is your child interested in for post-high-school? (college, trade, work, day program, gap year)",
           help: "Even rough thoughts are useful — IDEA requires post-school goals starting at age 14 in RI.",
           placeholder: "e.g., interested in computer science / animation; we're exploring a 2-year community college transition program.",
@@ -2135,7 +2002,6 @@
   const COMPREHENSIVE_ADDON_STEPS = [
     {
       id: 'comp_addon_babysitter',
-      addonKey: 'babysitter',
       eyebrow: 'Add-on: Babysitter Guide',
       title: 'Add a Babysitter / Respite Care Guide?',
       sub: 'Optional — a printable need-to-knows guide for anyone watching your child.',
@@ -2152,54 +2018,53 @@
       sub: 'These populate the Babysitter Care Guide. Each line goes onto the printed contact card.',
       showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; },
       fields: [
-        { key: 'sitter_mom_name_number', type: 'text', required: true, naOption: true,
+        { key: 'sitter_mom_name_number', type: 'text', required: true,
           label: 'PARENT 1 · Name + Number', placeholder: 'Maria, 401-555-0100',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_dad_partner_name_number', type: 'text', required: true, naOption: true,
+        { key: 'sitter_dad_partner_name_number', type: 'text', required: true,
           label: 'PARENT 2 · Name + Number', placeholder: '',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_close_neighbor_name_number', type: 'text', required: true, naOption: true,
+        { key: 'sitter_close_neighbor_name_number', type: 'text', required: false,
           label: 'CLOSE NEIGHBOR · Name + Number',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_backup_family_name_number', type: 'text', required: true, naOption: true,
+        { key: 'sitter_backup_family_name_number', type: 'text', required: false,
           label: 'BACKUP FAMILY MEMBER · Name + Number',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_pediatrician_name_number', type: 'text', required: true, naOption: true,
+        { key: 'sitter_pediatrician_name_number', type: 'text', required: true,
           label: 'PEDIATRICIAN · Name + Number',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_after_hours_care_name_number', type: 'text', required: true, naOption: true,
+        { key: 'sitter_after_hours_care_name_number', type: 'text', required: false,
           label: 'AFTER-HOURS CARE · Name + Number',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_home_address', type: 'text', required: true, naOption: true,
+        { key: 'sitter_home_address', type: 'text', required: true,
           label: 'HOME ADDRESS · Street, City, State, Zip',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_cross_streets_gate_code', type: 'text', required: true, naOption: true,
+        { key: 'sitter_cross_streets_gate_code', type: 'text', required: false,
           label: 'CROSS-STREETS / GATE CODE · If relevant',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_allergies_medications', type: 'text', required: true, naOption: true,
+        { key: 'sitter_allergies_medications', type: 'text', required: true,
           label: 'ALLERGIES / MEDICATIONS · List clearly',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_insurance_info', type: 'text', required: true, naOption: true,
+        { key: 'sitter_insurance_info', type: 'text', required: true,
           label: 'INSURANCE INFO · Carrier + ID',
           help: "This goes only on the Babysitter Guide as an emergency-contact reference (so a sitter has it if your child needs urgent care). Pieces of Perception does not use, share, or process this for any other purpose.",
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_local_er', type: 'text', required: true, naOption: true,
+        { key: 'sitter_local_er', type: 'text', required: true,
           label: 'LOCAL ER · Name + Address',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_foods_loved', type: 'textarea', required: true, naOption: true,
+        { key: 'sitter_foods_loved', type: 'textarea', required: true,
           label: "Foods they love (sitter can't go wrong with these)",
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_foods_to_skip', type: 'textarea', required: true, naOption: true,
+        { key: 'sitter_foods_to_skip', type: 'textarea', required: false,
           label: "Foods to skip on a sitter's watch",
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
-        { key: 'sitter_bedtime_routine', type: 'textarea', required: true, naOption: true,
+        { key: 'sitter_bedtime_routine', type: 'textarea', required: true,
           label: 'Bedtime routine — exact steps a sitter should follow',
           showIf: function(s) { return s.data.addon_babysitter === 'Yes — generate the Babysitter Guide (added to cart)'; } },
       ]
     },
     {
       id: 'comp_addon_extended_family',
-      addonKey: 'extended_family',
       eyebrow: 'Add-on: Extended Family Guide',
       title: 'Add an Extended Family / Close Friends Guide?',
       sub: 'Optional — a warm, plain-language guide for grandparents, aunts/uncles, godparents, and the close friends who feel like family.',
@@ -2207,12 +2072,12 @@
         { key: 'addon_extended_family', type: 'radio', required: true, triggersRerender: true,
           label: 'Generate an Extended Family / Close Friends Guide?',
           options: ['Yes — generate the Extended Family Guide (added to cart)','No — skip'] },
-        { key: 'extfam_avoid_phrases_from_upbringing', type: 'textarea', required: true, naOption: true,
+        { key: 'extfam_avoid_phrases_from_upbringing', type: 'textarea', required: false,
           label: "Are there specific phrases or attitudes from how YOU were raised that don't work for your child — and that you wish extended family would set down?",
           help: "e.g., 'Toughen up.' 'Look me in the eye.' 'Because I said so.' 'Don't make a scene.'",
           placeholder: '',
           showIf: function(s) { return s.data.addon_extended_family === 'Yes — generate the Extended Family Guide (added to cart)'; } },
-        { key: 'extfam_relationships_with_specific_members', type: 'textarea', required: true, naOption: true,
+        { key: 'extfam_relationships_with_specific_members', type: 'textarea', required: false,
           label: 'Anything specific about how your child relates to particular extended-family members?',
           help: "e.g., 'Grandma is regulating; Grandpa's tone often overwhelms him.' Will tune the guide.",
           placeholder: '',
@@ -2221,32 +2086,9 @@
     },
     {
       id: 'comp_addon_sibling',
-      addonKey: 'sibling',
-      // SIBLING GUIDE SKIP (2026-09-01, Sarah). "No siblings" used to
-      // soften this step's sub-copy but still show it, so a family with an
-      // only child was asked to decline a Sibling Guide. Now the step is
-      // dropped from the flow outright.
-      //
-      // The one exception is a family who ALREADY PAID for the Sibling
-      // Guide at checkout and then answers "No" -- hiding it there would
-      // take $15 and deliver nothing. They still get the step, and the
-      // cousin / family-friend option is how they use what they bought.
-      //
-      // ownsAddon() returns null when entitlements are unknown (RPC error,
-      // provider-sponsored family). null is NOT true, so an unknown falls
-      // through to the has_siblings test -- correct: an unknown family who
-      // says "No siblings" almost certainly did not buy a Sibling Guide.
-      showIfStep: function (s) {
-        if (ownsAddon('sibling') === true) return true;
-        return s.data.has_siblings !== 'No';
-      },
       eyebrow: 'Add-on: Sibling Guide',
       title: 'Add a Sibling Guide?',
-      sub: function (s) {
-        return s.data.has_siblings === 'No'
-          ? 'You told us there are no siblings at home, and you purchased this guide — so it can be made for a close cousin or family-friend child instead.'
-          : 'Age-tiered (4–7 / 8–11 / 12+). For an actual sibling or a close cousin / family-friend child.';
-      },
+      sub: 'Optional — age-tiered (4–7 / 8–11 / 12+). For an actual sibling OR a close cousin / family-friend child.',
       fields: [
         { key: 'addon_sibling', type: 'radio', required: true, triggersRerender: true,
           label: 'Generate a Sibling Guide?',
@@ -2255,7 +2097,7 @@
             'Yes — for a close cousin / family-friend child (details below — added to cart)',
             'No — skip the Sibling Guide for now'
           ] },
-        { key: 'addon_sibling_close_cousin_details', type: 'textarea', required: true, naOption: true,
+        { key: 'addon_sibling_close_cousin_details', type: 'textarea', required: false,
           label: "If you chose option 2, give that child's name, age, and relationship.",
           placeholder: '',
           showIf: function(s) { return s.data.addon_sibling === 'Yes — for a close cousin / family-friend child (details below — added to cart)'; } },
@@ -2277,7 +2119,6 @@
     },
     {
       id: 'comp_addon_teacher',
-      addonKey: 'teacher',
       eyebrow: 'Add-on: Teacher / School Staff Guide',
       title: 'Add a Teacher / School Staff Guide?',
       sub: 'Optional — neuro-affirming professional guide for school teams or homeschool co-ops.',
@@ -2289,11 +2130,11 @@
             'Yes — keep it on file for a future school re-entry scenario (added to cart)',
             'No — skip'
           ] },
-        { key: 'teacher_group_learning_environment', type: 'textarea', required: true, naOption: true,
+        { key: 'teacher_group_learning_environment', type: 'textarea', required: false,
           label: 'If your child is in any group-learning environment (co-op, art class, sport), describe it briefly.',
           placeholder: '',
           showIf: function(s) { return s.data.addon_teacher && s.data.addon_teacher.indexOf('Yes') === 0; } },
-        { key: 'teacher_accommodations_at_home', type: 'textarea', required: true, naOption: true,
+        { key: 'teacher_accommodations_at_home', type: 'textarea', required: false,
           label: "Specific accommodations YOU rely on at home that you'd want any group setting to know about.",
           help: 'e.g., 25-min movement break minimum; first lesson always wolves; weighted lap pad on chair.',
           placeholder: '',
@@ -2302,7 +2143,6 @@
     },
     {
       id: 'comp_addon_service_provider',
-      addonKey: 'service_provider',
       eyebrow: 'Add-on: Service Provider / Therapy Guide',
       title: 'Add a Service Provider / Therapy Guide?',
       sub: 'Optional — neuro-affirming clinical-bridge document for OTs, SLPs, social-skills facilitators, and other providers.',
@@ -2311,7 +2151,7 @@
           disclaimer: '* The Service Provider / Therapy Guide is an informational, supportive bridge document. It is <strong>not</strong> a clinical evaluation, diagnosis, treatment plan, or a substitute for the professional judgment of your child\u2019s providers, and it is not prepared by a licensed clinician. Share it with providers at your discretion. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
           label: 'Generate a Service Provider / Therapy Guide?',
           options: ['Yes — generate the Service Provider Guide (added to cart)','No — skip'] },
-        { key: 'provider_current_providers', type: 'multi_with_text', required: true, naOption: true,
+        { key: 'provider_current_providers', type: 'multi_with_text', required: false,
           label: 'Which providers does your child currently see, or which kind are you actively pursuing?',
           help: "List specialty + frequency. e.g., 'OT, weekly, sees Dr. Lee at MercyCare.' 'SLP, on waitlist.'",
           placeholder: '', options: [
@@ -2327,16 +2167,16 @@
           "None currently"
         ], extraPlaceholder: "Add specialty + frequency (e.g., 'OT, weekly, sees Dr. Lee').",
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
-        { key: 'provider_clinical_goals', type: 'textarea', required: true, naOption: true,
+        { key: 'provider_clinical_goals', type: 'textarea', required: false,
           label: 'What clinical goals does your child already have in any current therapy?',
           help: 'Optional but very useful — lets the bridge document align home work with existing clinical goals.',
           placeholder: '',
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
-        { key: 'provider_social_skills_history', type: 'textarea', required: true, naOption: true,
+        { key: 'provider_social_skills_history', type: 'textarea', required: false,
           label: "Has your child been in a social-skills group before? If yes, what worked / what didn't?",
           placeholder: '',
           showIf: function(s) { return s.data.addon_service_provider === 'Yes — generate the Service Provider Guide (added to cart)'; } },
-        { key: 'provider_quirks_preferences', type: 'textarea', required: true, naOption: true,
+        { key: 'provider_quirks_preferences', type: 'textarea', required: false,
           label: 'Any provider quirks / preferences?',
           help: 'e.g., warms up to providers who match a special interest; shuts down when a new clinician greets them at the door.',
           placeholder: '',
@@ -2345,19 +2185,18 @@
     },
       {
       id: "comp_addon_iep",
-      addonKey: 'iep',
       eyebrow: "Add-on: IEP Prep Companion",
-      title: "Add the IEP Prep Companion?",
-      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion: your concerns and priorities in your own words, present levels, strengths, the goal areas for the team to translate into measurable annual goals, accommodations to discuss, and the questions to bring. If Yes, we ask 14 short follow-up questions to ground it in your child\u2019s current plan.",
+      title: "Add IEP Goal Recommendations?",
+      sub: "Optional +$49 — a 21+ page parent-voiced IEP Prep Companion with 4-6 SMART goals tailored to your child, plus accommodations, service-delivery suggestions, and meeting prep. If Yes, we ask 14 short follow-up questions to ground the recommendations in your child\u2019s current plan.",
       fields: [
         { key: "iep_addon_choice", type: "radio", required: true, triggersRerender: true,
-          disclaimer: '* The IEP Prep Companion and its goal-area suggestions are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
-          label: "Add the IEP Prep Companion to your order?",
+          disclaimer: '* The IEP Prep Companion and its goal recommendations are an informational, parent-voiced support tool. They are <strong>not</strong> an Individualized Education Program (IEP), a 504 plan, a formal accommodations recommendation, an educational evaluation, or legal advice, and they are not prepared by a licensed educator, school psychologist, or attorney. Schools are not obligated to adopt them. Use them at your discretion alongside your child\u2019s school team. See the full <a href="/terms-and-conditions.html" target="_blank" rel="noopener">Terms and Conditions</a> for details.',
+          label: "Add the IEP Prep Companion + Goal Recommendations to your order?",
           options: [
             "Yes \u2014 generate the IEP Prep Companion (+$49, added to cart)",
             "No \u2014 skip the IEP add-on"
           ] },
-        { key: "iep_current_status", type: "radio", required: true, naOption: true,
+        { key: "iep_current_status", type: "radio", required: false,
           label: "What\u2019s the current state of your child\u2019s IEP / 504 plan?",
           options: [
             "Has an active IEP",
@@ -2367,11 +2206,11 @@
             "Never had one \u2014 exploring now"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_district", type: "text", required: true, naOption: true,
+        { key: "iep_district", type: "text", required: false,
           label: "Which school district holds (or would hold) the plan?",
           placeholder: "e.g., Providence Public Schools",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_case_manager_role", type: "radio", required: true, naOption: true,
+        { key: "iep_case_manager_role", type: "radio", required: false,
           label: "Who is the primary case manager?",
           options: [
             "Special-education teacher",
@@ -2384,7 +2223,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_current_services", type: "checkbox", required: true, naOption: true,
+        { key: "iep_current_services", type: "checkbox", required: false,
           label: "Which related services are currently provided? (check all that apply)",
           options: [
             "Speech-Language",
@@ -2402,7 +2241,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_service_hours_concern", type: "radio", required: true, naOption: true,
+        { key: "iep_service_hours_concern", type: "radio", required: false,
           label: "How do you feel about the current service hours?",
           options: [
             "They are adequate",
@@ -2414,7 +2253,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_current_goals_summary", type: "textarea", required: true, naOption: true,
+        { key: "iep_current_goals_summary", type: "textarea", required: false,
           label: "List the current annual goals (paste from the IEP if easier \u2014 just the goal language).",
           help: "Skip if you don\u2019t have them in front of you \u2014 we can still draft recommendations.",
           placeholder: "e.g., \"Joey will initiate a peer interaction with adult prompt during structured activities in 4 of 5 opportunities by June 2027.\"",
@@ -2422,7 +2261,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && st === "Has an active IEP";
           } },
-        { key: "iep_goals_progress", type: "radio", required: true, naOption: true,
+        { key: "iep_goals_progress", type: "radio", required: false,
           label: "For the current goals, how is progress?",
           options: [
             "Most are on track",
@@ -2435,7 +2274,7 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && st === "Has an active IEP";
           } },
-        { key: "iep_accommodations_using", type: "textarea", required: true, naOption: true,
+        { key: "iep_accommodations_using", type: "textarea", required: false,
           label: "Which accommodations are written in the current plan?",
           help: "Optional but useful \u2014 lets us identify gaps.",
           placeholder: "e.g., preferential seating, sensory breaks every 30 min, extended time on tests, headphones in cafeteria",
@@ -2443,18 +2282,18 @@
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_accommodations_working", type: "textarea", required: true, naOption: true,
+        { key: "iep_accommodations_working", type: "textarea", required: false,
           label: "Of those accommodations, which actually work day-to-day?",
           placeholder: "e.g., sensory breaks are essential; extended time is rarely used; headphones make the cafeteria possible",
           showIf: function(s) {
             var c = s.data.iep_addon_choice; var st = s.data.iep_current_status;
             return c && c.indexOf("Yes") === 0 && (st === "Has an active IEP" || st === "Has a 504 plan (not an IEP)");
           } },
-        { key: "iep_last_evaluation_date", type: "text", required: true, naOption: true,
+        { key: "iep_last_evaluation_date", type: "text", required: false,
           label: "When was the most recent formal evaluation? (year is fine)",
           placeholder: "e.g., Fall 2024",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_advocate_involved", type: "radio", required: true, naOption: true,
+        { key: "iep_advocate_involved", type: "radio", required: false,
           label: "Do you have an advocate or special-ed attorney involved?",
           options: [
             "Yes \u2014 paid advocate or attorney",
@@ -2463,19 +2302,19 @@
             "No \u2014 and not planning to"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_biggest_frustration", type: "textarea", required: true, naOption: true,
+        { key: "iep_biggest_frustration", type: "textarea", required: false,
           label: "What\u2019s the single biggest frustration with the IEP process right now?",
           placeholder: "e.g., the team listens but nothing changes; my child masks at school so they don\u2019t see what I see; we can\u2019t get an evaluation",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_next_meeting_date", type: "text", required: true, naOption: true,
+        { key: "iep_next_meeting_date", type: "text", required: false,
           label: "When is the next IEP / 504 meeting? (date or \"don\u2019t know\")",
           placeholder: "e.g., March 12, 2027",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_top_request", type: "textarea", required: true, naOption: true,
+        { key: "iep_top_request", type: "textarea", required: false,
           label: "If you could get ONE thing into the IEP at the next meeting, what would it be?",
           placeholder: "e.g., a dedicated sensory break room my child can access without asking",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_transition_concerns", type: "textarea", required: true, naOption: true,
+        { key: "iep_transition_concerns", type: "textarea", required: false,
           label: "(Age 14+ only) For transition planning: what\u2019s your biggest concern about post-21 / adult life?",
           placeholder: "e.g., independent living, vocational fit, social isolation, who will know my child the way we do",
           showIf: function(s) {
@@ -2483,7 +2322,7 @@
             var age = parseInt(s.data.child_age, 10);
             return c && c.indexOf("Yes") === 0 && age >= 14;
           } },
-        { key: "iep_eligibility_category", type: "radio", required: true, naOption: true,
+        { key: "iep_eligibility_category", type: "radio", required: false,
           label: "What eligibility category is (or would be) used for the IEP?",
           help: "If you're not sure, pick the closest fit or 'Don't know yet'.",
           options: [
@@ -2499,7 +2338,7 @@
             "Other"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_lre_setting", type: "radio", required: true, naOption: true,
+        { key: "iep_lre_setting", type: "radio", required: false,
           label: "What is the current (or proposed) educational placement?",
           help: "LRE = Least Restrictive Environment.",
           options: [
@@ -2513,26 +2352,26 @@
             "Other"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_next_reeval_date", type: "text", required: true, naOption: true,
+        { key: "iep_next_reeval_date", type: "text", required: false,
           label: "When is the next 3-year reevaluation due? (year is fine)",
           placeholder: "e.g., Spring 2027",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_pls_academic_strengths_concerns", type: "textarea", required: true, naOption: true,
+        { key: "iep_pls_academic_strengths_concerns", type: "textarea", required: false,
           label: "Academic profile: what does your child do well, and where are the challenges?",
           help: "Reading, writing, math, attention, work completion, organization.",
           placeholder: "e.g., reads two grade levels above peers; struggles with multi-step word problems; cannot tolerate timed tests.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_pls_communication_strengths_concerns", type: "textarea", required: true, naOption: true,
+        { key: "iep_pls_communication_strengths_concerns", type: "textarea", required: false,
           label: "Communication profile: how does your child communicate, and where are the gaps?",
           help: "Expressive language, receptive understanding, social pragmatics, AAC use.",
           placeholder: "e.g., highly articulate one-on-one but freezes in groups; struggles to ask for help when overwhelmed.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_pls_social_strengths_concerns", type: "textarea", required: true, naOption: true,
+        { key: "iep_pls_social_strengths_concerns", type: "textarea", required: false,
           label: "Social profile: how does your child interact with peers and adults?",
           help: "Friendships, group dynamics, conflict, trust with new adults.",
           placeholder: "e.g., loves 1:1 with a familiar adult; avoids group play; reads adult body language carefully before approaching.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_priority_goal_areas", type: "checkbox", required: true, naOption: true,
+        { key: "iep_priority_goal_areas", type: "checkbox", required: false,
           label: "What goal AREAS would you like the team to focus on this year? (check all that apply)",
           options: [
             "Self-regulation",
@@ -2550,12 +2389,12 @@
             "Vocational / pre-employment"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_behavior_incidents_history", type: "textarea", required: true, naOption: true,
+        { key: "iep_behavior_incidents_history", type: "textarea", required: false,
           label: "Has your child had behavior incidents at school? (restraints, seclusion, suspensions, removal from class)",
           help: "List dates / contexts as best you remember. Critical for the FBA / BIP discussion.",
           placeholder: "e.g., October 2024 — restrained for 12 minutes when refusing math test; November 2024 — sent home early after a meltdown in the cafeteria.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_fba_status", type: "radio", required: true, naOption: true,
+        { key: "iep_fba_status", type: "radio", required: false,
           label: "Has a Functional Behavioral Assessment (FBA) been completed?",
           options: [
             "Yes — completed, BIP (Behavior Intervention Plan) is in place",
@@ -2566,17 +2405,17 @@
             "Don't know what this is"
           ],
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_outside_evaluations", type: "textarea", required: true, naOption: true,
+        { key: "iep_outside_evaluations", type: "textarea", required: false,
           label: "Are there outside evaluations the team should consider? (private neuropsych, OT/SLP from outside the school, medical workups)",
           help: "If you have reports, list them by evaluator + date so the team can request copies.",
           placeholder: "e.g., neuropsych eval Dr. Patel, June 2024; private SLP eval Bright Futures Therapy, March 2024.",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_parent_questions_for_team", type: "textarea", required: true, naOption: true,
+        { key: "iep_parent_questions_for_team", type: "textarea", required: false,
           label: "What specific questions do YOU want to ask the team at the next meeting?",
           help: "We'll put these directly in Section 11 of the IEP Prep Companion so you have them in hand.",
           placeholder: "e.g., how is progress on the regulation goal being measured? what happens when the 1:1 aide is absent?",
           showIf: function(s) { return s.data.iep_addon_choice && s.data.iep_addon_choice.indexOf("Yes") === 0; } },
-        { key: "iep_transition_post_secondary_interest", type: "textarea", required: true, naOption: true,
+        { key: "iep_transition_post_secondary_interest", type: "textarea", required: false,
           label: "(Age 14+) What is your child interested in for post-high-school? (college, trade, work, day program, gap year)",
           help: "Even rough thoughts are useful — IDEA requires post-school goals starting at age 14 in RI.",
           placeholder: "e.g., interested in computer science / animation; we're exploring a 2-year community college transition program.",
@@ -2600,11 +2439,11 @@
       title: 'What lands. What doesn\'t.',
       sub: 'These phrases populate the SAY THIS / DON\'T SAY card in every guide.',
       fields: [
-        { key: 'working_phrases_or_scripts', type: 'textarea', required: true, naOption: true,
+        { key: 'working_phrases_or_scripts', type: 'textarea', required: false,
           label: "Specific phrases or scripts that ALREADY work in your household that you'd want any caregiver to also use.",
           help: "e.g., 'I see you, take a breath with me.' 'I'm not going to feed that thought.' The things you've discovered that land for THIS child.",
           placeholder: '' },
-        { key: 'phrases_that_do_not_work', type: 'textarea', required: true, naOption: true,
+        { key: 'phrases_that_do_not_work', type: 'textarea', required: false,
           label: 'Specific phrases or words that DO NOT work — that we should make sure never appear in any caregiver guide.',
           help: "e.g., 'STOP' is a trauma trigger. 'Calm down.' 'Because I said so.' Whatever has backfired.",
           placeholder: '' },
@@ -2623,6 +2462,7 @@
       ]
     },
   ];
+
 
 
   // ─────────────────────────────────────────────────────────────
@@ -2706,8 +2546,7 @@
           label: 'Describe what a good adult life looks like for them five years from now.',
           help: 'Where are they living, what are they doing on a Tuesday, who is around them?',
           placeholder: '' },
-        { key: 'tr_young_adult_own_vision', type: 'textarea', required: true, naOption: true,
-          naLabel: 'They haven\u2019t said, or can\u2019t tell us \u2014 I understand the report will speak in my words instead',
+        { key: 'tr_young_adult_own_vision', type: 'textarea', required: false,
           label: 'In THEIR words: what do they say they want their life to look like?',
           help: 'If it is different from your answer above, say so. Both belong in the report — a plan that ignores the person tends not to survive contact with the person.',
           placeholder: '' },
@@ -2753,8 +2592,7 @@
           label: 'What work, volunteering, chores, or internships have they done so far — and how did each go?',
           help: 'Including the ones that did not work out. Especially those.',
           placeholder: '' },
-        { key: 'tr_work_interests', type: 'textarea', required: true, naOption: true,
-          naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'tr_work_interests', type: 'textarea', required: false,
           label: 'What kinds of tasks do they gravitate toward or ask to do?',
           help: 'Sorting, fixing, organizing, caring for animals, being outside, working alone, working near people but not with them.',
           placeholder: '' },
@@ -2861,53 +2699,12 @@
           label: 'Emergencies — calling for help, describing what happened, following instructions under stress' },
         { key: 'tr_ind_self_advocacy', type: 'radio', required: true, options: TR_LEVELS,
           label: 'Self-advocacy — saying they need a break, correcting a wrong assumption, asking for an accommodation' },
-        { key: 'tr_independence_details', type: 'textarea', required: true, naOption: true,
-          naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'tr_independence_details', type: 'textarea', required: false,
           label: 'For any area above: what does the support actually look like in real life?',
           help: 'The concrete version. "Will hand over a twenty for a two-dollar item and not wait for change" is worth more than any rating.',
           placeholder: '' },
         { key: 'tr_independence_priorities', type: 'textarea', required: false,
           label: 'Which two or three of those areas matter most to work on first — and why those?',
-          placeholder: '' },
-      ]
-    },
-    {
-      id: 'tr_functional',
-      eyebrow: 'Reading, forms, and money',
-      title: 'The skills a job or program will assume they have.',
-      sub: 'Nobody asks this out loud and everybody assumes it. Answering it is what turns "needs support" into a specific accommodation somebody can actually arrange.',
-      fields: [
-        { key: 'tr_func_reading', type: 'radio', required: true,
-          label: 'Reading \u2014 a shift schedule, a form, a medication label, a text from a supervisor',
-          options: [
-            'Reads and understands most everyday text',
-            'Reads familiar text; new or dense text is hard',
-            'Reads a few key words, names, and symbols',
-            'Does not read text \u2014 uses pictures, icons, or someone reading it aloud',
-            'Not sure'
-          ] },
-        { key: 'tr_func_writing_forms', type: 'radio', required: true,
-          label: 'Writing and forms \u2014 filling in an application, writing a short message, signing where indicated',
-          options: [
-            'Completes most forms independently',
-            'Completes a form with someone sitting alongside',
-            'Signs their name and copies information that is shown to them',
-            'Someone else completes forms for them',
-            'Not sure'
-          ] },
-        { key: 'tr_func_money_numbers', type: 'radio', required: true,
-          label: 'Money as numbers \u2014 making change, checking a receipt, knowing whether there is enough for something',
-          help: 'Different from the money question earlier, which was about handling a purchase. This one is the arithmetic behind it.',
-          options: [
-            'Handles the numbers independently',
-            'Handles familiar amounts; larger or unfamiliar ones are hard',
-            'Recognizes coins and bills but not the arithmetic',
-            'Someone else manages money entirely',
-            'Not sure'
-          ] },
-        { key: 'tr_func_details', type: 'textarea', required: false,
-          label: 'What does that look like in practice?',
-          help: '"Can read the words on a schedule but cannot work out which shift is his" is exactly the kind of thing a job coach needs.',
           placeholder: '' },
       ]
     },
@@ -2948,8 +2745,7 @@
             'Depends on the person and the setting',
             'They have not been asked / cannot say'
           ] },
-        { key: 'tr_new_adult_first_meeting', type: 'textarea', required: true, naOption: true,
-          naLabel: 'I can\u2019t answer this \u2014 I understand this part of the report will be more general as a result',
+        { key: 'tr_new_adult_first_meeting', type: 'textarea', required: false,
           label: 'What should a brand-new adult do in the first ten minutes to get this right?',
           help: 'This becomes the first block of the one-page profile.',
           placeholder: '' },
@@ -3005,46 +2801,6 @@
         { key: 'tr_agencies_involved', type: 'textarea', required: false,
           label: 'Which adult agencies, case managers, or programs are already involved?',
           help: 'Names and roles if you have them, or "one intake meeting last spring and nothing since" — that is useful too.',
-          placeholder: '' },
-        { key: 'tr_current_support_hours', type: 'radio', required: true,
-          label: 'How much paid or funded support is in place right now?',
-          help: 'The first thing every adult agency asks. A rough number moves a conversation along faster than a description.',
-          options: [
-            'None \u2014 the family provides everything',
-            'A few hours a week',
-            'About 10 to 20 hours a week',
-            'About 20 to 40 hours a week',
-            'Support most waking hours',
-            'It varies week to week',
-            'Not sure'
-          ] },
-        { key: 'tr_current_support_who', type: 'multi_with_text', required: false,
-          label: 'Who provides the support they have now? (check all that apply)',
-          options: [
-            'Family only',
-            'School staff',
-            'Staff through an adult agency',
-            'A self-directed or family-hired worker',
-            'Privately paid help',
-            'A day or community program',
-            'Nobody outside the family'
-          ], extraPlaceholder: 'Names or hours, if you have them.' },
-        { key: 'tr_documents_in_hand', type: 'multi_with_text', required: false,
-          label: 'Which of these do you already have in hand? (check all that apply)',
-          help: 'Programs and employers ask for these on day one, and families routinely find out at intake that something is missing or expired.',
-          options: [
-            'State ID or driver\u2019s license',
-            'Social Security card',
-            'Birth certificate',
-            'Proof of work authorization',
-            'Benefits award or denial letter',
-            'A copy of the current IEP or school records',
-            'None of these yet',
-            'Not sure'
-          ], extraPlaceholder: 'Anything expired, lost, or in progress?' },
-        { key: 'tr_health_program_must_know', type: 'textarea', required: false,
-          label: 'Is there anything about their health a program, employer, or job coach would need to know on day one to keep them safe?',
-          help: 'Allergies, a medication that has to be taken at a set time, a condition that can produce an emergency, or anything an EMT would want to know. Optional \u2014 leave it blank and nothing appears. What you write here is governed by the disclosure preference you set earlier.',
           placeholder: '' },
       ]
     },
@@ -3110,8 +2866,7 @@
             'I answered on their behalf',
             'They are not able to participate in this kind of questionnaire'
           ] },
-        { key: 'tr_young_adult_own_words', type: 'textarea', required: true, naOption: true,
-          naLabel: 'They have nothing they want added \u2014 I understand the closing part of the report, which is written to them, will be shorter as a result',
+        { key: 'tr_young_adult_own_words', type: 'textarea', required: false,
           label: 'Anything they want said in their own words — printed as theirs, not yours.',
           help: 'This is quoted in the report and shapes the whole self-advocacy section. Even one sentence changes it.',
           placeholder: '' },
@@ -3140,9 +2895,9 @@
         .concat(COMPREHENSIVE_ADDON_STEPS)
         .concat(FINAL_STEPS);
     } else if (state.flow === 'next_chapter') {
-      // Next Chapter Profile (16+). The full comprehensive core, then the
-      // transition block. FOCUSED_ISSUE_STEPS is deliberately left out:
-      // this flow is not about one presenting issue.
+      // Next Chapter Profile (16+). The full comprehensive core, then
+      // the transition block. FOCUSED_ISSUE_STEPS is deliberately left
+      // out: this flow is not about one presenting issue.
       steps = SHARED_STEPS
         .concat(COMPREHENSIVE_STEPS)
         .concat(TRANSITION_STEPS)
@@ -3153,26 +2908,7 @@
     } else {
       return [];
     }
-
-    // STEP-LEVEL SKIP (2026-09-01). A step may declare
-    //   showIfStep: function (state) { return true|false; }
-    // and is dropped from the flow entirely when it returns false --
-    // it never renders, never validates, never appears in the review
-    // list, and does not count toward the progress bar (totalSteps()
-    // calls this same function).
-    //
-    // FAILS OPEN, on purpose and for the same reason loadEntitlements()
-    // does: a thrown predicate must never be able to hide a step a
-    // family paid for. An exception means "show it".
-    //
-    // Safe to recompute on every render: state.step is an index into
-    // THIS array, and every predicate below keys off an answer that is
-    // collected on an EARLIER step, so the array never shrinks behind
-    // the position the family is currently standing on.
-    return steps.filter(function (st) {
-      if (typeof st.showIfStep !== 'function') return true;
-      try { return !!st.showIfStep(state); } catch (e) { return true; }
-    });
+    return steps;
   }
 
   // showIf: a field can declare `showIf: function(state) { return ... }`.
@@ -3265,7 +3001,7 @@
   function renderFlowChoice(card) {
     card.appendChild(el('div', { className: 'step-eyebrow' }, 'CHOOSE YOUR REPORT'));
     card.appendChild(el('h2', { className: 'step-title serif' }, 'How deep do you want to go?'));
-    card.appendChild(el('p', { className: 'step-sub' }, 'You can come back later for the deeper plan — but if you\'re ready, the Comprehensive Plan is the one most families say changed how they parent.'));
+    card.appendChild(el('p', { className: 'step-sub' }, 'You can come back later for a deeper plan. If your young adult is 16 or older and school supports are winding down, start with the Next Chapter Profile.'));
 
     const grid = el('div', { className: 'flow-grid' });
 
@@ -3289,120 +3025,18 @@
     compCard.appendChild(el('button', { className: 'btn btn-primary', onclick: (e) => { e.stopPropagation(); chooseFlow('comprehensive'); } }, 'Choose Comprehensive Plan →'));
     grid.appendChild(compCard);
 
-    // Next Chapter card (transition years, 16+). Added 2026-08-17, merged 2026-09-15.
+
+    // Next Chapter card (transition years, 16+). Added 2026-08-17.
     const nextCard = el('div', { className: 'flow-card transition', onclick: () => chooseFlow('next_chapter') });
-    nextCard.appendChild(el('div', { className: 'flow-icon' }, '\u{1F9ED}'));
+    nextCard.appendChild(el('div', { className: 'flow-icon' }, '🧭'));
     nextCard.appendChild(el('h3', null, 'Next Chapter Profile'));
     nextCard.appendChild(el('div', { className: 'flow-tagline' }, 'For ages 16+. When school ends and adult life begins.'));
     nextCard.appendChild(el('div', { className: 'flow-price', html: '<span class="currency">$</span>149' }));
     nextCard.appendChild(el('div', { className: 'flow-desc' }, 'Everything in the Comprehensive Plan, plus the transition years: independence, work, benefits and decisions at 18, and a Handoff Pack built to give an adult program, an employer, or a job coach.'));
-    nextCard.appendChild(el('button', { className: 'btn btn-sky', onclick: (e) => { e.stopPropagation(); chooseFlow('next_chapter'); } }, 'Choose Next Chapter \u2192'));
+    nextCard.appendChild(el('button', { className: 'btn btn-sky', onclick: (e) => { e.stopPropagation(); chooseFlow('next_chapter'); } }, 'Choose Next Chapter →'));
     grid.appendChild(nextCard);
 
     card.appendChild(grid);
-  }
-
-  // ── ENTITLEMENTS (GL-9, 2026-08-30) ────────────────────────────
-  // The flow-choice screen used to be free: state.flow was whatever the
-  // family clicked. Nothing reconciled the MAIN report against what was
-  // paid — purchase_gate.PAID_GATES deliberately excludes it — so a family
-  // who bought the $149 Comprehensive could pick the $99 Action Report and
-  // spend an hour answering the WRONG QUESTIONS, and a family who bought
-  // Action could take Comprehensive for free. Both silently.
-  //
-  // get_my_entitlements() is a SECURITY DEFINER RPC because the browser
-  // cannot read `purchases` (RLS on, zero policies, by design).
-  //
-  // ⚠ FAILS OPEN. Any error, any null flow, and the normal choice screen
-  // is shown. A provider-sponsored family has no purchases row and must
-  // never be blocked from starting.
-  let entitlements = null;
-
-  async function loadEntitlements(session) {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_entitlements`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        },
-        body: '{}'
-      });
-      if (!res.ok) return null;
-      const d = await res.json();
-      return (d && d.ok) ? d : null;
-    } catch (_) { return null; }
-  }
-
-  // ── ADDON KEYS ─────────────────────────────────────────────────
-  // ✅ VERIFIED 2026-09-02 against the live get_my_entitlements() prosrc
-  // (read out of pg_proc). The RPC emits EXACTLY these six strings in its
-  // `addons` array and nothing else:
-  //
-  //     babysitter · sibling · extended_family · teacher ·
-  //     service_provider · iep
-  //
-  // They are identical to purchase_gate.PAID_GATES in the render pipeline
-  // (minus next_chapter, which the RPC reports as a `flow`, not an add-on).
-  // ⚠ If one list changes, the other must change with it.
-  //
-  // ★★ THE $49 FIVE-GUIDE BUNDLE IS EXPANDED INSIDE THE RPC. On any of
-  //    'all 5 care guides bundle' / 'all 5 care guides (bundle)' /
-  //    'all 6 care guides (bundle)' it sets all five guide keys directly.
-  //    So NO 'careguides' key is ever returned, and the client must not try
-  //    to expand a bundle itself -- doing so would be dead code implying a
-  //    key that cannot occur.
-  //
-  // ownsAddon(name) -> true | false | null
-  //   true  = this family paid for it
-  //   false = they did not
-  //   null  = UNKNOWN. The RPC returned ok:false (no session) or the fetch
-  //           failed, or this is a provider-sponsored family with no
-  //           purchases row.
-  //
-  // ⚠ Callers MUST treat null as "do not charge and do not hide" -- never
-  //   as false. Charging on an unknown double-bills a family for something
-  //   they already own; hiding on an unknown buries a step they paid for.
-  function ownsAddon(name) {
-    if (!entitlements || !Array.isArray(entitlements.addons)) return null;
-
-    // ★★ ZERO PURCHASE ROWS MEANS "NOTHING TO GO ON", NOT "OWNS NOTHING".
-    //
-    // get_my_entitlements() returns ok:true with addons:[] and
-    // purchase_count:0 for a beta family, a hand-issued access grant, or a
-    // provider-sponsored family -- precisely the population
-    // purchase_gate.py steps aside for: "A family with NO purchase rows at
-    // all is a beta family or a hand-issued grant. The gate does not block
-    // them." An empty array is the SAME state, reported by a different
-    // layer, and must be read the same way.
-    //
-    // Reading it as "bought nothing" would tell a beta family their guides
-    // cost $15 and would strip those guides out of their submission.
-    // ⚠ Found 2026-09-03, when Sarah pointed out nobody has purchased
-    // anything yet -- which made this the state of EVERY account.
-    //
-    // A family who bought only the $99 plan is a different case: they have
-    // purchase_count >= 1 with addons [], and correctly own no add-ons.
-    //
-    // If purchase_count is ever absent, this returns null and everything
-    // grants free -- the safe direction.
-    if (!entitlements.purchase_count) return null;
-
-    return entitlements.addons.indexOf(name) !== -1;
-  }
-
-  function renderPurchasedFlowNote(card) {
-    if (!entitlements || !entitlements.flow) return;
-    const LABEL = { comprehensive: 'Comprehensive Plan',
-                    action: 'Action Report',
-                    next_chapter: 'Next Chapter Profile' };
-    const name = LABEL[entitlements.flow];
-    if (!name) return;
-    const note = el('div', { className: 'step-sub',
-      style: 'background:rgba(82,183,136,0.10);border:1px solid rgba(82,183,136,0.35);border-radius:12px;padding:12px 16px;margin-bottom:18px;' });
-    note.textContent = 'You purchased the ' + name + ', so these are the questions we need for it.';
-    card.appendChild(note);
   }
 
   function chooseFlow(flow) {
@@ -3413,7 +3047,7 @@
       const a = Number(state.data.child_age);
       if (a && a < 16) {
         const ok = window.confirm(
-          'The Next Chapter Profile is written for ages 16 and up \u2014 school ' +
+          'The Next Chapter Profile is written for ages 16 and up — school ' +
           'transition, work, and the decisions that arrive at 18.\n\n' +
           'You entered age ' + a + '. The Comprehensive Plan is usually the ' +
           'better fit below 16.\n\nContinue with Next Chapter anyway?');
@@ -3434,7 +3068,6 @@
   // ───────────────────────────────────────────────────────────────
   function renderIntro(card) {
     card.appendChild(el('div', { className: 'step-eyebrow' }, 'BEFORE YOU BEGIN'));
-    renderPurchasedFlowNote(card);
     card.appendChild(el('h2', { className: 'step-title serif' }, 'The more you share, the more this report sees your child.'));
 
     const sub = el('p', { className: 'step-sub' });
@@ -3512,16 +3145,14 @@
   let PROVIDER_NAME = null;
 
   // The three acknowledgments the attorney drafted (MES 2026-08-19). These are
-  // word-for-word identical to the boxes on checkout.html and family-dashboard.html
-  // — do not reword one without the other two.
+  // word-for-word identical to the boxes on checkout.html, family-dashboard.html
+  // and questionnaire.html — do not reword one without the others.
   const ACK_POINTS = [
     'I have read and agree to the <strong>Terms and Conditions</strong> ' +
       '<a href="' + ACTIVE_AGREEMENT.url + '" target="_blank" rel="noopener" class="ack-link">(view full text)</a>, ' +
       'including the parental consent provisions in the Agreement.',
-    'I confirm that I am over the age of 18 and that I am either (a) the parent, legal guardian, or other person ' +
-      'legally authorized to provide information about the Child for whom I am purchasing or otherwise obtaining a Report, ' +
-      'or (b) for a Next Chapter Profile only, the young adult the Report is about, or a person providing information ' +
-      'about that young adult with their permission.',
+    'I confirm that I am over the age of 18 and I am the parent, legal guardian, or other person ' +
+      'legally authorized to provide information about the Child for whom I am obtaining a Report.',
     'I understand that my questionnaire responses and Reports will remain available through my ' +
       'account for the applicable <strong>12-month Retention Period</strong> described in the Agreement. ' +
       'After the applicable Retention Period ends, this information will be permanently deleted. ' +
@@ -3529,9 +3160,8 @@
       'to immediately download and save all Reports.'
   ];
 
-  // Continue unlocks when every REQUIRED box is checked. Boxes carrying
-  // data-optional="1" (currently the sponsored-access sharing authorization)
-  // are deliberately excluded — an unchecked optional box is a real answer.
+  // Continue unlocks when every REQUIRED box is checked. data-optional="1"
+  // boxes (the sponsored-access sharing authorization) are excluded.
   function refreshAckContinue() {
     const btn = document.getElementById('ack-continue-q');
     if (!btn) return;
@@ -3589,9 +3219,7 @@
         PROVIDER_NAME = provName;
         const item = el('label', { className: 'ack-item' });
         // OPTIONAL by design: sponsored access does not require the family to
-        // authorize sharing (Terms and Conditions, Section 1). Checking it
-        // is the authorization; leaving it unchecked is a valid answer and must
-        // NOT block the Continue button.
+        // authorize sharing (Terms and Conditions, Section 1).
         const cb = el('input', {
           type: 'checkbox',
           id: 'ack-provider-share',
@@ -3599,11 +3227,6 @@
         });
         cb.setAttribute('data-optional', '1');
         item.appendChild(cb);
-        // Wording tracks Section 1 of the Terms and Conditions (sponsored
-        // access): the Provider PAYS for access, but the family is the
-        // customer, Reports go to the family, and NOTHING reaches the Provider
-        // unless the family authorizes it here. No branding claim — the
-        // The provider co-branding framing was retired on 2026-08-05 (Sponsored Access).
         item.appendChild(el('span', { className: 'ack-item-text', html:
           '<strong>Sharing with your provider (optional).</strong> My access to Pieces of Perception is sponsored by <strong>' + provName + '</strong>. ' +
           'I understand that their payment does <strong>not</strong> by itself authorize Pieces of Perception to share anything with them, and that ' +
@@ -3639,7 +3262,7 @@
     errEl.style.display = 'none';
     if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
 
-    // Record a single acknowledgment of the unified Terms and Conditions.
+    // Record a single acknowledgment of the unified Beta Agreement.
     const session = getSession ? getSession() : null;
     if (session && session.user_id) {
       const rows = [{
@@ -3651,8 +3274,6 @@
       // row AND inside the answers payload (travels into answers.json, so the
       // consent is visible in the pipeline and the report Q&A appendix).
       if (PROVIDER_NAME) {
-        // Record the family's ACTUAL answer — yes or no. Sponsored access does
-        // not imply authorization to share (Terms and Conditions, Sec. 1).
         const shareBox = document.getElementById('ack-provider-share');
         const authorized = !!(shareBox && shareBox.checked);
         rows.push({
@@ -3693,15 +3314,7 @@
   function renderStep(card, step) {
     card.appendChild(el('div', { className: 'step-eyebrow' }, step.eyebrow.toUpperCase()));
     card.appendChild(el('h2', { className: 'step-title serif' }, step.title));
-    const _sub = (typeof step.sub === 'function') ? step.sub(state) : step.sub;
-    if (_sub) card.appendChild(el('p', { className: 'step-sub' }, _sub));
-
-    // 2026-09-02: an add-on step says, in its own words, whether this family
-    // already owns it or is about to owe for it. Silent when unknown.
-    if (step.addonKey) {
-      const _note = renderAddonEntitlementNote(step.addonKey);
-      if (_note) card.appendChild(_note);
-    }
+    if (step.sub) card.appendChild(el('p', { className: 'step-sub' }, step.sub));
 
     const errorBox = el('div', { className: 'alert-error', id: 'step-error' });
     card.appendChild(errorBox);
@@ -3712,59 +3325,6 @@
     });
 
     card.appendChild(renderStepActions({ showBack: true, nextLabel: 'Continue →' }));
-  }
-
-  // ── "Doesn't apply / not sure" (GL-9, 2026-08-30) ──────────────
-  // Sarah's rule: nothing in an add-on section should be optional, because
-  // an add-on report cannot be built from blanks — but every required field
-  // needs an honest way out, and it must NOT be "type N/A into the box".
-  //
-  // A field with naOption:true renders one checkbox under the input. Ticking
-  // it stores NA_SENTINEL, which satisfies the required check.
-  //
-  // ★ AT SUBMIT the sentinel is normalised back to '' — see stripNaSentinels().
-  // So the pipeline sees exactly the same blank it sees today and Task #70's
-  // diagnosis-grounded gap-filling still does its job. The point of this
-  // change is FEWER gaps, not a different gap policy: a family must now make
-  // a conscious choice to skip, where before the question just slid past.
-  var NA_SENTINEL = '__NA__';
-
-  function isNa(v) { return v === NA_SENTINEL; }
-
-  function stripNaSentinels(data) {
-    var out = {};
-    for (var k in data) {
-      if (!Object.prototype.hasOwnProperty.call(data, k)) continue;
-      var v = data[k];
-      if (isNa(v)) { out[k] = ''; continue; }
-      if (Array.isArray(v)) {
-        var arr = v.filter(function (x) { return !isNa(x); });
-        out[k] = arr;
-        continue;
-      }
-      out[k] = v;
-    }
-    return out;
-  }
-
-  function renderNaToggle(wrap, f) {
-    if (!f.naOption) return;
-    var row = el('label', { className: 'na-row',
-      style: 'display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:#6B6982;cursor:pointer;' });
-    var box = el('input', { type: 'checkbox' });
-    box.checked = isNa(state.data[f.key]);
-    box.addEventListener('change', function () {
-      if (box.checked) {
-        state.data[f.key] = NA_SENTINEL;
-      } else if (isNa(state.data[f.key])) {
-        state.data[f.key] = (f.type === 'checkbox') ? [] : '';
-      }
-      saveDraft();
-      render();
-    });
-    row.appendChild(box);
-    row.appendChild(el('span', null, f.naLabel || "This doesn\u2019t apply to us, or I\u2019m not sure"));
-    wrap.appendChild(row);
   }
 
   function renderField(f) {
@@ -3921,7 +3481,6 @@
     }
 
     if (f.disclaimer) wrap.appendChild(el('div', { className: 'field-disclaimer', html: f.disclaimer }));
-    renderNaToggle(wrap, f);
 
     return wrap;
   }
@@ -3954,7 +3513,6 @@
       if (!f.required) continue;
       if (!evalShowIf(f)) continue;          // skip required check on hidden fields
       const v = state.data[f.key];
-      if (isNa(v)) continue;   // "doesn't apply / not sure" is a real answer
       if (f.type === 'checkbox') {
         if (!Array.isArray(v) || v.length === 0) {
           return { ok: false, msg: `Please answer: ${f.label}` };
@@ -3992,13 +3550,9 @@
   function goBack() {
     if (state.step > 0) {
       state.step -= 1;
-    } else if (!(entitlements && entitlements.flow)) {
+    } else {
       // back from step 0 → flow-choice
       state.flow = null;
-    } else {
-      // The flow is fixed by what this family purchased, so there is no
-      // choice screen to go back to. Do nothing rather than un-pin it.
-      return;
     }
     saveDraft();
     render();
@@ -4053,97 +3607,47 @@
   // ─────────────────────────────────────────────────────────────
   // ADD-ON STEP
   // ─────────────────────────────────────────────────────────────
-  // ─────────────────────────────────────────────────────────────
-  // FINAL SCREEN  (rewritten 2026-09-02)
-  //
-  // This used to be a SECOND IEP upsell titled "Add IEP Goal
-  // Recommendations?" -- a duplicate, because both flows already ask about
-  // IEP on their own step (action_addon_iep / comp_addon_iep, both
-  // required). It also showed the price as $99 in the big number while its
-  // own toggle said +$49, and checkout sells it at $49.
-  //
-  // It is now the confirmation screen: what we are about to build, what is
-  // still owed, and the submit button. The IEP toggle survives ONLY as a
-  // fallback for the case where nothing has asked yet.
-  // ─────────────────────────────────────────────────────────────
   function renderAddon(card) {
-    const pending = pendingAddons();
-    const iepAsked = typeof state.data.iep_addon_choice === 'string' && state.data.iep_addon_choice !== '';
+    card.appendChild(el('div', { className: 'step-eyebrow' }, 'ONE LAST OPTION'));
+    card.appendChild(el('h2', { className: 'step-title serif' }, 'Add IEP Goal Recommendations?'));
+    card.appendChild(el('p', { className: 'step-sub' }, 'Optional — built specifically to drop into an IEP draft your team can refine. Most families add this when they\'re heading into an annual review or evaluation.'));
 
-    card.appendChild(el('div', { className: 'step-eyebrow' }, 'LAST STEP'));
-    card.appendChild(el('h2', { className: 'step-title serif' }, 'Ready to build ' +
-      ((state.data.child_first_name || '').trim() || 'your child') + '\u2019s reports.'));
+    const addon = el('div', { className: 'addon-card' });
+    addon.appendChild(el('div', { className: 'addon-flag' }, 'POPULAR ADD-ON'));
+    addon.appendChild(el('h3', null, 'IEP Goal Recommendations'));
+    addon.appendChild(el('div', { className: 'addon-price', html: '<span style="font-size:14px;vertical-align:super;">$</span>99' }));
+    const ul = el('ul', { className: 'addon-features' });
+    [
+      'Measurable, IEP-ready goal language',
+      'Aligned to your child\'s strengths and challenges',
+      'Suggested accommodations and supports',
+      'Progress monitoring ideas your team can adopt'
+    ].forEach(t => ul.appendChild(el('li', null, t)));
+    addon.appendChild(ul);
 
-    // What they are getting, and have already paid for.
-    const included = getCartItems();
-    if (included.length) {
-      const box = el('div', { style: 'background:rgba(82,183,136,0.08);border:1px solid rgba(82,183,136,0.30);' +
-                                     'border-radius:14px;padding:16px 20px;margin-bottom:18px;' });
-      box.appendChild(el('div', { style: 'font-size:11px;font-weight:700;letter-spacing:1px;color:#2f8f63;margin-bottom:8px;' },
-        'WE\u2019LL BUILD THESE NOW'));
-      included.forEach(function (it) {
-        box.appendChild(el('div', { style: 'padding:3px 0;color:#2C2A4A;' }, it.name));
-      });
-      box.appendChild(el('div', { style: 'margin-top:8px;font-size:12.5px;color:#6B6982;' },
-        'Paid for at checkout \u2014 nothing more to pay for these.'));
-      card.appendChild(box);
-    }
+    const isSel = !!state.addon_iep;
+    const toggle = el('label', { className: 'addon-toggle' + (isSel ? ' selected' : '') });
+    const cb = el('input', { type: 'checkbox' });
+    if (isSel) cb.setAttribute('checked', 'checked');
+    cb.addEventListener('change', () => {
+      state.addon_iep = cb.checked;
+      if (cb.checked) toggle.classList.add('selected'); else toggle.classList.remove('selected');
+      saveDraft();
+      // update the submit label below
+      const submitBtn = document.getElementById('submit-btn');
+      if (submitBtn) submitBtn.textContent = submitLabel();
+    });
+    toggle.appendChild(cb);
+    toggle.appendChild(el('span', null, 'Yes — add IEP Goal Recommendations (+$49)'));
+    addon.appendChild(toggle);
 
-    // What they added but have not bought.
-    if (pending.length) {
-      const box = el('div', { style: 'background:rgba(232,132,90,0.09);border:1px solid rgba(232,132,90,0.35);' +
-                                     'border-radius:14px;padding:16px 20px;margin-bottom:18px;' });
-      box.appendChild(el('div', { style: 'font-size:11px;font-weight:700;letter-spacing:1px;color:#c0663a;margin-bottom:8px;' },
-        'YOU ALSO ASKED FOR THESE'));
-      pending.forEach(function (a) {
-        const row = el('div', { style: 'display:flex;justify-content:space-between;gap:12px;padding:3px 0;color:#2C2A4A;' });
-        row.appendChild(el('span', null, a.name));
-        row.appendChild(el('span', { style: 'color:#6B6982;' }, '$' + a.price));
-        box.appendChild(row);
-      });
-      const tot = el('div', { style: 'display:flex;justify-content:space-between;gap:12px;border-top:1px solid rgba(232,132,90,0.35);' +
-                                     'margin-top:8px;padding-top:8px;font-weight:700;color:#2C2A4A;' });
-      tot.appendChild(el('span', null, 'To complete'));
-      tot.appendChild(el('span', null, '$' + pendingTotal()));
-      box.appendChild(tot);
-      box.appendChild(el('div', { style: 'margin-top:10px;font-size:12.5px;color:#6B6982;' },
-        'Your answers for these are saved. Submit first \u2014 we\u2019ll show you how to complete them on the ' +
-        'next screen, and they\u2019re added to your set once payment is in. Your main reports start right away either way.'));
-      card.appendChild(box);
-    }
+    card.appendChild(addon);
 
-    // FALLBACK ONLY: nothing has asked about IEP, so ask here.
-    if (!iepAsked && ownsAddon('iep') !== true) {
-      const addon = el('div', { className: 'addon-card' });
-      addon.appendChild(el('h3', null, 'IEP Prep Companion'));
-      addon.appendChild(el('div', { className: 'addon-price',
-        html: '<span style="font-size:14px;vertical-align:super;">$</span>49' }));
-      const ul = el('ul', { className: 'addon-features' });
-      [ 'Your concerns and priorities, in your own words',
-        'Present levels, strengths, and the goal areas to address',
-        'Accommodations and supports to discuss',
-        'The questions to bring to the meeting'
-      ].forEach(function (t) { ul.appendChild(el('li', null, t)); });
-      addon.appendChild(ul);
+    // skip notice
+    card.appendChild(el('p', { className: 'step-sub', style: 'font-size:13.5px; margin-top:-6px;' },
+      'No pressure — you can always add this later from your dashboard.'));
 
-      const isSel  = !!state.addon_iep;
-      const toggle = el('label', { className: 'addon-toggle' + (isSel ? ' selected' : '') });
-      const cb = el('input', { type: 'checkbox' });
-      if (isSel) cb.setAttribute('checked', 'checked');
-      cb.addEventListener('change', function () {
-        state.addon_iep = cb.checked;
-        if (cb.checked) toggle.classList.add('selected'); else toggle.classList.remove('selected');
-        saveDraft();
-        render();               // the summary boxes above depend on this
-      });
-      toggle.appendChild(cb);
-      toggle.appendChild(el('span', null, 'Yes \u2014 add the IEP Prep Companion ($49)'));
-      addon.appendChild(toggle);
-      card.appendChild(addon);
-      card.appendChild(el('p', { className: 'step-sub', style: 'font-size:13.5px; margin-top:-6px;' },
-        'No pressure \u2014 you can always add this later from your dashboard.'));
-    }
-
+    // Submit
     const submitBtn = el('button', {
       className: 'btn btn-primary btn-large',
       id: 'submit-btn',
@@ -4151,7 +3655,7 @@
     }, submitLabel());
 
     const row = el('div', { className: 'step-actions' });
-    row.appendChild(el('button', { className: 'btn btn-ghost', onclick: goBack }, '\u2190 Back'));
+    row.appendChild(el('button', { className: 'btn btn-ghost', onclick: goBack }, '← Back'));
     const right = el('div', { className: 'right-side' });
     right.appendChild(submitBtn);
     row.appendChild(right);
@@ -4159,11 +3663,14 @@
   }
 
   function submitLabel() {
-    // GL-9 (2026-08-30): this used to end with a dollar total. Payment happens
-    // at CHECKOUT, before the questionnaire — showing a price on the submit
-    // button reads as a second charge and is the single most alarming thing
-    // on the page. No figure here.
-    return 'Submit & Generate My Reports';
+    const base = (state.flow === 'comprehensive'
+                  || state.flow === 'next_chapter') ? 149 : 99;
+    const yes = v => typeof v === 'string' && v.indexOf('Yes') === 0;
+    const guideKeys = ['addon_babysitter','addon_extended_family','addon_sibling','addon_teacher','addon_service_provider'];
+    const guideCount = guideKeys.filter(k => yes(state.data[k])).length;
+    // 4+ guides auto-price as the $49 all-5 bundle
+    const total = base + Math.min(guideCount * 15, 49) + (state.addon_iep ? 49 : 0);
+    return `Submit & Generate Report ($${total})`;
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -4180,35 +3687,17 @@
     // new add-on columns added in the Phase 2D Supabase migration.
     function isYes(v) { return typeof v === 'string' && v.indexOf('Yes') === 0; }
 
-    // ★ Normalise the "doesn't apply / not sure" sentinel to '' BEFORE the
-    // payload is built — the promoted columns below read state.data directly,
-    // so normalising only the answers blob would leak '__NA__' into
-    // siblings.close_cousin_details and friends. Safe to mutate: the draft is
-    // cleared immediately after a successful submit.
-    state.data = stripNaSentinels(state.data);
-
-    // What they added but have not paid for. Rides in the `answers` blob, so
-    // no migration is needed; it is the record of what is owed and of which
-    // questions were already answered for it.
-    const _pending = pendingAddons();
-    state.data.addons_pending_payment = _pending.map(function (a) { return a.key; });
-
     const payload = {
       user_id: session.user_id,
       flow: state.flow,
 
       // Add-on opt-ins (booleans) — populate the new Phase 2D columns
-      // ★ addonGranted(), NOT "did they tick yes". A known-unpaid add-on
-      // submits FALSE so purchase_gate.py stays green and the main report
-      // renders on schedule; the selection is preserved in
-      // answers.addons_pending_payment and the family is shown how to
-      // complete it after submit. See addonGranted() for why unknown grants.
-      addon_iep:               addonGranted('iep'),
-      addon_babysitter:        addonGranted('babysitter'),
-      addon_sibling:           addonGranted('sibling'),
-      addon_extended_family:   addonGranted('extended_family'),
-      addon_teacher:           addonGranted('teacher'),
-      addon_service_provider:  addonGranted('service_provider'),
+      addon_iep: !!state.addon_iep || (typeof state.data.iep_addon_choice === 'string' && state.data.iep_addon_choice.indexOf('Yes') === 0),
+      addon_babysitter:        isYes(state.data.addon_babysitter),
+      addon_sibling:           isYes(state.data.addon_sibling),
+      addon_extended_family:   isYes(state.data.addon_extended_family),
+      addon_teacher:           isYes(state.data.addon_teacher),
+      addon_service_provider:  isYes(state.data.addon_service_provider),
 
       // Promoted shared columns
       child_first_name: state.data.child_first_name || null,
@@ -4258,13 +3747,7 @@
       // Catch-all JSON blob — every field the user answered, forward-compatible.
       // The promoted columns above are duplicated here on purpose so any field
       // not yet promoted is still queryable.
-      // report_language (2026-09-25): "es" when the family filled this in on
-      // the Spanish site. render_family.py then builds a Spanish (_ES) copy of
-      // every report alongside the English set. Read from the raw answers by
-      // the pipeline, like flow — not a schema field.
-      answers: Object.assign({}, state.data, {
-        report_language: (window.popLang && window.popLang() === 'es') ? 'es' : 'en'
-      }),
+      answers: state.data,
       status: 'submitted'
     };
 
@@ -4294,11 +3777,7 @@
           response_id: responseId,
           flow: state.flow,
           addon_iep: state.addon_iep,
-          child_first_name: state.data.child_first_name || '',
-          // generating.html renders these as "complete your add-ons"
-          addons_pending: _pending.map(function (a) {
-            return { key: a.key, name: a.name, price: a.price };
-          })
+          child_first_name: state.data.child_first_name || ''
         }));
       } catch (_) {}
 
@@ -4360,64 +3839,9 @@
     } catch (e) { /* non-critical */ }
   }
 
-  // LC-18 (2026-10-03): send beta families back to THEIR dashboard. The
-  // static "Dashboard" links on this page point at /family-dashboard.html,
-  // the customer dashboard, so a beta family who followed one left the beta
-  // portal. Same test as update.html's dashboardPath(): a beta_agreement
-  // acknowledgment on record. Any failure leaves the links as they were.
-  async function routeBetaDashboardLinks(session) {
-    try {
-      const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.${encodeURIComponent(session.user_id)}` +
-        `&policy_type=eq.beta_agreement&select=policy_type&limit=1`,
-        { headers: {
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${session.access_token}`,
-            'Accept': 'application/json'
-          } }
-      );
-      if (!res.ok) return;
-      const rows = await res.json();
-      if (!(Array.isArray(rows) && rows.length > 0)) return;
-      const FROM = 'a[href="/family-dashboard.html"]';
-      document.querySelectorAll(FROM).forEach(function (a) { a.setAttribute('href', '/beta-dashboard.html'); });
-      // Links built later (e.g. the cap-reached screen) are caught at click time.
-      document.addEventListener('click', function (e) {
-        const a = e.target && e.target.closest ? e.target.closest(FROM) : null;
-        if (a) a.setAttribute('href', '/beta-dashboard.html');
-      }, true);
-    } catch (e) { /* leave links alone */ }
-  }
-
   async function init() {
     const session = await ensureFreshSession();
     if (!session) { redirectToAuth(); return; }
-    routeBetaDashboardLinks(session);
-
-    // LEG-4 - verification backstop. The dashboard is where the verify
-    // screen lives; this exists so that typing this page's URL directly
-    // does not walk around it. Sends them back to the dashboard rather
-    // than duplicating the screen, so there is one copy of that copy.
-    // FAILS OPEN on any technical failure - a broken lookup must never
-    // strand every family at once.
-    try {
-      const vr = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_verification_status`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
-        },
-        body: '{}'
-      });
-      if (vr.ok) {
-        const vs = await vr.json();
-        if (vs && vs.ok === true && vs.required === true && vs.status !== 'verified') {
-          window.location.replace('/family-dashboard.html');
-          return;
-        }
-      }
-    } catch (e) { /* fail open */ }
 
     // Submission cap: initial + one update = 2 max per family.
     // Exempt accounts (founder/test) bypass. Fails open; DB trigger is the
@@ -4429,20 +3853,6 @@
     setDraftKey(session && session.user_id);
     loadDraft();
 
-    // What did this family actually buy? Fails open (null = show the choice).
-    entitlements = await loadEntitlements(session);
-    if (entitlements && entitlements.flow && state.flow !== entitlements.flow) {
-      // Pin the flow to the purchase. If a draft was started on the wrong
-      // flow, correct it and send them back to the first question rather
-      // than leaving them mid-way through the wrong question set.
-      if (state.flow && state.flow !== entitlements.flow) {
-        state.step = 0;
-        state.intro_shown = false;
-      }
-      state.flow = entitlements.flow;
-      saveDraft();
-    }
-
     // Unified agreement: skip the acknowledgment screen when this account has
     // already accepted it (e.g. on the dashboard). The screen still appears
     // for anyone who reaches the form without an acknowledgment on record,
@@ -4450,21 +3860,12 @@
     // the check errors.
     if (!state.acks_confirmed) {
       try {
-        // Accept EITHER agreement on record: customer_agreement v2.1 (live
-        // customers, accepted at checkout before payment) OR beta_agreement
-        // v1.0 (beta families completing their original questionnaire). Beta
-        // families are separately required to accept the current Family
-        // Service Agreement before a free UPDATE — that gate lives on
-        // beta-dashboard.html and update.html, not here.
         const ar = await fetch(
           `${SUPABASE_URL}/rest/v1/policy_acknowledgments?user_id=eq.` +
           encodeURIComponent(session.user_id) +
-          // Per-type versions. The live Agreement is v2.1; the beta agreement
-          // stays v1.0. A single &policy_version filter across both types would
-          // lock every beta family out of their own questionnaire, so each type
-          // carries its own version here.
-          `&or=(and(policy_type.eq.${CUSTOMER_AGREEMENT.type},policy_version.eq.${CUSTOMER_AGREEMENT.version}),` +
-              `and(policy_type.eq.${BETA_AGREEMENT.type},policy_version.eq.${BETA_AGREEMENT.version}))` +
+          `&policy_type=in.(` + encodeURIComponent(CUSTOMER_AGREEMENT.type) + `,` +
+                                encodeURIComponent(BETA_AGREEMENT.type) + `)` +
+          `&policy_version=eq.v1.0` +
           `&select=policy_type&limit=1`,
           { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${session.access_token}`, 'Accept': 'application/json' } });
         if (ar.ok) {
