@@ -442,6 +442,14 @@
       transition: opacity .25s;
     }
     .saved-pill.show { opacity: 1; }
+    /* RPT-3 (2026-10-11): visible, confirmed start-over */
+    .progress-actions { display: inline-flex; align-items: center; gap: 14px; }
+    .start-over {
+      background: none; border: none; padding: 0; cursor: pointer;
+      font: inherit; font-size: 12px; font-weight: 600;
+      color: var(--text-light); text-decoration: underline;
+    }
+    .start-over:hover, .start-over:focus-visible { color: var(--accent); }
     .saved-pill::before {
       content: ''; width: 7px; height: 7px; border-radius: 50%;
       background: var(--sage);
@@ -527,7 +535,10 @@
   <div class="progress-wrap" id="progress-wrap" style="display:none;">
     <div class="progress-meta">
       <span><span class="step-label" id="step-counter">Step 1</span> of <span id="step-total">8</span></span>
-      <span class="saved-pill" id="saved-pill">Draft saved</span>
+      <span class="progress-actions">
+        <span class="saved-pill" id="saved-pill">Draft saved</span>
+        <button type="button" class="start-over" id="start-over-btn" onclick="startOver()">Start over</button>
+      </span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
@@ -3989,6 +4000,30 @@
     saveDraft();
     render();
   }
+  // RPT-3 (2026-10-11): a visible "Start over". Clears ONLY this signed-in
+  // user's draft (DRAFT_KEY is user-scoped since GL-9) and returns them to the
+  // first question. The flow stays pinned to what they bought; the agreement
+  // acceptance is a database record, so it is kept and not asked for again.
+  function startOver() {
+    const ok = window.confirm(
+      "Start over from the first question? This clears every answer saved " +
+      "on this device for your account. It can't be undone.");
+    if (!ok) return;
+    clearDraft();
+    const pinned = (entitlements && entitlements.flow) ? entitlements.flow : null;
+    state = {
+      flow: pinned,
+      acks_confirmed: state.acks_confirmed,
+      intro_shown: false,
+      step: 0,
+      data: {},
+      addon_iep: false
+    };
+    saveDraft();
+    render();
+    window.scrollTo(0, 0);
+  }
+
   function goBack() {
     if (state.step > 0) {
       state.step -= 1;
