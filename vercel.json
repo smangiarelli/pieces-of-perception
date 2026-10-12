@@ -47,11 +47,6 @@
       "permanent": true
     },
     {
-      "source": "/partner-sample-report.pdf",
-      "destination": "/partnerships.html",
-      "permanent": false
-    },
-    {
       "source": "/marketing/sample-report/Sample_Comprehensive_Profile.pdf",
       "destination": "/sample-comprehensive-profile.html",
       "permanent": false
