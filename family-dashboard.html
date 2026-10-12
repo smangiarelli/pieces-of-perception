@@ -609,12 +609,21 @@
     </p>
     <div id="verify-msg" style="display:none; padding:10px 14px; border-radius:10px; font-size:13px; margin:12px 0;"></div>
     <a id="verify-start" class="btn btn-primary btn-large" href="#" target="_blank" rel="noopener" style="margin-top:6px;">Verify With Stripe &rarr;</a>
+    <div id="verify-card-wrap" style="margin-top:22px; padding-top:16px; border-top:1px solid #e4e6ef;">
+      <p class="ack-lede" style="margin-bottom:10px;">
+        <strong>Prefer not to use an ID?</strong> You can confirm with a $1.00 charge on your own
+        debit or credit card instead. We refund it automatically, right away. Prepaid and gift
+        cards can&#8217;t be used for this.
+      </p>
+      <a id="verify-card" class="btn btn-outline" href="#" target="_blank" rel="noopener">Confirm With a $1 Card Check &rarr;</a>
+      <p style="margin-top:8px; font-size:12px; color:#6B6B80;">The refund usually shows on your statement within 5&ndash;10 business days.</p>
+    </div>
     <p style="margin-top:18px; font-size:13px;">
       Finished it in another tab?
       <a href="#" onclick="recheckVerification(event)" style="font-weight:600;">Check again</a>
     </p>
     <p class="ack-footnote">
-      Stuck, or you don&#8217;t have a photo ID? Email
+      Can&#8217;t do either one? Email
       <a id="verify-help-link" href="mailto:hello@piecesofperception.com?subject=Help%20with%20verification">hello@piecesofperception.com</a>
       and we&#8217;ll find another way. You will not be left without your reports.
     </p>
@@ -724,6 +733,10 @@
   // Stripe -> Identity -> Verification flows -> that flow -> Copy link.
   // MUST be the LIVE-mode link, not the test-mode one.
   const VERIFY_LINK = 'https://verify.stripe.com/v/6oU4gz3Ci4Pf2sN00r5AQ00';  // LIVE flow, pasted 11 Oct 2026
+  // LEG-4 · the $1 refunded card check. A Stripe Payment Link for the product
+  // named "Parent card check (refunded)" — the webhook keys on that name.
+  // While this still starts with PASTE_ the option is hidden.
+  const CARD_CHECK_LINK = 'https://buy.stripe.com/eVq9ATegWbdD1oJbJ95AQ0f';  // LIVE, pasted 11 Oct 2026
 
   function getSession() {
     try {
@@ -1210,6 +1223,18 @@
         msg.textContent = 'Your check is still being reviewed. This usually takes under a minute — use “Check again” below in a moment.';
         msg.style.display = 'block';
       }
+    }
+
+    // $1 card check (alternative to the ID check)
+    const cardWrap = document.getElementById('verify-card-wrap');
+    const cardBtn  = document.getElementById('verify-card');
+    if (!CARD_CHECK_LINK || CARD_CHECK_LINK.indexOf('PASTE_') === 0) {
+      if (cardWrap) cardWrap.style.display = 'none';
+    } else if (cardBtn) {
+      const csep = CARD_CHECK_LINK.indexOf('?') === -1 ? '?' : '&';
+      let curl = CARD_CHECK_LINK + csep + 'client_reference_id=' + encodeURIComponent(code);
+      if (email) curl += '&prefilled_email=' + encodeURIComponent(email);
+      cardBtn.href = curl;
     }
 
     const help = document.getElementById('verify-help-link');
