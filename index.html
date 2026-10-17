@@ -323,6 +323,17 @@
     }
 
     /* ── TWO PATHS ── */
+    /* Next Chapter Profile (live 2026-10-17): full-width third card */
+    .path-card.nc { grid-column: 1 / -1; border-color: rgba(63,168,204,0.55);
+      background: linear-gradient(145deg, rgba(63,168,204,0.06), white); }
+    .path-card.nc .path-meta { color: #2B8BAD; }
+    .price-card.nc { grid-column: 1 / -1; border-color: rgba(63,168,204,0.55); }
+    .price-card.nc .price-tier { color: #2B8BAD; }
+    .price-card.nc .popular-badge { background: #3FA8CC; }
+    .price-card.nc .pf-check { background: rgba(63,168,204,0.18); color: #2B8BAD; }
+    .btn-sky { background: #3FA8CC; color: white; }
+    .btn-sky:hover { background: #2B8BAD; color: white; }
+    @media (min-width: 1041px) { .price-card.nc .price-features { display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; } }
     .paths-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 860px; margin: 0 auto; }
     @media (max-width: 1040px) { .paths-grid { grid-template-columns: 1fr; max-width: 480px; } }
     /* Next Chapter -- not yet available, so it must not read as clickable */
@@ -855,7 +866,7 @@
 
 <section style="background:var(--bg)">
   <div class="section-inner" style="text-align:center">
-    <div class="section-label">Two Ways to Get Support</div>
+    <div class="section-label">Three Ways to Get Support</div>
     <h2 class="section-title">Start Where You Are</h2>
     <p class="section-sub">Every family is different.<br>Choose the path that fits where you are right now.</p>
     <div class="paths-grid">
@@ -870,6 +881,12 @@
         <h3>Action Report</h3>
         <p>One thing is consuming everything right now — mornings, transitions, meltdowns, eating, a school crisis. This path goes deep on that one challenge and gives you focused strategies and a week-one checklist.</p>
         <p class="path-meta"><strong>Best when</strong> you need help with one thing, now &nbsp;·&nbsp; $99</p>
+      </div>
+      <div class="path-card nc">
+        <div class="path-icon">🌱</div>
+        <h3>Next Chapter Profile</h3>
+        <p>For young people 16 and up. Eighteen is coming, and the adults around them are about to change. This path covers independence, work, and the decisions that arrive at 18 — plus a Handoff Pack to give an adult program, an employer, or a job coach.</p>
+        <p class="path-meta"><strong>Best when</strong> your young person is 16 or older &nbsp;·&nbsp; $149</p>
       </div>
     </div>
   </div>
@@ -1131,6 +1148,25 @@
           <li><div class="pf-check" style="background:rgba(232,132,90,0.2);color:var(--warm)">✓</div> One updated report included in your first year</li>
         </ul>
         <a href="/checkout.html" class="btn btn-warm" style="width:100%;padding:14px">Get Started &rarr;</a>
+      </div>
+      <div class="price-card nc">
+        <div class="popular-badge">AGES 16+</div>
+        <div class="price-tier">NEXT CHAPTER PROFILE</div>
+        <div class="price-amount">$149</div>
+        <div class="price-period">one-time payment</div>
+        <p class="price-desc">Built for the transition years — independence, work, and the decisions that arrive at 18 — with a Handoff Pack for the adults who come next, and a section written to the young adult themselves.</p>
+        <div class="price-divider"></div>
+        <ul class="price-features">
+          <li><div class="pf-check">✓</div> Independence snapshot across 12 areas of daily life</li>
+          <li><div class="pf-check">✓</div> Transition timeline: 16, 17, and turning 18</li>
+          <li><div class="pf-check">✓</div> The decisions that arrive at 18 — and the questions to ask</li>
+          <li><div class="pf-check">✓</div> A one-page profile in their own voice</li>
+          <li><div class="pf-check">✓</div> Day One checklist and accommodations menu</li>
+          <li><div class="pf-check">✓</div> Contacts, consent, and placement log</li>
+          <li><div class="pf-check">✓</div> “In My Own Words” — a section written to the young adult</li>
+          <li><div class="pf-check">✓</div> One updated report included in your first year</li>
+        </ul>
+        <a href="/checkout.html" class="btn btn-sky" style="width:100%;padding:14px">Get Started &rarr;</a>
       </div>
     </div>
 
